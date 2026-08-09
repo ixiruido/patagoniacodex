@@ -72,6 +72,105 @@
     
 </section>
 
+<!-- MODAL DE PRODUCTO MOVIDO A LA PÁGINA PRINCIPAL -->
+<div id="producto-modal" class="producto-modal oculto">
+    <div class="modal-content">
+        <button class="modal-close" aria-label="Cerrar modal">
+            ✕
+        </button>
+        <div class="modal-body">
+            <div class="modal-imagen">
+                <img id="modal-img" src="" alt="">
+            </div>
+            <div class="modal-info">
+                <span id="modal-categoria" class="modal-categoria"></span>
+                <h2 id="modal-nombre"></h2>
+                <div id="modal-descripcion" class="modal-descripcion"></div>
+                <div id="modal-precio" class="modal-precio"></div>
+                <div id="modal-stock" class="modal-stock"></div>
+                <button id="modal-whatsapp" class="modal-whatsapp-btn">
+                    Consultar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Escuchar mensajes del iframe para abrir el modal
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'abrirModalProducto') {
+        const producto = event.data.producto;
+        abrirModalProductoPrincipal(producto);
+    }
+});
+
+// Función para abrir el modal en la página principal
+function abrirModalProductoPrincipal(producto) {
+    const modal = document.getElementById('producto-modal');
+    const modalImg = document.getElementById('modal-img');
+    const modalCategoria = document.getElementById('modal-categoria');
+    const modalNombre = document.getElementById('modal-nombre');
+    const modalDescripcion = document.getElementById('modal-descripcion');
+    const modalPrecio = document.getElementById('modal-precio');
+    const modalStock = document.getElementById('modal-stock');
+    const modalWhatsapp = document.getElementById('modal-whatsapp');
+    
+    // Llenar datos del modal
+    if (producto.foto) {
+        modalImg.src = producto.foto;
+        modalImg.style.display = 'block';
+    } else {
+        modalImg.style.display = 'none';
+    }
+    
+    modalCategoria.textContent = producto.categoria || '';
+    modalNombre.textContent = producto.nombre || '';
+    modalDescripcion.textContent = producto.descripcion || '';
+    modalPrecio.textContent = producto.precio || '';
+    
+    const stock = producto.stock !== 'no';
+    modalStock.textContent = stock ? 'En stock' : 'Sin stock';
+    modalStock.className = stock ? 'modal-stock' : 'modal-stock sin-stock';
+    
+    // Configurar botón WhatsApp
+    modalWhatsapp.onclick = function() {
+        const whatsappUrl = `https://wa.me/?text=Hola, estoy interesado en: ${producto.nombre}`;
+        window.open(whatsappUrl, '_blank');
+    };
+    
+    // Mostrar modal
+    modal.classList.remove('oculto');
+    document.body.style.overflow = 'hidden';
+}
+
+// Cerrar modal
+document.querySelector('.modal-close').addEventListener('click', function() {
+    const modal = document.getElementById('producto-modal');
+    modal.classList.add('oculto');
+    document.body.style.overflow = '';
+});
+
+// Cerrar modal al hacer clic fuera del contenido
+document.getElementById('producto-modal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        this.classList.add('oculto');
+        document.body.style.overflow = '';
+    }
+});
+
+// Cerrar modal con Escape
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modal = document.getElementById('producto-modal');
+        if (!modal.classList.contains('oculto')) {
+            modal.classList.add('oculto');
+            document.body.style.overflow = '';
+        }
+    }
+});
+</script>
+
 <section class="contact" id="contacto"><h2>Contactanos</h2>
         <p class="contact-subtitle">Elegí el medio de contacto que prefieras para realizar consultas, presupuestos o pedidos.</p><div class="contact-grid reveal">
             <a href="https://wa.me" class="contact-card whatsapp-card" target="_blank" rel="noopener noreferrer">

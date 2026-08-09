@@ -1124,9 +1124,6 @@ function crearProducto(
                 ? `
                     <div class="producto-descripcion">
                         ${obtenerDescripcionCorta(producto.descripcion)}
-                        <button class="ver-mas-btn" data-producto-id="${producto.id || producto.nombre}">
-                            Ver más
-                        </button>
                     </div>
                 `
                 : ""
@@ -1186,22 +1183,8 @@ function crearProducto(
         if (event.target.closest('.producto-boton')) {
             return;
         }
-        // Obtener la posición de la tarjeta clickeada
-        const rect = tarjeta.getBoundingClientRect();
-        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-        abrirModalProducto(producto, rect.top + scrollY);
+        abrirModalProducto(producto);
     });
-
-    // Agregar evento específico para el botón "Ver más"
-    const verMasBtn = info.querySelector('.ver-mas-btn');
-    if (verMasBtn) {
-        verMasBtn.addEventListener('click', (event) => {
-            event.stopPropagation(); // Evitar que se dispare el evento de la tarjeta
-            const rect = tarjeta.getBoundingClientRect();
-            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-            abrirModalProducto(producto, rect.top + scrollY);
-        });
-    }
 
 
     tarjeta.appendChild(
@@ -1481,9 +1464,23 @@ const modalWhatsapp = document.getElementById('modal-whatsapp');
 
 let productoActualModal = null;
 
-function abrirModalProducto(producto, productoScrollPosition = null) {
+function abrirModalProducto(producto) {
     productoActualModal = producto;
 
+    // Enviar mensaje a la página principal para abrir el modal
+    try {
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: 'abrirModalProducto',
+                producto: producto
+            }, '*');
+            return;
+        }
+    } catch (e) {
+        console.log('No se puede comunicar con la página principal');
+    }
+
+    // Fallback: mostrar modal dentro del iframe si no hay comunicación
     // Llenar datos del modal
     if (producto.foto) {
         modalImg.src = obtenerUrlImagen(producto.foto);
@@ -1501,45 +1498,25 @@ function abrirModalProducto(producto, productoScrollPosition = null) {
     modalStock.textContent = stock ? 'En stock' : 'Sin stock';
     modalStock.className = stock ? 'modal-stock' : 'modal-stock sin-stock';
 
-    // Mostrar modal
+    // Mostrar modal dentro del iframe
     modal.classList.remove('oculto');
-    document.body.style.overflow = 'hidden'; // Prevenir scroll
-
-    // Ajustar posición del modal cerca del producto clickeado
-    if (productoScrollPosition !== null) {
-        const modalContent = document.querySelector('.modal-content');
-        const viewportHeight = window.innerHeight;
-        const modalHeight = Math.min(600, viewportHeight * 0.8); // Altura máxima del modal
-
-        // Calcular posición óptima: cerca del producto pero visible
-        let targetPosition = productoScrollPosition - 50; // 50px arriba del producto
-
-        // Asegurar que el modal no quede muy arriba de la pantalla
-        if (targetPosition < 80) {
-            targetPosition = 80;
-        }
-
-        // Asegurar que el modal no quede muy abajo de la pantalla
-        if (targetPosition + modalHeight > viewportHeight - 50) {
-            targetPosition = viewportHeight - modalHeight - 50;
-        }
-
-        modal.style.paddingTop = `${targetPosition}px`;
-        modal.style.paddingBottom = '20px';
-    } else {
-        // Comportamiento original si no se proporciona posición
-        modal.style.paddingTop = '80px';
-        modal.style.paddingBottom = '20px';
-    }
+    document.body.style.overflow = 'hidden';
 }
 
 function cerrarModalProducto() {
     modal.classList.add('oculto');
-    document.body.style.overflow = ''; // Restaurar scroll
+    document.body.style.overflow = ''; // Restaurar scroll en el iframe
     productoActualModal = null;
-    // Restablecer estilos de padding del modal
-    modal.style.paddingTop = '80px';
-    modal.style.paddingBottom = '20px';
+    
+    // Restaurar scroll en la página principal
+    try {
+        if (window.parent && window.parent !== window) {
+            window.parent.document.body.style.overflow = '';
+        }
+    } catch (e) {
+        // No se puede acceder al padre
+        console.log('No se puede acceder a la página principal');
+    }
 }
 
 // Evento para cerrar modal con el botón X
