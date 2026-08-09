@@ -272,6 +272,11 @@ filter:blur(0);}}
     max-width: 100%;
     max-height: 400px;
     object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.modal-imagen img:hover {
+    transform: scale(1.1);
 }
 
 .modal-info {

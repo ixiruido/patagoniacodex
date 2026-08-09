@@ -133,9 +133,22 @@ function abrirModalProductoPrincipal(producto) {
     modalStock.textContent = stock ? 'En stock' : 'Sin stock';
     modalStock.className = stock ? 'modal-stock' : 'modal-stock sin-stock';
     
-    // Configurar botón WhatsApp
+    // Configurar botón WhatsApp con datos del Google Sheet
     modalWhatsapp.onclick = function() {
-        const whatsappUrl = `https://wa.me/?text=Hola, estoy interesado en: ${producto.nombre}`;
+        // Usar los datos del producto que incluyen info del Google Sheet
+        const numero = producto.whatsappNumero || producto.numeroWhatsapp || '';
+        const mensajeBase = producto.whatsappMensaje || producto.mensajeWhatsapp || 'Hola, estoy interesado en:';
+        const mensajeProducto = producto.nombre || '';
+        const mensajePrecio = producto.precio ? ` - ${producto.precio}` : '';
+        const mensajeCompleto = `${mensajeBase} ${mensajeProducto}${mensajePrecio}`;
+        
+        if (!numero) {
+            alert('No hay un número de WhatsApp configurado.');
+            return;
+        }
+        
+        const numeroLimpio = String(numero).replace(/\D/g, '');
+        const whatsappUrl = `https://wa.me/${numeroLimpio}?text=${encodeURIComponent(mensajeCompleto)}`;
         window.open(whatsappUrl, '_blank');
     };
     

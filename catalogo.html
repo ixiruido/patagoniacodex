@@ -43,39 +43,38 @@
 
             </div>
 
-            <select
-                id="ordenar"
-                aria-label="Ordenar productos"
-            >
+            <div class="filtros-grupo">
+                <select
+                    id="categorias-select"
+                    class="categorias-select"
+                    aria-label="Categorías"
+                >
+                    <option value="Todas">Categorías</option>
+                </select>
 
-                <option value="orden">
-                    Orden del catálogo
-                </option>
+                <select
+                    id="ordenar"
+                    aria-label="Ordenar productos"
+                >
 
-                <option value="precio-asc">
-                    Precio: menor a mayor
-                </option>
+                    <option value="orden">
+                        Ordenar
+                    </option>
 
-                <option value="precio-desc">
-                    Precio: mayor a menor
-                </option>
+                    <option value="precio-asc">
+                        Precio: menor a mayor
+                    </option>
 
-            </select>
+                    <option value="precio-desc">
+                        Precio: mayor a menor
+                    </option>
+
+                </select>
+            </div>
 
         </div>
 
     </header>
-
-
-    <div class="categorias-container">
-        <label for="categorias-select" class="categorias-label">Filtrar por categoría:</label>
-        <select
-            id="categorias-select"
-            class="categorias-select"
-            aria-label="Categorías"
-        >
-        </select>
-    </div>
 
 
     <div class="catalogo-info">

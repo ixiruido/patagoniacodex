@@ -190,11 +190,7 @@ function crearCategorias() {
         .sort();
 
     categoriasContenedor.innerHTML =
-        "";
-
-    crearOpcionCategoria(
-        "Todas"
-    );
+        '<option value="Todas">Categorías</option>';
 
     categorias.forEach(
         categoria => {
@@ -1472,7 +1468,11 @@ function abrirModalProducto(producto) {
         if (window.parent && window.parent !== window) {
             window.parent.postMessage({
                 type: 'abrirModalProducto',
-                producto: producto
+                producto: {
+                    ...producto,
+                    whatsappNumero: numeroWhatsapp,
+                    whatsappMensaje: mensajeWhatsapp
+                }
             }, '*');
             return;
         }
@@ -1497,6 +1497,13 @@ function abrirModalProducto(producto) {
     const stock = tieneStock(producto);
     modalStock.textContent = stock ? 'En stock' : 'Sin stock';
     modalStock.className = stock ? 'modal-stock' : 'modal-stock sin-stock';
+
+    // Guardar datos de WhatsApp en el producto actual para el fallback
+    productoActualModal = {
+        ...producto,
+        whatsappNumero: numeroWhatsapp,
+        whatsappMensaje: mensajeWhatsapp
+    };
 
     // Mostrar modal dentro del iframe
     modal.classList.remove('oculto');
@@ -1539,7 +1546,21 @@ document.addEventListener('keydown', (event) => {
 // Evento para el botón de WhatsApp del modal
 modalWhatsapp.addEventListener('click', () => {
     if (productoActualModal) {
-        abrirWhatsApp(productoActualModal);
+        // Usar función directa de WhatsApp con datos del producto
+        const numero = productoActualModal.whatsappNumero || numeroWhatsapp;
+        const mensajeBase = productoActualModal.whatsappMensaje || mensajeWhatsapp || 'Hola, estoy interesado en:';
+        const mensajeProducto = productoActualModal.nombre || '';
+        const mensajePrecio = productoActualModal.precio ? ` - ${productoActualModal.precio}` : '';
+        const mensajeCompleto = `${mensajeBase} ${mensajeProducto}${mensajePrecio}`;
+        
+        if (!numero) {
+            alert('No hay un número de WhatsApp configurado.');
+            return;
+        }
+        
+        const numeroLimpio = String(numero).replace(/\D/g, '');
+        const whatsappUrl = `https://wa.me/${numeroLimpio}?text=${encodeURIComponent(mensajeCompleto)}`;
+        window.open(whatsappUrl, '_blank');
     }
 });
 
