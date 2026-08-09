@@ -1186,7 +1186,10 @@ function crearProducto(
         if (event.target.closest('.producto-boton')) {
             return;
         }
-        abrirModalProducto(producto);
+        // Obtener la posición de la tarjeta clickeada
+        const rect = tarjeta.getBoundingClientRect();
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        abrirModalProducto(producto, rect.top + scrollY);
     });
 
     // Agregar evento específico para el botón "Ver más"
@@ -1194,7 +1197,9 @@ function crearProducto(
     if (verMasBtn) {
         verMasBtn.addEventListener('click', (event) => {
             event.stopPropagation(); // Evitar que se dispare el evento de la tarjeta
-            abrirModalProducto(producto);
+            const rect = tarjeta.getBoundingClientRect();
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            abrirModalProducto(producto, rect.top + scrollY);
         });
     }
 
@@ -1476,7 +1481,7 @@ const modalWhatsapp = document.getElementById('modal-whatsapp');
 
 let productoActualModal = null;
 
-function abrirModalProducto(producto) {
+function abrirModalProducto(producto, productoScrollPosition = null) {
     productoActualModal = producto;
 
     // Llenar datos del modal
@@ -1499,12 +1504,42 @@ function abrirModalProducto(producto) {
     // Mostrar modal
     modal.classList.remove('oculto');
     document.body.style.overflow = 'hidden'; // Prevenir scroll
+
+    // Ajustar posición del modal cerca del producto clickeado
+    if (productoScrollPosition !== null) {
+        const modalContent = document.querySelector('.modal-content');
+        const viewportHeight = window.innerHeight;
+        const modalHeight = Math.min(600, viewportHeight * 0.8); // Altura máxima del modal
+
+        // Calcular posición óptima: cerca del producto pero visible
+        let targetPosition = productoScrollPosition - 50; // 50px arriba del producto
+
+        // Asegurar que el modal no quede muy arriba de la pantalla
+        if (targetPosition < 80) {
+            targetPosition = 80;
+        }
+
+        // Asegurar que el modal no quede muy abajo de la pantalla
+        if (targetPosition + modalHeight > viewportHeight - 50) {
+            targetPosition = viewportHeight - modalHeight - 50;
+        }
+
+        modal.style.paddingTop = `${targetPosition}px`;
+        modal.style.paddingBottom = '20px';
+    } else {
+        // Comportamiento original si no se proporciona posición
+        modal.style.paddingTop = '80px';
+        modal.style.paddingBottom = '20px';
+    }
 }
 
 function cerrarModalProducto() {
     modal.classList.add('oculto');
     document.body.style.overflow = ''; // Restaurar scroll
     productoActualModal = null;
+    // Restablecer estilos de padding del modal
+    modal.style.paddingTop = '80px';
+    modal.style.paddingBottom = '20px';
 }
 
 // Evento para cerrar modal con el botón X
