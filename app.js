@@ -158,6 +158,18 @@ function normalizar(valor) {
 }
 
 
+function obtenerDescripcionCorta(descripcion) {
+    const desc = String(descripcion || "").trim();
+    const maxLength = 60; // Máximo de caracteres para la descripción corta
+
+    if (desc.length <= maxLength) {
+        return escaparHTML(desc);
+    }
+
+    return escaparHTML(desc.substring(0, maxLength)) + "...";
+}
+
+
 // ============================
 // CATEGORIAS
 // ============================
@@ -1111,9 +1123,10 @@ function crearProducto(
             producto.descripcion
                 ? `
                     <div class="producto-descripcion">
-                        ${escaparHTML(
-                            producto.descripcion
-                        )}
+                        ${obtenerDescripcionCorta(producto.descripcion)}
+                        <button class="ver-mas-btn" data-producto-id="${producto.id || producto.nombre}">
+                            Ver más
+                        </button>
                     </div>
                 `
                 : ""
@@ -1133,7 +1146,7 @@ function crearProducto(
             class="producto-boton"
             href="#"
         >
-            Consultar por WhatsApp
+            Consultar
         </a>
 
     `;
@@ -1166,6 +1179,24 @@ function crearProducto(
     tarjeta.appendChild(
         imagenContenedor
     );
+
+    // Agregar evento de clic a toda la tarjeta para abrir el modal
+    tarjeta.addEventListener('click', (event) => {
+        // Evitar que se abra si se hace clic en el botón de WhatsApp
+        if (event.target.closest('.producto-boton')) {
+            return;
+        }
+        abrirModalProducto(producto);
+    });
+
+    // Agregar evento específico para el botón "Ver más"
+    const verMasBtn = info.querySelector('.ver-mas-btn');
+    if (verMasBtn) {
+        verMasBtn.addEventListener('click', (event) => {
+            event.stopPropagation(); // Evitar que se dispare el evento de la tarjeta
+            abrirModalProducto(producto);
+        });
+    }
 
 
     tarjeta.appendChild(
@@ -1428,6 +1459,77 @@ if (
 
 }
 
+
+// ============================
+// MODAL DE PRODUCTO
+// ============================
+
+const modal = document.getElementById('producto-modal');
+const modalClose = document.querySelector('.modal-close');
+const modalImg = document.getElementById('modal-img');
+const modalCategoria = document.getElementById('modal-categoria');
+const modalNombre = document.getElementById('modal-nombre');
+const modalDescripcion = document.getElementById('modal-descripcion');
+const modalPrecio = document.getElementById('modal-precio');
+const modalStock = document.getElementById('modal-stock');
+const modalWhatsapp = document.getElementById('modal-whatsapp');
+
+let productoActualModal = null;
+
+function abrirModalProducto(producto) {
+    productoActualModal = producto;
+
+    // Llenar datos del modal
+    if (producto.foto) {
+        modalImg.src = obtenerUrlImagen(producto.foto);
+        modalImg.style.display = 'block';
+    } else {
+        modalImg.style.display = 'none';
+    }
+
+    modalCategoria.textContent = producto.categoria || '';
+    modalNombre.textContent = producto.nombre || '';
+    modalDescripcion.textContent = producto.descripcion || '';
+    modalPrecio.textContent = producto.precio || '';
+
+    const stock = tieneStock(producto);
+    modalStock.textContent = stock ? 'En stock' : 'Sin stock';
+    modalStock.className = stock ? 'modal-stock' : 'modal-stock sin-stock';
+
+    // Mostrar modal
+    modal.classList.remove('oculto');
+    document.body.style.overflow = 'hidden'; // Prevenir scroll
+}
+
+function cerrarModalProducto() {
+    modal.classList.add('oculto');
+    document.body.style.overflow = ''; // Restaurar scroll
+    productoActualModal = null;
+}
+
+// Evento para cerrar modal con el botón X
+modalClose.addEventListener('click', cerrarModalProducto);
+
+// Evento para cerrar modal al hacer clic fuera del contenido
+modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        cerrarModalProducto();
+    }
+});
+
+// Evento para cerrar con tecla Escape
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !modal.classList.contains('oculto')) {
+        cerrarModalProducto();
+    }
+});
+
+// Evento para el botón de WhatsApp del modal
+modalWhatsapp.addEventListener('click', () => {
+    if (productoActualModal) {
+        abrirWhatsApp(productoActualModal);
+    }
+});
 
 // ============================
 // INICIO
