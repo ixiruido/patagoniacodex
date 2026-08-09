@@ -453,37 +453,30 @@ body {
     }
 
 
-    .productos {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-
-        gap: 12px;
+  .productos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
     }
-
 
     .producto-info {
-        padding: 12px;
+        padding: 10px;
     }
-
 
     .producto h2 {
-        font-size: 16px;
+        font-size: 15px;
     }
-
 
     .producto-descripcion {
-        font-size: 13px;
+        font-size: 12px;
     }
-
 
     .producto-precio {
-        font-size: 19px;
+        font-size: 18px;
     }
 
-
     .producto-boton {
-        font-size: 14px;
-        padding: 10px;
+        font-size: 12px;
+        padding: 9px 6px;
     }
 
 }
@@ -498,6 +491,100 @@ body {
     .productos {
         grid-template-columns:
             1fr;
+    }
+
+}
+
+/* =========================
+   PAGINACIÓN
+========================= */
+
+.paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 35px;
+    min-height: 42px;
+
+    flex-wrap: wrap;
+}
+
+
+.pagina-btn {
+    min-width: 40px;
+    height: 40px;
+
+    padding: 0 12px;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+
+    background: white;
+
+    color: #222;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition:
+        background 0.2s,
+        color 0.2s,
+        border-color 0.2s,
+        opacity 0.2s;
+}
+
+
+.pagina-btn:hover:not(:disabled) {
+    background: #eee;
+}
+
+
+.pagina-btn.activa {
+    background: #222;
+    color: white;
+    border-color: #222;
+}
+
+
+.pagina-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+
+.pagina-separador {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 40px;
+
+    color: #777;
+}
+
+
+@media (max-width: 500px) {
+
+    .paginacion {
+        gap: 5px;
+    }
+
+
+    .pagina-btn {
+        min-width: 38px;
+        height: 38px;
+
+        padding: 0 9px;
+    }
+
+
+    .pagina-anterior,
+    .pagina-siguiente {
+        font-size: 13px;
     }
 
 }

@@ -19,119 +19,111 @@
 
 </head>
 
-
 <body>
 
-    <main
-        id="catalogo-app"
-        class="catalogo"
-    >
+<main
+    id="catalogo-app"
+    class="catalogo"
+>
 
-        <!-- ENCABEZADO -->
+        <div class="catalogo-controles">
 
-        <header class="catalogo-header">
+            <div class="buscador">
 
-            <h1>
-                Catálogo de productos
-            </h1>
+                <span>
+                    🔎
+                </span>
 
-            <div class="catalogo-controles">
-
-                <div class="buscador">
-
-                    <span>
-                        🔎
-                    </span>
-
-                    <input
-                        type="search"
-                        id="buscador"
-                        placeholder="Buscar productos..."
-                        autocomplete="off"
-                    >
-
-                </div>
-
-
-                <select
-                    id="ordenar"
-                    aria-label="Ordenar productos"
+                <input
+                    type="search"
+                    id="buscador"
+                    placeholder="Buscar productos..."
+                    autocomplete="off"
                 >
 
-                    <option value="orden">
-                        Orden del catálogo
-                    </option>
-
-                    <option value="precio-asc">
-                        Precio: menor a mayor
-                    </option>
-
-                    <option value="precio-desc">
-                        Precio: mayor a menor
-                    </option>
-
-                </select>
-
             </div>
 
-        </header>
+            <select
+                id="ordenar"
+                aria-label="Ordenar productos"
+            >
 
+                <option value="orden">
+                    Orden del catálogo
+                </option>
 
-        <!-- CATEGORÍAS -->
+                <option value="precio-asc">
+                    Precio: menor a mayor
+                </option>
 
-        <nav
-            id="categorias"
-            class="categorias"
-            aria-label="Categorías"
-        >
-        </nav>
+                <option value="precio-desc">
+                    Precio: mayor a menor
+                </option>
 
-
-        <!-- INFORMACIÓN -->
-
-        <div class="catalogo-info">
-
-            <span id="contador">
-                Cargando productos...
-            </span>
+            </select>
 
         </div>
 
-
-        <!-- PRODUCTOS -->
-
-        <section
-            id="productos"
-            class="productos"
-        >
-        </section>
+    </header>
 
 
-        <!-- SIN RESULTADOS -->
+    <nav
+        id="categorias"
+        class="categorias"
+        aria-label="Categorías"
+    >
+    </nav>
 
-        <div
-            id="sinResultados"
-            class="sin-resultados oculto"
-        >
 
-            <div class="sin-resultados-icono">
-                🔎
-            </div>
+    <div class="catalogo-info">
 
-            <h2>
-                No encontramos productos
-            </h2>
+        <span id="contador">
+            Cargando productos...
+        </span>
 
-            <p>
-                Probá con otro nombre o categoría.
-            </p>
+    </div>
 
+
+    <section
+        id="productos"
+        class="productos"
+    >
+    </section>
+
+
+    <div
+        id="sinResultados"
+        class="sin-resultados oculto"
+    >
+
+        <div class="sin-resultados-icono">
+            🔎
         </div>
 
-    </main>
+        <h2>
+            No encontramos productos
+        </h2>
+
+        <p>
+            Probá con otro nombre o categoría.
+        </p>
+
+    </div>
 
 
-    <script src="app.js"></script>
+    <!-- PAGINACIÓN -->
+
+    <nav
+        id="paginacion"
+        class="paginacion"
+        aria-label="Paginación del catálogo"
+    >
+    </nav>
+
+</main>
+
+
+<script src="app.js"></script>
 
 </body>
 

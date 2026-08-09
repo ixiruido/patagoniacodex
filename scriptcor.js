@@ -51,3 +51,59 @@ document.addEventListener("DOMContentLoaded", function() {
             navLinks.forEach(link => {link.classList.remove('active');
                 if (link.getAttribute('href') === `#${current}`) {
                     link.classList.add('active');}});});        
+
+
+const catalogoIframe =
+    document.getElementById(
+        "catalogoIframe"
+    );
+
+
+window.addEventListener(
+    "message",
+    event => {
+
+        if (
+            !catalogoIframe ||
+            event.source !==
+                catalogoIframe.contentWindow
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !event.data ||
+            event.data.tipo !==
+                "catalogo-altura"
+        ) {
+
+            return;
+
+        }
+
+
+        const altura =
+            Number(
+                event.data.altura
+            );
+
+
+        if (
+            !Number.isFinite(
+                altura
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        catalogoIframe.style.height =
+            `${altura}px`;
+
+    }
+);

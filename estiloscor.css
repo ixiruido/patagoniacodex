@@ -331,6 +331,23 @@ footer {background:#1a1a1a;
 
 a[href^="tel"] {color: inherit; text-decoration: none;}    
 
+.catalogo-modulo {
+    width: 100%;
+}
+
+
+.catalogo-modulo iframe {
+    display: block;
+
+    width: 100%;
+
+    height: 800px;
+
+    border: 0;
+
+    overflow: hidden;
+}
+
 @media (max-width: 768px) {
 header {padding: 0.8rem 15px;}
 .logo {font-size: 1.4rem; margin-bottom: 0.5rem; letter-spacing: 2px;}
