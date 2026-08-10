@@ -18,29 +18,29 @@
         <div class="logo">Cabaña del Bosque</div>
         <nav><a href="#inicio">🏠 Inicio</a>
             <a href="#sobre-mi">🌲 La Cabaña</a>
-            <a href="#servicios">✨ Servicios</a>
             <a href="#galeria">📷 Galería</a>
             <a href="#contacto">📬 Contacto</a>
+            <a href="#disponibilidad">💰 Precios</a>
             <a href="#ubicacion">📍 Ubicación</a></nav>
     </header>
 
     <section class="hero" id="inicio">
         <h1>Tu Refugio de Paz en la Montaña</h1>
         <p>Descubre la serenidad de la naturaleza en nuestra cabaña, un espacio diseñado para desconectar, descansar y renovar el espíritu.</p>
-        <a href="#contacto" class="btn-gold">Reservar Ahora</a>
+        <a href="#disponibilidad" class="btn-gold">Reservar Ahora</a>
     </section>
 
     <section class="about" id="sobre-mi">
-        <div class="about-img">
-            <img src="./images/fotocab.jpg" alt="Cabaña en el bosque"></div>
-        <div class="about-content">
-            <h2>Nuestra Cabaña</h2>
-            <p>Ubicada en el corazón de la montaña, nuestra cabaña te ofrece un refugio perfecto para escapar del ruido de la ciudad. Rodeada de bosques nativos y con vistas impresionantes, es el lugar ideal para reconnectar con la naturaleza.</p>
-            <p>Diseñada con materiales nobles y un estilo rústico acogedor, la cabaña cuenta con todas las comodidades modernas para que tu estadía sea inolvidable. Ven solo, en pareja o en familia, y vive la experiencia de paz y tranquilidad que mereces.</p>
+        <div class="about-top">
+            <div class="about-img">
+                <img src="./images/fotocab.jpg" alt="Cabaña en el bosque"></div>
+            <div class="about-content">
+                <h2>Nuestra Cabaña</h2>
+                <p>Ubicada en el corazón de la montaña, nuestra cabaña te ofrece un refugio perfecto para escapar del ruido de la ciudad. Rodeada de bosques nativos y con vistas impresionantes, es el lugar ideal para reconnectar con la naturaleza.</p>
+                <p>Diseñada con materiales nobles y un estilo rústico acogedor, la cabaña cuenta con todas las comodidades modernas para que tu estadía sea inolvidable. Ven solo, en pareja o en familia, y vive la experiencia de paz y tranquilidad que mereces.</p>
+            </div>
         </div>
-    </section>
-
-    <section class="services" id="servicios"><h2>Servicios del Alquiler</h2>
+        
         <div class="services-grid">
             <div class="card reveal"><h3>📶 WiFi de Alta Velocidad</h3>
                 <p>Conexión estable y rápida para trabajar o mantener el contacto con el mundo exterior.</p>
@@ -59,30 +59,52 @@
             </div>
             <div class="card reveal"><h3>📺 Televisión Satelital</h3>
                 <p>TV con cable y Netflix para tus momentos de relax dentro de la cabaña.</p>
-            </div></div>
+            </div>
+        </div>
     </section>
 
     <section class="gallery" id="galeria"><h2>Galería de la Cabaña</h2>
         <p class="gallery-subtitle">Imágenes de nuestro refugio en la montaña</p>
-        <div class="gallery-grid reveal"><div class="gallery-item">
-                <img src="./images/foto1.jpg" alt="Exterior de la cabaña">
-                <div class="gallery-caption">Exterior</div></div>
-            <div class="gallery-item">
-                <img src="./images/foto2.jpg" alt="Sala de estar con chimenea">
-                <div class="gallery-caption">Sala de Estar</div></div>
-            <div class="gallery-item">
-                <img src="./images/foto3.jpg" alt="Cocina equipada">
-                <div class="gallery-caption">Cocina</div></div>
-            <div class="gallery-item">
-                <img src="./images/foto4.jpg" alt="Dormitorio principal">
-                <div class="gallery-caption">Dormitorio</div></div>
-            <div class="gallery-item">
-                <img src="./images/foto5.jpg" alt="Baño moderno">
-                <div class="gallery-caption">Baño</div></div>
-            <div class="gallery-item">
-                <img src="./images/foto6.jpg" alt="Parrilla al aire libre">
-                <div class="gallery-caption">Parrilla</div>
-            </div></div>
+        <div class="gallery-slider reveal">
+            <div class="slider-container">
+                <button class="slider-arrow prev-arrow" id="prevBtn">❮</button>
+                <div class="slider-wrapper">
+                    <div class="slide">
+                        <img src="./images/foto1.jpg" alt="Exterior de la cabaña">
+                        <div class="slide-caption">Exterior</div>
+                    </div>
+                    <div class="slide">
+                        <img src="./images/foto2.jpg" alt="Sala de estar con chimenea">
+                        <div class="slide-caption">Sala de Estar</div>
+                    </div>
+                    <div class="slide">
+                        <img src="./images/foto3.jpg" alt="Cocina equipada">
+                        <div class="slide-caption">Cocina</div>
+                    </div>
+                    <div class="slide">
+                        <img src="./images/foto4.jpg" alt="Dormitorio principal">
+                        <div class="slide-caption">Dormitorio</div>
+                    </div>
+                    <div class="slide">
+                        <img src="./images/foto5.jpg" alt="Baño moderno">
+                        <div class="slide-caption">Baño</div>
+                    </div>
+                    <div class="slide">
+                        <img src="./images/foto6.jpg" alt="Parrilla al aire libre">
+                        <div class="slide-caption">Parrilla</div>
+                    </div>
+                </div>
+                <button class="slider-arrow next-arrow" id="nextBtn">❯</button>
+            </div>
+            <div class="slider-dots">
+                <span class="dot active" data-slide="0"></span>
+                <span class="dot" data-slide="1"></span>
+                <span class="dot" data-slide="2"></span>
+                <span class="dot" data-slide="3"></span>
+                <span class="dot" data-slide="4"></span>
+                <span class="dot" data-slide="5"></span>
+            </div>
+        </div>
         </section>
 
     <section class="contact" id="contacto"><h2>Contacto y Reservas</h2>
@@ -106,6 +128,21 @@
                         <path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 7.713-9.518-7.713h19.036zm-19.518 14v-11.817l10 8.104 10-8.104v11.817h-20z"/>
                     </svg></span><h3>Correo Electrónico</h3>
                 <p>reservas@cabanadelbosque.com</p></a></div>
+    </section>
+
+    <!-- Sección de Tarjeta de Cabaña -->
+    <section class="cabin-availability" id="disponibilidad">
+        <h2>Disponibilidad y Precios</h2>
+        <p class="cabin-subtitle">Consulta precios actualizados</p>
+        <div class="cabin-card-container reveal">
+            <iframe 
+                src="./cardcabin-integrated.html" 
+                class="cabin-iframe"
+                title="Tarjeta de disponibilidad de cabaña"
+                scrolling="no"
+                frameborder="0">
+            </iframe>
+        </div>
     </section>
 
     <section class="location" id="ubicacion">
@@ -140,9 +177,9 @@
                 <h4>Enlaces Útiles</h4>
                 <ul><li><a href="#inicio">🏠 Inicio</a></li>
                     <li><a href="#sobre-mi">🌲 La Cabaña</a></li>
-                    <li><a href="#servicios">✨ Servicios</a></li>
                     <li><a href="#galeria">📷 Galería</a></li>
                     <li><a href="#contacto">📬 Contacto</a></li>
+                    <li><a href="#disponibilidad">💰 Precios</a></li>
                     <li><a href="#ubicacion">📍 Ubicación</a></li></ul>
             </div>
             <div class="footer-col">
@@ -161,6 +198,83 @@ San Martín de los Andes, Argentina<br>Check-in: 14:00 hs | Check-out: 11:00 hs<
 <div class="footer-bottom">
             <p>&copy; 2026 Cabaña del Bosque. Todos los derechos reservados.</p>
                    <a href="https://patagoniacodex.com.ar/" style="font-size: 0.6rem; text-decoration: none; color: rgb(107, 99, 99);">PATAGONIA CODEX</a>
+    </footer>
+
+    <script>
+        // Galería Slider
+        const sliderWrapper = document.querySelector('.slider-wrapper');
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dots = document.querySelectorAll('.dot');
+        
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+        
+        function updateSlider() {
+            sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Update dots
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active');
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                }
+            });
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlider();
+        }
+        
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        }
+        
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        
+        // Dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                updateSlider();
+            });
+        });
+        
+        // Auto-play (optional)
+        let autoPlayInterval = setInterval(nextSlide, 5000);
+        
+        // Pause on hover
+        const sliderContainer = document.querySelector('.slider-container');
+        sliderContainer.addEventListener('mouseenter', () => {
+            clearInterval(autoPlayInterval);
+        });
+        
+        sliderContainer.addEventListener('mouseleave', () => {
+            autoPlayInterval = setInterval(nextSlide, 5000);
+        });
+        
+        // Reveal animations
+        function reveal() {
+            const reveals = document.querySelectorAll('.reveal');
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                }
+            }
+        }
+        
+        window.addEventListener('scroll', reveal);
+        reveal(); // Initial check
+    </script>
+</body>
+</html>
 
         </div></footer>
     <a href="https://wa.me" class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Contactar por WhatsApp">

@@ -90,7 +90,7 @@ nav a:hover::after { width: 100%; left: 0; }
 
 section { padding: 3rem 8%; }
 
-#inicio, #sobre-mi, #servicios, #galeria, #contacto, #ubicacion { scroll-margin-top: 50px; }
+#inicio, #sobre-mi, #galeria, #contacto, #disponibilidad, #ubicacion { scroll-margin-top: 50px; }
 
 .hero {position: relative; overflow: hidden; min-height: 100vh; 
     display: flex; flex-direction: column; justify-content: center;
@@ -153,8 +153,10 @@ section { padding: 3rem 8%; }
         box-shadow: 0 4px 18px rgba(212, 184, 150, 0.4), 0 0 30px rgba(212, 184, 150, 0.25);
         border-color: var(--gold-hover);background-color: var(--gold-hover);}}
 
-.about {display: flex; gap: 4rem; align-items: center;
+.about {display: flex; flex-direction: column; gap: 4rem;
     max-width: 1200px; margin: 0 auto; padding: 6rem 8%;}
+
+.about-top {display: flex; gap: 4rem; align-items: center;}
 
 .about-img {flex: 1; min-width: 300px; max-width: 380px;
     position: relative; border: 1px solid rgba(212, 184, 150, 0.4);
@@ -205,29 +207,46 @@ section { padding: 3rem 8%; }
     font-size: 1.4rem; letter-spacing: 1px;}
 .card p { color: var(--text-muted); font-size: 0.95rem; }
 
-.gallery {padding: 6rem 8%; background-color: var(--bg-dark);
-    background-color: transparent;}
+.gallery {padding: 6rem 8%; background-color: transparent;}
 .gallery-subtitle {text-align: center; color: var(--text-muted);
     margin-bottom: 4rem; font-size: 1.1rem;}
-.gallery-grid {display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem; max-width: 1200px; margin: 0 auto;}
-.gallery-item {position: relative; aspect-ratio: 4/3;
-    overflow: hidden; border-radius: 8px;
-    border: 1px solid rgba(212, 184, 150, 0.2);
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;}
-.gallery-item:hover {transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(212, 184, 150, 0.2);}
-.gallery-item img {width: 100%; height: 100%;
-    object-fit: cover; transition: transform 0.5s ease;}
-.gallery-item:hover img {transform: scale(1.1);}
-.gallery-caption {position: absolute; bottom: 0; left: 0; right: 0;
-    background: linear-gradient(transparent, rgba(26, 46, 26, 0.9));
-    color: var(--text-light); padding: 1.5rem 1rem 1rem;
-    font-size: 1rem; font-weight: 500; opacity: 0;
-    transition: opacity 0.3s ease;}
-.gallery-item:hover .gallery-caption {opacity: 1;}
+
+.gallery-slider {max-width: 1000px; margin: 0 auto;}
+.slider-container {position: relative; overflow: hidden;
+    border-radius: 12px; border: 1px solid rgba(212, 184, 150, 0.3);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);}
+
+.slider-wrapper {display: flex; transition: transform 0.5s ease;
+    aspect-ratio: 16/9;}
+
+.slide {min-width: 100%; position: relative;}
+.slide img {width: 100%; height: 100%; object-fit: cover;
+    display: block;}
+.slide-caption {position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(26, 46, 26, 0.95));
+    color: var(--text-light); padding: 1.5rem 1.5rem 1rem;
+    font-size: 0.9rem; font-weight: 500;
+    text-align: center;}
+
+.slider-arrow {position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(26, 46, 26, 0.4); color: var(--gold-primary);
+    border: 1px solid rgba(212, 184, 150, 0.3); width: 35px; height: 35px;
+    border-radius: 50%; font-size: 1rem; cursor: pointer;
+    transition: all 0.3s ease; z-index: 10;
+    display: flex; align-items: center; justify-content: center;}
+.slider-arrow:hover {background: rgba(26, 46, 26, 0.7); color: var(--gold-primary);
+    transform: translateY(-50%) scale(1.1); border-color: var(--gold-primary);}
+.prev-arrow {left: 15px;}
+.next-arrow {right: 15px;}
+
+.slider-dots {display: flex; justify-content: center; gap: 12px;
+    margin-top: 2rem;}
+.dot {width: 12px; height: 12px; border-radius: 50%;
+    background: rgba(212, 184, 150, 0.3); cursor: pointer;
+    transition: all 0.3s ease; border: 2px solid transparent;}
+.dot:hover {background: rgba(212, 184, 150, 0.5);}
+.dot.active {background: var(--gold-primary); border-color: var(--gold-primary);
+    transform: scale(1.2);}
 
 .contact-grid {display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -256,6 +275,52 @@ section { padding: 3rem 8%; }
 .contact-card:hover::before {opacity: 1;}
 .whatsapp-card:hover {border-color: #25d366; 
     box-shadow: 0 10px 30px rgba(37, 211, 102, 0.15);}
+.instagram-card:hover {border-color: #e1306c; 
+    box-shadow: 0 10px 30px rgba(225, 48, 108, 0.15);}
+.email-card:hover {border-color: rgba(212, 184, 150, 0.4);
+    box-shadow: 0 10px 30px rgba(212, 184, 150, 0.15);}
+
+/* Estilos para sección de disponibilidad de cabaña */
+.cabin-availability {
+    padding: 4rem 8%;
+    background: transparent;
+    position: relative;
+}
+
+.cabin-availability h2 {
+    text-align: center;
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    color: var(--gold-primary);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: var(--font-headers);
+}
+
+.cabin-subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+}
+
+.cabin-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.cabin-iframe {
+    width: 100%;
+    height: 450px;
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    background: transparent;
+}
+
 .instagram-card:hover {border-color: #e1306c; 
     box-shadow: 0 10px 30px rgba(225, 48, 108, 0.15);}
 .email-card:hover {border-color: var(--gold-primary); 
@@ -360,10 +425,13 @@ a[href^="tel"] {color: inherit; text-decoration: none;}
 .whatsapp-float svg { width: 26px; height: 26px; }
 .card h3 { font-size: 1.5rem; }
 .card p { font-size: 1.1rem; color: #c4c8d5; }
-.about-content h2 { font-size: 2.1rem; }
-.about-content p { font-size: 1.15rem; color: #c4c8d5; line-height: 1.7; }
-.about { flex-direction: column; gap: 2.5rem; }
-.about-img { max-width: 320px; margin: 0 auto; aspect-ratio: 1.1 / 1; }
+.about-content h2 { font-size: 1.8rem !important; color: var(--gold-primary) !important; display: block !important; visibility: visible !important; opacity: 1 !important; }
+.about-content p { font-size: 0.95rem; color: var(--text-muted) !important; line-height: 1.7; display: block !important; visibility: visible !important; opacity: 1 !important; }
+.about { padding: 4rem 6%; gap: 3rem; }
+.about-top { flex-direction: column; gap: 2rem; text-align: center; }
+.about-img { min-width: 100%; max-width: 100%; aspect-ratio: 4/3; margin: 0 auto; }
+.about-content { width: 100%; position: relative; z-index: 1; }
+.reveal { opacity: 1 !important; transform: none !important; }
 .card:active, 
 .contact-card:active {transform: scale(0.98);border-color: rgba(212, 184, 150, 0.6);transition: transform 0.1s ease;}
 
@@ -396,7 +464,7 @@ a[href^="tel"] {color: inherit; text-decoration: none;}
     nav a:nth-child(1), nav a:nth-child(2),
     nav a:nth-child(3) {margin-bottom: 0.1rem;}
     
-    #inicio, #sobre-mi, #servicios, #galeria, #contacto, #ubicacion {
+    #inicio, #sobre-mi, #galeria, #contacto, #disponibilidad, #ubicacion {
         scroll-margin-top: 80px;}
     
     body {padding-top: 60px;}
@@ -407,7 +475,7 @@ a[href^="tel"] {color: inherit; text-decoration: none;}
         font-size: 1.2rem; letter-spacing: 1px;}
         nav a {margin: 0 0.5rem; font-size: 0.65rem;}
     
-    #inicio, #sobre-mi, #servicios, #galeria, #contacto, #ubicacion {
+    #inicio, #sobre-mi, #galeria, #contacto, #disponibilidad, #ubicacion {
         scroll-margin-top: 100px;}
     
     body {padding-top: 80px;}
