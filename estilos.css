@@ -67,7 +67,7 @@ section { padding: 2rem 8%; }
     padding-top: calc(4rem + 70px);}
 .hero::before {content: ""; position: absolute; top: 0;
     left: 0; width: 100%; height: 100%; z-index: 1; 
-    background-image: linear-gradient(rgba(255, 255, 255, 0.664), rgba(249, 250, 251, 0.466)), url('/images/fondo.jpg') ;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.664), rgba(249, 250, 251, 0.466)), url('./images/fondo.jpg') ;
     background-repeat: no-repeat; background-position: center center;
     background-size: cover; background-attachment: fixed;
     animation: respiracionFondo 8s ease-in-out infinite alternate;
