@@ -99,7 +99,7 @@ section { padding: 3rem 8%; }
     margin-top: -70px; padding-top: calc(4rem + 70px);}
 .hero::before {content: ""; position: absolute; top: 0;
     left: 0; width: 100%; height: 100%; z-index: 1; 
-    background-image: linear-gradient(rgba(45, 37, 32, 0.85), rgba(45, 37, 32, 0.85)), url('/demo/cab/images/fondocab.jpg');
+    background-image: linear-gradient(rgba(45, 37, 32, 0.85), rgba(45, 37, 32, 0.85)), url('./images/fondocab.jpg');
     background-repeat: no-repeat;
     background-position: center center; background-size: cover;
     animation: respiraCabello 12s ease-in-out infinite alternate;
@@ -193,7 +193,7 @@ section { padding: 3rem 8%; }
     z-index: 1; will-change: transform;}
 .card::before {content: ''; position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(rgba(45, 37, 32, 0.9), rgba(45, 37, 32, 0.9)), url('/demo/cab/images/tarjetacab.jpg') no-repeat center center;
+    background: linear-gradient(rgba(45, 37, 32, 0.9), rgba(45, 37, 32, 0.9)), url('./images/tarjetacab.jpg') no-repeat center center;
     background-size: cover; opacity: 0.25;
     filter: grayscale(100%); transition: opacity 0.3s ease;
     z-index: -1;}
