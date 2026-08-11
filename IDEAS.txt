@@ -1,14 +1,14 @@
 -MONOTRIBUTO
 
--MENU RESTAURANTE
+-MENU RESTAURANTE (Editable desde Google Drive)
 
--HOTEL
+-HOTEL (Habitaciones desde Google Drive)
 
--AUTOS
+-AUTOS (Catálogo desde Google Drive)
 
--SERVICIOS
+-Landing Page Artistas
 
--PRECIOS
+-PRECIOS EN PATAGONIA CODEX
 
 -CUIDADO CON LINKS DE API NOMAS
 Cliente: NIC.AR - Cloudflare - Github - Google Drive
