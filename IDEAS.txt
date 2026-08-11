@@ -1,14 +1,10 @@
 -MONOTRIBUTO
 
--MENU RESTAURANTE (Editable desde Google Drive)
-
--HOTEL (Habitaciones desde Google Drive)
-
--AUTOS (Catálogo desde Google Drive)
-
--Landing Page Artistas
-
--Plataforma de Clases
+Abogado y Salud
+Cabaña y Landing Page
+Corralón y Autos
+Hotel y Restaurante
+Curso y MultiCurso
 
 -PRECIOS EN PATAGONIA CODEX
 
