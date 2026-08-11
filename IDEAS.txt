@@ -7,6 +7,7 @@ Hotel y Restaurante
 Curso y MultiCurso
 
 -PRECIOS EN PATAGONIA CODEX
+Términos y Condiciones
 
 -CUIDADO CON LINKS DE API NOMAS
 Cliente: NIC.AR - Cloudflare - Github - Google Drive
