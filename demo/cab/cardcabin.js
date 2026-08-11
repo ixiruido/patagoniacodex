@@ -1,25 +1,12 @@
 // REEMPLAZA CON TU URL GENERADA EN DEPLOY DE APPS SCRIPT
-const urlScript = "https://script.google.com/macros/s/AKfycbxZMWrhdybT5usjWRJ9xQdaBHNaGYAhCQxSq6O1WhE9TD_SUYGwc768JtNVQPUuYH4E-A/exec"; 
-
-const testData = {
-    "nombre": "Cabaña 1",
-    "estado": "Disponible",
-    "precioBase": "$45.000 x día",
-    "descuento": "15% +2 días",
-    "aviso": "Sin disponibilidad hasta marzo",
-    "ultimaActualizacion": "9 de Agosto 2026",
-    "whatsappLink": "https://wa.me/5492996100676?text=Hola!%20Estoy%20interesado%20en%20este%20alojamiento%3A%20%20Caba%C3%B1a%201"
-};
+const urlScript = "https://script.google.com/macros/s/AKfycbx_RvwXS9kdqt3y96iOr6d865r2MmVLt7zUICRTStHalO_j4B3ESvcAzFxUbAXrL44-UA/exec"; 
 
 async function loadCabinData() {
     const cardElement = document.getElementById("cabin-card");
     try {
-        const response = await fetch(urlScript, {
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        // Agregar timestamp para evitar cache
+        const urlWithTimestamp = `${urlScript}?t=${new Date().getTime()}`;
+        const response = await fetch(urlWithTimestamp);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
         const data = await response.json();
@@ -84,3 +71,6 @@ function processCabinData(data) {
 
 // Inicializar la app al cargar la web
 document.addEventListener("DOMContentLoaded", loadCabinData);
+
+// Actualizar datos cada 30 segundos para reflejar cambios en Google Sheets
+setInterval(loadCabinData, 30000);
