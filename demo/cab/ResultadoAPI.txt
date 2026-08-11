@@ -1,0 +1,3 @@
+https://script.google.com/macros/s/AKfycbx_RvwXS9kdqt3y96iOr6d865r2MmVLt7zUICRTStHalO_j4B3ESvcAzFxUbAXrL44-UA/exec
+
+{"nombre":"Cabaña 1","estado":"Disponible","precioBase":"$75.000 x día","descuento":"15% +2 días","aviso":"Sin disponibilidad hasta marzo","ultimaActualizacion":"9 de Agosto 2026","whatsappLink":"https://wa.me/5492996100676?text=Hola!%20Estoy%20interesado%20en%20este%20alojamiento%3A%20%20Caba%C3%B1a%201"}
