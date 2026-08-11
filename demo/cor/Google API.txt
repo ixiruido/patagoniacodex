@@ -1,0 +1,158 @@
+function doGet() {
+
+  const ID_PLANILLA =
+    "1VnwBZClkqqcSm9EEfnHdksr0LctO2591wlIpOSkkXu4";
+
+  const planilla =
+    SpreadsheetApp.openById(ID_PLANILLA);
+
+  const hoja =
+    planilla.getSheetByName("Productos");
+
+  const rango =
+    hoja.getDataRange();
+
+  const datos =
+    rango.getValues();
+
+  datos.shift();
+
+
+  // ============================
+  // CONFIGURACIÓN
+  // ============================
+
+  const whatsapp =
+    String(
+      hoja.getRange("L2").getDisplayValue()
+    ).trim();
+
+
+  const mensajeWhatsapp =
+    String(
+      hoja.getRange("M2").getDisplayValue()
+    ).trim();
+
+
+  // ============================
+  // PRODUCTOS
+  // ============================
+
+  const productos =
+    datos.map((fila, indice) => {
+
+      let foto = "";
+
+
+      const celdaFoto =
+        rango
+          .getCell(indice + 2, 4)
+          .getValue();
+
+
+      // Imagen insertada dentro de la celda
+
+      if (
+        celdaFoto &&
+        typeof celdaFoto === "object" &&
+        typeof celdaFoto.getContentUrl === "function"
+      ) {
+
+        foto =
+          celdaFoto.getContentUrl();
+
+      }
+
+
+      // Limpiar URL
+
+      if (
+        typeof foto === "string"
+      ) {
+
+        const match =
+          foto.match(
+            /\((https?:\/\/[^)]+)\)/
+          );
+
+
+        if (match) {
+          foto = match[1];
+        }
+
+
+        const inicio =
+          foto.indexOf("https://");
+
+
+        if (inicio > 0) {
+          foto =
+            foto.substring(inicio);
+        }
+
+      }
+
+
+      return {
+
+        nombre:
+          fila[0],
+
+        descripcion:
+          fila[1],
+
+        precio:
+          fila[2],
+
+        foto:
+          foto,
+
+        categoria:
+          fila[4],
+
+        descuento:
+          fila[5],
+
+        orden:
+          fila[6],
+
+        visible:
+          fila[7],
+
+        destacado:
+          fila[8],
+
+        stock:
+          fila[9]
+
+      };
+
+    });
+
+
+  // ============================
+  // RESPUESTA
+  // ============================
+
+  const respuesta = {
+
+    whatsapp:
+      whatsapp,
+
+    mensajeWhatsapp:
+      mensajeWhatsapp,
+
+    productos:
+      productos
+
+  };
+
+
+  return ContentService
+    .createTextOutput(
+      JSON.stringify(respuesta)
+    )
+    .setMimeType(
+      ContentService.MimeType.JSON
+    );
+}
