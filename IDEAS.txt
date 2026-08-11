@@ -8,6 +8,8 @@
 
 -Landing Page Artistas
 
+-Plataforma de Clases
+
 -PRECIOS EN PATAGONIA CODEX
 
 -CUIDADO CON LINKS DE API NOMAS
