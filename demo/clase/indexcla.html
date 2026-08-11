@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma del Curso</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; background: #f4f6f9; display: flex; flex-direction: column; height: 100vh; color: #333; }
+        
+        /* Pantalla de Login */
+        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: #2c3e50; }
+        .login-box { background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 100%; max-width: 400px; }
+        .login-box h2 { margin-top: 0; color: #2c3e50; font-size: 24px; }
+        .login-box input { width: 100%; padding: 12px; margin: 20px 0; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; outline: none; transition: border 0.3s; }
+        .login-box input:focus { border-color: #3498db; }
+        .login-box button { background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: background 0.3s; }
+        .login-box button:hover { background: #2980b9; }
+
+        /* Plataforma Principal */
+        #app-screen { display: none; flex-direction: column; height: 100vh; }
+        header { background: #34495e; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header h1 { margin:0; font-size: 20px; font-weight: 500; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        #user-email { font-weight: bold; background: #2c3e50; padding: 6px 12px; border-radius: 4px; font-size: 14px; }
+        .btn-logout { background: transparent; border: 1px solid #ffffffaa; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-logout:hover { background: #ffffff22; }
+        
+        .layout { display: flex; flex: 1; overflow: hidden; }
+        
+        /* Menú Lateral */
+        sidebar { width: 280px; background: #2c3e50; color: white; padding: 15px 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .clase-item { padding: 14px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; font-size: 15px; background: #34495e; }
+        .clase-item.autorizada:hover { background: #1abc9c; color: white; }
+        .clase-item.active { background: #1abc9c; color: white; font-weight: bold; }
+        .clase-item.bloqueada { opacity: 0.4; cursor: not-allowed; }
+        .candado { font-size: 14px; }
+
+        /* Contenido Central */
+        main { flex: 1; padding: 40px; overflow-y: auto; background: white; display: flex; flex-direction: column; }
+        .welcome-msg { text-align: center; margin-top: 10%; color: #7f8c8d; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 800px; background: #000; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin-bottom: 25px; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .comment-box { max-width: 800px; line-height: 1.6; color: #555; background: #f8f9fa; padding: 20px; border-left: 4px solid #1abc9c; border-radius: 4px; margin-bottom: 25px; font-size: 16px; }
+        .btn-pdf { display: inline-block; background: #e74c3c; color: white; padding: 14px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background 0.3s; box-shadow: 0 4px 6px rgba(231, 76, 60, 0.2); width: fit-content; }
+        .btn-pdf:hover { background: #c0392b; }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA DE LOGIN -->
+    <div id="login-screen">
+        <div class="login-box" id="box-login-content">
+            <h2>Acceso al Curso</h2>
+            <input type="email" id="email-input" placeholder="Introduce tu correo electrónico">
+            <button onclick="conectarPlataforma()">Ingresar</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA PRINCIPAL -->
+    <div id="app-screen">
+        <header>
+            <h1>Plataforma de Estudios</h1>
+            <div class="header-right">
+                <span id="user-email"></span>
+                <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+            </div>
+        </header>
+        <div class="layout">
+            <sidebar id="sidebar-clases"></sidebar>
+            <main id="contenido-clase">
+                <div class="welcome-msg">
+                    <h2>¡Hola!</h2>
+                    <p>Selecciona una clase del menú izquierdo para visualizar los contenidos.</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Tu URL de la API de Google Apps Script ya vinculada
+        const API_URL = "https://script.google.com/macros/s/AKfycbyWlQ-Avf6NVYkqUE3hXDzixtmCtOpUAdxzVhgKvp9UPZ9-XotKQNYWpKhhUDvaWHPV/exec"; 
+        let datosCurso = [];
+
+        async function conectarPlataforma() {
+            const email = document.getElementById('email-input').value.trim();
+            if(!email) return alert("Por favor escribe tu email");
+
+            // Guardamos temporalmente el contenido del login para restaurarlo si hay error
+            const loginBox = document.getElementById('box-login-content');
+            const contenidoOriginal = loginBox.innerHTML;
+            loginBox.innerHTML = `<h3>Verificando acceso...</h3><p style="color:#7f8c8d;">Buscando tus permisos en la lista...</p>`;
+
+            try {
+                // MODIFICACIÓN PARA EVITAR BLOQUEOS DE CORS LOCALES: redirect: "follow"
+                const respuesta = await fetch(`${API_URL}?email=${encodeURIComponent(email)}`, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+                const resultado = await respuesta.json();
+
+                if(resultado.error) {
+                    alert(resultado.error);
+                    loginBox.innerHTML = contenidoOriginal;
+                    return;
+                }
+
+                datosCurso = resultado.clases;
+                
+                // Si la lista de clases viene vacía es porque el mail no existe en el Sheets
+                if(datosCurso.length === 0) {
+                    alert("Tu correo no se encuentra registrado en el sistema o la lista está vacía.");
+                    loginBox.innerHTML = contenidoOriginal;
+                    return;
+                }
+
+                // Ocultar login y mostrar plataforma
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-screen').style.display = 'flex';
+                document.getElementById('user-email').innerText = email;
+
+                renderizarMenu();
+
+            } catch (error) {
+                console.error(error);
+                alert("Error al conectar. Asegúrate de: \n1. Que el correo exista exactamente en tu Sheets.\n2. Que tu Google Sheets esté compartido como 'Cualquier persona con el enlace puede ver'.");
+                loginBox.innerHTML = contenidoOriginal;
+            }
+        }
+
+
+        function renderizarMenu() {
+            const sidebar = document.getElementById('sidebar-clases');
+            sidebar.innerHTML = "";
+
+            datosCurso.forEach((clase, index) => {
+                const item = document.createElement('div');
+                item.className = `clase-item ${clase.acceso ? 'autorizada' : 'bloqueada'}`;
+                item.id = `item-${index}`;
+                item.innerHTML = `<span>${clase.nombre}</span> <span class="candado">${clase.acceso ? '🔓' : '🔒'}</span>`;
+                
+                if(clase.acceso) {
+                    item.onclick = () => mostrarClase(index);
+                } else {
+                    item.onclick = () => alert("No tienes acceso autorizado a esta clase todavía. Contacta al docente para habilitarla.");
+                }
+                sidebar.appendChild(item);
+            });
+        }
+
+        function mostrarClase(index) {
+            // Desmarcar cualquier clase seleccionada previamente y marcar la nueva
+            document.querySelectorAll('.clase-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`item-${index}`).classList.add('active');
+
+            const clase = datosCurso[index];
+            const contenedor = document.getElementById('contenido-clase');
+            
+            // Extraer el ID de Youtube de cualquier formato de link común
+            let videoId = "";
+            try {
+                if(clase.video.includes("v=")) {
+                    videoId = clase.video.split("v=")[1].split("&")[0];
+                } else if(clase.video.includes("youtu.be/")) {
+                    videoId = clase.video.split("youtu.be/")[1].split("?")[0];
+                } else if(clase.video.includes("embed/")) {
+                    videoId = clase.video.split("embed/")[1].split("?")[0];
+                }
+            } catch(e) {
+                videoId = ""; 
+            }
+
+            contenedor.innerHTML = `
+                <h1 style="color: #2c3e50; margin-top:0; margin-bottom:10px;">${clase.nombre}</h1>
+                
+                ${clase.comentario ? `
+                    <div class="comment-box">${clase.comentario}</div>
+                ` : ''}
+                
+                ${videoId ? `
+                <div class="video-container">
+                    <iframe src="https://youtube.com{videoId}" allowfullscreen></iframe>
+                </div>
+                ` : '<p style="color:#e67e22; font-weight:bold; margin-bottom:25px;">⚠️ Esta clase no contiene un video explicativo.</p>'}
+                
+                ${clase.pdf ? `
+                    <a href="${clase.pdf}" target="_blank" class="btn-pdf">📄 Descargar Material PDF</a>
+                ` : '<p style="color:#7f8c8d; font-style:italic;">Esta clase no requiere archivos PDF adjuntos.</p>'}
+            `;
+        }
+
+function cerrarSesion() {if(confirm("¿Seguro que deseas salir de la plataforma?")) {location.reload();}}
