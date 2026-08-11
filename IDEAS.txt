@@ -1,11 +1,15 @@
 -MONOTRIBUTO
 
--cabaña no anda
-
 -MENU RESTAURANTE
 
 -HOTEL
 
+-AUTOS
+
 -SERVICIOS
 
 -PRECIOS
+
+-CUIDADO CON LINKS DE API NOMAS
+Cliente: NIC.AR - Cloudflare - Github - Google Drive
+PatagoniaCodex: Colaborador Github - Colaborador Google Drive
