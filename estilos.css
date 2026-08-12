@@ -421,10 +421,22 @@ body { padding-top: 170px; }
 .popout-body h4 {font-size: 1.2rem; color: var(--gold-primary);
     margin: 1.5rem 0 0.5rem 0; font-weight: 600;}
 .popout-body p {color: var(--text-light); line-height: 1.6; margin-bottom: 1rem;}
+.popout-body .popout-description {color: var(--text-muted); font-style: italic; margin-bottom: 1rem;}
 .popout-body ul {list-style: none; padding: 0; margin: 1rem 0;}
 .popout-body li {padding: 0.5rem 0; color: var(--text-light);
     border-bottom: 1px solid #e5e7eb; font-size: 0.95rem;}
 .popout-body li:last-child {border-bottom: none;}
+
+.popout-examples {margin: 1.5rem 0;}
+.popout-examples-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;}
+.popout-example-item {background-color: #f9fafb; border-radius: 12px; overflow: hidden;
+    border: 1px solid #e5e7eb; transition: all 0.3s ease;}
+.popout-example-item:hover {transform: translateY(-2px); border-color: #000000;}
+.popout-example-item img {width: 100%; height: 100px; object-fit: cover;}
+.popout-example-item div {padding: 0.8rem; text-align: center;}
+.popout-example-item strong {display: block; font-size: 0.9rem; color: var(--gold-primary); margin-bottom: 0.3rem;}
+.popout-example-item a {color: #22c55e; text-decoration: none; font-size: 0.8rem; font-weight: 600;}
+.popout-example-item a:hover {color: #16a34a;}
 
 .popout-body a {color: #22c55e; text-decoration: none; font-weight: 600;
     transition: color 0.3s ease;}
@@ -443,16 +455,16 @@ body { padding-top: 170px; }
 .popout-body .btn-buy:hover {background-color: #16a34a;
     transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);}
 
-.popout-navigation {display: flex; justify-content: space-between;
-    padding: 1rem 2rem; border-top: 1px solid #e5e7eb;
-    background-color: #f9fafb; border-radius: 0 0 16px 16px;}
-.popout-nav-btn {padding: 0.6rem 1.2rem; background-color: var(--gold-primary);
-    color: #ffffff; border: none; border-radius: 8px; font-size: 0.85rem;
-    font-weight: 600; cursor: pointer; transition: all 0.3s ease;}
-.popout-nav-btn:hover {background-color: var(--gold-hover);
-    transform: translateY(-1px);}
-.popout-nav-btn:disabled {background-color: #d1d5db; cursor: not-allowed;
-    transform: none;}
+.popout-nav-arrow {position: absolute; top: 50%; transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.3); border: none; border-radius: 50%;
+    width: 50px; height: 50px; font-size: 1.5rem; cursor: pointer;
+    transition: all 0.3s ease; z-index: 20; color: #ffffff;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);}
+.popout-nav-arrow:hover {background-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-50%) scale(1.1);}
+.popout-nav-prev {left: 20px;}
+.popout-nav-next {right: 20px;}
 
 @media (max-width: 768px) {
     .combined-grid {grid-template-columns: 1fr;}

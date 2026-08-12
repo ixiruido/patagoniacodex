@@ -25,140 +25,16 @@ function toggleTerms() {
     btnTerms.classList.toggle('active');
 }
 
-// Datos para el popout
-const popoutData = {
-    'web-informativa': {
-        title: 'Web Informativa para Profesionales',
-        price: '$130.000 ARS',
-        period: 'Primer año completo. Luego $40.000 ARS / año',
-        payment: 'Transferencia bancaria',
-        includes: [
-            '✔️ Dominio oficial (.com.ar) registrado a tu nombre.',
-            '✔️ Diseño moderno, profesional y personalizado.',
-            '✔️ Monitoreamos y mantenemos tu sitio por un año.',
-            '✔️ Optimización avanzada para buscadores con IA.',
-            '✔️ Te ayudamos a gestionar la renovación de tu dominio.',
-            '✔️ Soporte por WhatsApp.',
-            '✔️ Certificado SSL de alta seguridad.',
-            '✔️ Hosting administrado en Cloudflare.',
-            '✔️ Se incluyen modificaciones menores sin cargo durante el primer mes.'
-        ],
-        examples: [
-            { name: '⚖️ Abogado', link: './demo/abo/indexabo.html' },
-            { name: '🩺 Salud', link: './demo/den/indexden.html' }
-        ]
-    },
-    'web-editable': {
-        title: 'Webs con Funciones Simples Editables',
-        price: '$180.000 ARS',
-        period: 'Primer año completo. Luego $50.000 ARS / año',
-        payment: 'Transferencia bancaria',
-        includes: [
-            '✔️ Dominio oficial (.com.ar) registrado a tu nombre.',
-            '✔️ Diseño moderno, profesional y personalizado.',
-            '✔️ Panel de administración editable desde Google Drive.',
-            '✔️ Monitoreamos y mantenemos tu sitio por un año.',
-            '✔️ Optimización avanzada para buscadores con IA.',
-            '✔️ Te ayudamos a gestionar la renovación de tu dominio.',
-            '✔️ Soporte por WhatsApp.',
-            '✔️ Certificado SSL de alta seguridad.',
-            '✔️ Hosting administrado en Cloudflare.',
-            '✔️ Se incluyen modificaciones menores sin cargo durante el primer mes.',
-            '✔️ Integración con Google Drive para edición de contenido.'
-        ],
-        examples: [
-            { name: '🛖 Cabaña', link: './demo/cab/indexcab.html' },
-            { name: '🎨 Landing Page Artística', link: '#' }
-        ]
-    },
-    'web-catalogo': {
-        title: 'Webs con Catálogo',
-        price: '$220.000 ARS',
-        period: 'Primer año completo. Luego $60.000 ARS / año',
-        payment: 'Transferencia bancaria',
-        includes: [
-            '✔️ Dominio oficial (.com.ar) registrado a tu nombre.',
-            '✔️ Diseño moderno, profesional y personalizado.',
-            '✔️ Catálogo de productos/servicios integrado.',
-            '✔️ Sincronización con Google Drive.',
-            '✔️ Conexión directa con WhatsApp para pedidos.',
-            '✔️ Monitoreamos y mantenemos tu sitio por un año.',
-            '✔️ Optimización avanzada para buscadores con IA.',
-            '✔️ Te ayudamos a gestionar la renovación de tu dominio.',
-            '✔️ Soporte por WhatsApp.',
-            '✔️ Certificado SSL de alta seguridad.',
-            '✔️ Hosting administrado en Cloudflare.',
-            '✔️ Se incluyen modificaciones menores sin cargo durante el primer mes.'
-        ],
-        examples: [
-            { name: '🛠️ Corralón', link: './demo/cor/indexcor.html' },
-            { name: '🍽️ Restaurante', link: '#' }
-        ]
-    },
-    'web-catalogo-detallado': {
-        title: 'Web con Catálogo Detallado',
-        price: '$280.000 ARS',
-        period: 'Primer año completo. Luego $80.000 ARS / año',
-        payment: 'Transferencia bancaria',
-        includes: [
-            '✔️ Dominio oficial (.com.ar) registrado a tu nombre.',
-            '✔️ Diseño moderno, profesional y personalizado.',
-            '✔️ Catálogo avanzado con filtros y búsqueda.',
-            '✔️ Fichas de producto con características detalladas.',
-            '✔️ Galería de imágenes por producto.',
-            '✔️ Sincronización con Google Drive.',
-            '✔️ Conexión directa con WhatsApp para consultas.',
-            '✔️ Monitoreamos y mantenemos tu sitio por un año.',
-            '✔️ Optimización avanzada para buscadores con IA.',
-            '✔️ Te ayudamos a gestionar la renovación de tu dominio.',
-            '✔️ Soporte por WhatsApp.',
-            '✔️ Certificado SSL de alta seguridad.',
-            '✔️ Hosting administrado en Cloudflare.',
-            '✔️ Se incluyen modificaciones menores sin cargo durante el primer mes.'
-        ],
-        examples: [
-            { name: '🚗 Automotores', link: '#' },
-            { name: '🏠 Inmobiliaria', link: '#' }
-        ]
-    },
-    'plataforma-video': {
-        title: 'Plataforma de Video Curso',
-        price: '$350.000 ARS',
-        period: 'Primer año completo. Luego $100.000 ARS / año',
-        payment: 'Transferencia bancaria',
-        includes: [
-            '✔️ Dominio oficial (.com.ar) registrado a tu nombre.',
-            '✔️ Diseño moderno, profesional y personalizado.',
-            '✔️ Plataforma completa de gestión de cursos.',
-            '✔️ Sistema de carga y organización de videos.',
-            '✔️ Panel de administración para gestión de contenido.',
-            '✔️ Sistema de usuarios y acceso restringido.',
-            '✔️ Integración con pasarelas de pago.',
-            '✔️ Monitoreamos y mantenemos tu sitio por un año.',
-            '✔️ Optimización avanzada para buscadores con IA.',
-            '✔️ Te ayudamos a gestionar la renovación de tu dominio.',
-            '✔️ Soporte por WhatsApp.',
-            '✔️ Certificado SSL de alta seguridad.',
-            '✔️ Hosting administrado en Cloudflare.',
-            '✔️ Se incluyen modificaciones menores sin cargo durante el primer mes.'
-        ],
-        examples: [
-            { name: '📚 Video Curso', link: '#' },
-            { name: '🎓 Plataforma Educativa', link: '#' }
-        ]
-    }
-};
-
-let currentPopoutIndex = 0;
-const popoutKeys = Object.keys(popoutData);
+let currentPopoutCard = null;
+const allCards = document.querySelectorAll('.combined-card');
 
 // Función para abrir el popout
-function openPopout(serviceId) {
-    const overlay = document.getElementById('popoutOverlay');
-    const body = document.getElementById('popoutBody');
+function openPopout(button) {
+    const card = button.closest('.combined-card');
+    currentPopoutCard = card;
     
-    currentPopoutIndex = popoutKeys.indexOf(serviceId);
-    updatePopoutContent(serviceId);
+    const overlay = document.getElementById('popoutOverlay');
+    updatePopoutContent(card);
     
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -169,38 +45,63 @@ function closePopout() {
     const overlay = document.getElementById('popoutOverlay');
     overlay.classList.remove('active');
     document.body.style.overflow = '';
+    currentPopoutCard = null;
 }
 
-// Función para actualizar el contenido del popout
-function updatePopoutContent(serviceId) {
-    const data = popoutData[serviceId];
+// Función para actualizar el contenido del popout desde la tarjeta
+function updatePopoutContent(card) {
     const body = document.getElementById('popoutBody');
     
+    // Extraer datos de los atributos data-
+    const title = card.dataset.title;
+    const description = card.dataset.description;
+    const price = card.dataset.price;
+    const currency = card.dataset.currency;
+    const period = card.dataset.period;
+    const payment = card.dataset.payment;
+    const includes = JSON.parse(card.dataset.includes);
+    
+    // Extraer ejemplos de las imágenes
+    const demoLinks = card.querySelectorAll('.demo-link');
     let examplesHTML = '';
-    if (data.examples && data.examples.length > 0) {
-        examplesHTML = '<h4>Ejemplos disponibles:</h4><ul>';
-        data.examples.forEach(example => {
-            examplesHTML += `<li><strong>${example.name}</strong> - <a href="${example.link}" target="_blank">Ver demo</a></li>`;
+    if (demoLinks.length > 0) {
+        examplesHTML = '<div class="popout-examples"><h4>Ejemplos disponibles:</h4><div class="popout-examples-grid">';
+        demoLinks.forEach(link => {
+            const img = link.querySelector('img');
+            const h4 = link.querySelector('h4');
+            const a = link.querySelector('a');
+            
+            examplesHTML += `
+                <div class="popout-example-item">
+                    <img src="${img.src}" alt="${img.alt}">
+                    <div>
+                        <strong>${h4.textContent}</strong>
+                        <a href="${a.href}" target="_blank">Ver demo</a>
+                    </div>
+                </div>
+            `;
         });
-        examplesHTML += '</ul>';
+        examplesHTML += '</div></div>';
     }
     
     let includesHTML = '<h4>Qué incluye:</h4><ul>';
-    data.includes.forEach(item => {
-        includesHTML += `<li>${item}</li>`;
+    includes.forEach(item => {
+        includesHTML += `<li>✔️ ${item}</li>`;
     });
     includesHTML += '</ul>';
     
     body.innerHTML = `
-        <h3>${data.title}</h3>
+        <h3>${title}</h3>
+        <p class="popout-description">${description}</p>
         <div class="popout-price">
-            <span class="price-amount">${data.price}</span>
+            <span class="price-amount">${price}</span>
+            <span class="pricing-currency">${currency}</span>
         </div>
-        <p>${data.period}</p>
-        <p><strong>Método de pago:</strong> ${data.payment}</p>
+        <p>${period}</p>
+        <p><strong>Método de pago:</strong> ${payment}</p>
         ${examplesHTML}
         ${includesHTML}
-        <button class="btn-buy" style="margin-top: 1.5rem;" onclick="window.open('https://wa.me/5492996100676?text=Hola!', '_blank')">
+        <button class="btn-buy" onclick="window.open('https://wa.me/5492996100676?text=Hola!', '_blank')">
             Comprar
         </button>
     `;
@@ -210,22 +111,27 @@ function updatePopoutContent(serviceId) {
 
 // Función para actualizar los botones de navegación
 function updateNavigationButtons() {
-    const prevBtn = document.querySelector('.popout-nav-btn:first-child');
-    const nextBtn = document.querySelector('.popout-nav-btn:last-child');
+    const currentIndex = Array.from(allCards).indexOf(currentPopoutCard);
+    const prevBtn = document.querySelector('.popout-nav-prev');
+    const nextBtn = document.querySelector('.popout-nav-next');
     
-    prevBtn.disabled = currentPopoutIndex === 0;
-    nextBtn.disabled = currentPopoutIndex === popoutKeys.length - 1;
+    if (prevBtn) prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
+    if (nextBtn) nextBtn.style.display = currentIndex === allCards.length - 1 ? 'none' : 'flex';
 }
 
 // Función para navegar entre tarjetas en el popout
 function navigatePopout(direction) {
-    if (direction === 'prev' && currentPopoutIndex > 0) {
-        currentPopoutIndex--;
-    } else if (direction === 'next' && currentPopoutIndex < popoutKeys.length - 1) {
-        currentPopoutIndex++;
+    const currentIndex = Array.from(allCards).indexOf(currentPopoutCard);
+    
+    if (direction === 'prev' && currentIndex > 0) {
+        currentPopoutCard = allCards[currentIndex - 1];
+    } else if (direction === 'next' && currentIndex < allCards.length - 1) {
+        currentPopoutCard = allCards[currentIndex + 1];
     }
     
-    updatePopoutContent(popoutKeys[currentPopoutIndex]);
+    if (currentPopoutCard) {
+        updatePopoutContent(currentPopoutCard);
+    }
 }
 
 // Cerrar popout con tecla ESC
