@@ -1,8 +1,9 @@
 -MONOTRIBUTO
 
-Abogado, Salud, Veterinario
-Cabaña, Landing Page, Hotel 
-Corralón, Autos, Restaurante
+Abogado, Salud
+Cabaña, Landing Page, 
+Corralón, Restaurante
+Hotel, Autos
 Plataforma de Video Curso
 
 -PRECIOS EN PATAGONIA CODEX

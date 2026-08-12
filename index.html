@@ -57,8 +57,7 @@
             <a href="#sobre-mi">Info</a>
             <a href="#servicios">Servicios</a>
             <a href="#contacto">Contacto</a>
-            <a href="#precios">Precios</a>
-            <a href="#demos">Demos</a>
+            <a href="#precios-demos">Precios y Demos</a>
            
         </nav></header>
 
@@ -111,97 +110,228 @@
                     <path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 7.713-9.518-7.713h19.036zm-19.518 14v-11.817l10 8.104 10-8.104v11.817h-20z"/></svg>
                 </span><h3>Correo Electrónico</h3><p>ixi@patagoniacodex.com</p></a>
         </div></section>
-<section class="pricing" id="precios">
-    <h2>Precios</h2>
-    <p class="contact-subtitle">Todo lo que necesitás para tener una presencia profesional 
-        en Internet, en un solo servicio.</p>
+<section class="pricing-demos" id="precios-demos">
+    <h2>Precios y Demos</h2>
+    <p class="contact-subtitle">Explora nuestros servicios y ejemplos de sitios web que podemos crear para tu negocio.</p>
     
-    <div class="pricing-container">
-        <div class="pricing-card">
-            <div class="pricing-image">
-                <img src="./images/fondo.jpg" alt="Página web informativa de contacto">
+    <div class="combined-grid">
+        <!-- Tarjeta combinada: Web informativa para profesionales -->
+        <div class="combined-card">
+            <div class="combined-header">
+                <h3>Web Informativa para Profesionales</h3>
+                <p>Diseñado para profesionales que buscan mejorar su presencia digital</p>
             </div>
-            <div class="pricing-content">
-                <div class="pricing-header">
-                    <div class="pricing-info">
-                        <h3>Página Web Informativa de Contacto</h3>
-                        <div class="pricing-price">
-                            <span class="price-amount">$130.000</span>
-                            <span class="pricing-currency">ARS</span>
-                        </div>
-                        <p class="price-period" style="font-size: 13px;">
-                            Primer año completo. <br> Luego $40.000 ARS / año</p>
-                        <p style="font-size: 14px;">Transferencia bancaria</p>
-                    </div>
-                    <div class="pricing-action">
-                        <p class="payment-method">
-                        Incluye diseño, dominio, hosting y mantenimiento.<br>Sin costos ocultos.</p>
+            
+            <div class="demo-examples">
+                <div class="demo-link">
+                    <img src="./demo/abo/images/fondoabo.jpg" alt="Diseño web para estudio jurídico" loading="lazy">
+                    <div>
+                        <h4>⚖️ Abogado</h4>
+                        <a href="./demo/abo/indexabo.html" target="_blank">Ver ejemplo</a>
                     </div>
                 </div>
-                
-                <button class="btn-buy" onclick="window.open('https://wa.me/5492996100676?text=Hola!', '_blank')">
-                    Comprar
-                </button>
-                
-                <button class="btn-terms" onclick="toggleTerms()">
-                    <span class="btn-text">Qué Incluye</span>
-                    <span class="btn-arrow">▼</span>
-                </button>
-                
-                <div class="terms-content" id="termsContent">
-                    <div class="terms-columns">
-                        <ul class="terms-list">
-                            <li>✔️ Dominio oficial (.com.ar) registrado a tu nombre.</li>
-                            <li>✔️ Diseño moderno, profesional y  personalizado.</li>
-                            <li>✔️ Monitoreamos y mantenemos tu sitio por un año.</li>
-                            <li>✔️ Optimización avanzada para buscadores con IA.</li>
-                            <li>✔️ Te ayudamos a gestionar la renovación de tu dominio.</li>
-                            <li>✔️ Soporte por WhatsApp.</li>
-                            <li>✔️ Certificado SSL de alta seguridad.</li>
-                            <li>✔️ Hosting administrado en Cloudflare.</li>
-                            <li>✔️ Se incluyen modificaciones menores 
-                                sin cargo durante el primer mes. </li>
-                                              
-                           <button class="btn-buy" style="margin-top: 15px;" onclick="window.open('https://wa.me/5492996100676?text=Hola!', '_blank')">
-                    Comprar
-                </button>     
-                                <button class="btn-terms" onclick="toggleTerms()">
-                                    <span class="btn-arrow">▲</span>
-                </button>
-                
-                        </ul>
+                <div class="demo-link">
+                    <img src="./demo/den/images/fondodent.jpg" alt="Página web para consultorio odontológico" loading="lazy">
+                    <div>
+                        <h4>🩺 Salud</h4>
+                        <a href="./demo/den/indexden.html" target="_blank">Ver ejemplo</a>
                     </div>
                 </div>
+            </div>
+            
+            <div class="combined-pricing">
+                <div class="pricing-info">
+                    <div class="pricing-price">
+                        <span class="price-amount">$130.000</span>
+                        <span class="pricing-currency">ARS</span>
+                    </div>
+                    <p class="price-period">Primer año completo. Luego $40.000 ARS / año</p>
+                    <p class="payment-info">Transferencia bancaria</p>
+                </div>
+                <button class="btn-view-details" onclick="openPopout('web-informativa')">
+                    Qué Incluye
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tarjeta combinada: Webs con funciones simples editables -->
+        <div class="combined-card">
+            <div class="combined-header">
+                <h3>Webs con Funciones Simples Editables</h3>
+                <p>Actualiza la información de la web desde una planilla en Google Drive
+              
+                </p>
+            </div>
+            
+            <div class="demo-examples">
+                <div class="demo-link">
+                    <img src="./demo/cab/images/fondocab.jpg" alt="Página web para cabaña" loading="lazy">
+                    <div>
+                        <h4>🏠 Cabaña</h4>
+                        <a href="./demo/cab/indexcab.html" target="_blank">Ver ejemplo</a>
+                    </div>
+                </div>
+                <div class="demo-link">
+                    <img src="./images/fondo.jpg" alt="Landing page artística" loading="lazy">
+                    <div>
+                        <h4>🎨 Landing Page</h4>
+                        <a href="#" target="_blank">No Disponible</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="combined-pricing">
+                <div class="pricing-info">
+                    <div class="pricing-price">
+                        <span class="price-amount">$180.000</span>
+                        <span class="pricing-currency">ARS</span>
+                    </div>
+                    <p class="price-period">Primer año completo. Luego $50.000 ARS / año</p>
+                    <p class="payment-info">Transferencia bancaria</p>
+                </div>
+                <button class="btn-view-details" onclick="openPopout('web-editable')">
+                    Ver detalles completos
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tarjeta combinada: Webs con catálogo -->
+        <div class="combined-card">
+            <div class="combined-header">
+                <h3>Webs con Catálogo</h3>
+                <p>Catálogo de productos/servicios sincronizado con planilla en Google Drive y con integración de consultas por WhatsApp</p>
+            </div>
+            
+            <div class="demo-examples">
+                <div class="demo-link">
+                    <img src="./demo/cor/images/fondocor.jpg" alt="Página web para corralón" loading="lazy">
+                    <div>
+                        <h4>🛠️ Corralón</h4>
+                        <a href="./demo/cor/indexcor.html" target="_blank">Ver ejemplo</a>
+                    </div>
+                </div>
+                <div class="demo-link">
+                    <img src="./images/fondo.jpg" alt="Página web para restaurante" loading="lazy">
+                    <div>
+                        <h4>🍽️ Restaurante</h4>
+                        <a href="#" target="_blank">No Disponible</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="combined-pricing">
+                <div class="pricing-info">
+                    <div class="pricing-price">
+                        <span class="price-amount">$220.000</span>
+                        <span class="pricing-currency">ARS</span>
+                    </div>
+                    <p class="price-period">Primer año completo. Luego $60.000 ARS / año</p>
+                    <p class="payment-info">Transferencia bancaria</p>
+                </div>
+                <button class="btn-view-details" onclick="openPopout('web-catalogo')">
+                    Ver detalles completos
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tarjeta combinada: Web con catálogo detallado -->
+        <div class="combined-card">
+            <div class="combined-header">
+                <h3>Web con Catálogo Detallado</h3>
+                <p>Catálogo avanzado con filtros, búsqueda y características detalladas,
+                    actualizable desde planilla en Google Drive, y con Whatsapp integrado.
+                </p>
+            </div>
+            
+            <div class="demo-examples">
+                <div class="demo-link">
+                    <img src="./images/fondo.jpg" alt="Página web para automotores" loading="lazy">
+                    <div>
+                        <h4>🚗 Automotores</h4>
+                        <a href="#" target="_blank">No Disponible</a>
+                    </div>
+                </div>
+                <div class="demo-link">
+                    <img src="./images/fondo.jpg" alt="Página web para inmobiliaria" loading="lazy">
+                    <div>
+                        <h4>🏠 Inmobiliaria</h4>
+                        <a href="#" target="_blank">No Disponible</a>
+                    </div>
+                </div>
+               <div class="demo-link">
+                    <img src="./images/fondo.jpg" alt="Página web para hotel" loading="lazy">
+                    <div>
+                        <h4>🏘️ Hotel</h4>
+                        <a href="#" target="_blank">No Disponible</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="combined-pricing">
+                <div class="pricing-info">
+                    <div class="pricing-price">
+                        <span class="price-amount">$280.000</span>
+                        <span class="pricing-currency">ARS</span>
+                    </div>
+                    <p class="price-period">Primer año completo. Luego $80.000 ARS / año</p>
+                    <p class="payment-info">Transferencia bancaria</p>
+                </div>
+                <button class="btn-view-details" onclick="openPopout('web-catalogo-detallado')">
+                    Ver detalles completos
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tarjeta combinada: Plataforma de video curso -->
+        <div class="combined-card">
+            <div class="combined-header">
+                <h3>Plataforma de Video Curso</h3>
+                <p>Plataforma para visualizar cursos online, las clases y
+                    autorización del alumno se gestionan mediante una planilla 
+                    en Google Drive
+                </p>
+            </div>
+            
+            <div class="demo-examples">
+                <div class="demo-link">
+                    <img src="./images/fondo.jpg" alt="Plataforma de video curso" loading="lazy">
+                    <div>
+                        <h4>📚 Video Curso</h4>
+                        <a href="#" target="_blank">No Disponible</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="combined-pricing">
+                <div class="pricing-info">
+                    <div class="pricing-price">
+                        <span class="price-amount">$250.000</span>
+                        <span class="pricing-currency">ARS</span>
+                    </div>
+                    <p class="price-period">Primer año completo. Luego $70.000 ARS / año</p>
+                    <p class="payment-info">Transferencia bancaria</p>
+                </div>
+                <button class="btn-view-details" onclick="openPopout('plataforma-video')">
+                    Ver detalles completos
+                </button>
             </div>
         </div>
     </div>
 </section>
-<section class="demos" id="demos"><h2>DEMOS</h2>
-<p class="contact-subtitle">
-Explora ejemplos de sitios web que podemos crear para tu negocio.</p>
-<div class="demo-grid">
 
-<div class="demo-card"><img src="./demo/den/images/fondodent.jpg" alt="Página web para consultorio odontológico" loading="lazy">
-<div><h3>🩺Salud</h3>
-<p>Página Web para servicios de salud.</p>
-<a href="./demo/den/indexden.html" target="_blank">Ver demo</a></div></div>
-
-<div class="demo-card"><img src="./demo/abo/images/fondoabo.jpg" alt="Diseño web para estudio jurídico" loading="lazy">
-<div><h3>⚖️Estudio Jurídico</h3>
-<p>Página Web para Abogados.</p>
-<a href="./demo/abo/indexabo.html" target="_blank">Ver demo</a></div></div>
-
-<div class="demo-card"><img src="./demo/cab/images/fondocab.jpg" alt="Página web para alquiler turístico" loading="lazy">
-<div><h3>🛖Alquiler Turístico</h3>
-<p>Página Web para alquileres turísticos.</p>
-<a href="./demo/cab/indexcab.html" target="_blank">Ver demo</a></div></div>
-
-<div class="demo-card"><img src="./demo/cor/images/fondocor.jpg" alt="Página web para corralón" loading="lazy">
-<div><h3>🛠️Tienda con Catálogo</h3>
-<p>Página Web con catálogo sincronizado desde Google Drive y conectado con Whatsapp.</p>
-<a href="./demo/cor/indexcor.html" target="_blank">Ver demo</a></div></div>
-    
-</div></section>   
+<!-- Popout con fondo borroso -->
+<div class="popout-overlay" id="popoutOverlay" onclick="closePopout()">
+    <div class="popout-content" id="popoutContent" onclick="event.stopPropagation()">
+        <button class="popout-close" onclick="closePopout()">✕</button>
+        <div class="popout-body" id="popoutBody">
+            <!-- Contenido dinámico -->
+        </div>
+        <div class="popout-navigation">
+            <button class="popout-nav-btn" onclick="navigatePopout('prev')">← Anterior</button>
+            <button class="popout-nav-btn" onclick="navigatePopout('next')">Siguiente →</button>
+        </div>
+    </div>
+</div>   
 
 <footer><div class="footer-grid">
             <div class="footer-col"><a href="https://patagoniacodex.com.ar" style="color: inherit; text-decoration: none;"><h4 style="letter-spacing: 6px;">PATAGONIA
@@ -215,8 +345,7 @@ Explora ejemplos de sitios web que podemos crear para tu negocio.</p>
                     <li><a href="#sobre-mi">Nosotros</a></li>
                     <li><a href="#servicios">Servicios</a></li>
                     <li><a href="#contacto">Contacto</a></li>
-                    <li><a href="#precios">Precios</a></li>
-                    <li><a href="#demos">Demos</a></li></ul></div>
+                    <li><a href="#precios-demos">Precios y Demos</a></li></ul></div>
             <div class="footer-col"><h4>Contacto</h4>
 <ul><li><a href="mailto:ixi@patagoniacodex.com" >ixi@patagoniacodex.com</a></ul></li>
 <ul><li>Atención online</ul></li>
