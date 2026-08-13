@@ -1,5 +1,5 @@
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbwEPSBc_MCTBRWMEDRrwW9ssIudg027t_5GhJVoDNowvihvP-UiinkHf7JzcOfyf6zZ/exec";
+    "https://script.google.com/macros/s/AKfycbyMwgLJGcgwS4XR4nocavKrFxHGDXBJ0nY8Vl5gLNPcWj2x9P_N20GdBSsncYslZ4sA/exec";
 
 const productosContenedor =
     document.getElementById("productos");
