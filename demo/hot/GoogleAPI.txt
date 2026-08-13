@@ -1,0 +1,35 @@
+function doGet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  // Leemos la fila 2 desde la columna A (1) hasta la columna J (10) para incluir el mensaje completo
+  var data = sheet.getRange(2, 1, 1, 10).getValues()[0]; 
+  
+  // Mapeo exacto según tu estructura de Google Sheets
+  var cabanaNombre        = data[0].toString(); // Columna A (Cabaña 1)
+  var estado              = data[1].toString(); // Columna B (Disponible)
+  var precioBase          = data[2].toString(); // Columna C ($45.000 x día)
+  var descuento           = data[3].toString(); // Columna D (15% +2 días)
+  var aviso               = data[4].toString(); // Columna E (Sin disponibilidad...)
+  var ultimaActualizacion = data[5].toString(); // Columna F (9 de Agosto 2026)
+  var telefono            = data[8].toString().replace(/[^0-9]/g, ''); // Columna H (Limpia caracteres extraños)
+  var mensajeOriginal     = data[9].toString(); // Columna I (Mensaje base)
+
+  // Concatenamos el mensaje original con el nombre de la cabaña automáticamente
+  var mensajeCompleto = mensajeOriginal + " " + cabanaNombre;
+  var mensajeCodificado = encodeURIComponent(mensajeCompleto);
+  
+  // Generamos el link correcto con la barra "/" integrada
+  var linkWhatsapp = "https://wa.me/" + telefono + "?text=" + mensajeCodificado;
+
+  var resultado = {
+    nombre: cabanaNombre,
+    estado: estado,
+    precioBase: precioBase,
+    descuento: descuento,
+    aviso: aviso,
+    ultimaActualizacion: ultimaActualizacion,
+    whatsappLink: linkWhatsapp
+  };
+
+  return ContentService.createTextOutput(JSON.stringify(resultado))
+    .setMimeType(ContentService.MimeType.JSON);
+}
