@@ -1,5 +1,5 @@
 // REEMPLAZA CON TU URL GENERADA EN DEPLOY DE APPS SCRIPT
-const urlScript = "https://script.google.com/macros/s/AKfycbx_RvwXS9kdqt3y96iOr6d865r2MmVLt7zUICRTStHalO_j4B3ESvcAzFxUbAXrL44-UA/exec"; 
+const urlScript = "https://script.google.com/macros/s/AKfycbyv42bW6h9pQfwe_gpQD4La48a906_M4FL_84DDcFRDiP3gUW1oxMWqpIXv2EjTH8LmFw/exec"; 
 
 async function loadCabinData() {
     const cardElement = document.getElementById("cabin-card");
