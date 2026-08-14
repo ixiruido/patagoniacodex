@@ -1,0 +1,542 @@
+    * {
+      box-sizing: border-box;
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+    }
+
+
+    body {
+
+      margin: 0;
+
+      background: #f4f6f8;
+
+      color: #222;
+
+    }
+
+
+    /* =====================================
+       LOGIN
+       ===================================== */
+
+    #login-screen {
+
+      min-height: 100vh;
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+
+      padding: 20px;
+
+      background: #1f2937;
+
+    }
+
+
+    .login-box {
+
+      width: 100%;
+
+      max-width: 400px;
+
+      background: white;
+
+      padding: 40px;
+
+      border-radius: 16px;
+
+      box-shadow:
+        0 15px 40px rgba(0,0,0,0.25);
+
+      text-align: center;
+
+    }
+
+
+    .login-box h1 {
+
+      margin-top: 0;
+
+      margin-bottom: 10px;
+
+      font-size: 28px;
+
+    }
+
+
+    .login-box p {
+
+      color: #6b7280;
+
+      margin-bottom: 25px;
+
+    }
+
+
+    .login-box input {
+
+      width: 100%;
+
+      padding: 14px;
+
+      border: 1px solid #d1d5db;
+
+      border-radius: 8px;
+
+      font-size: 16px;
+
+      margin-bottom: 12px;
+
+    }
+
+
+    .login-box input:focus {
+
+      outline: none;
+
+      border-color: #2563eb;
+
+    }
+
+
+    .login-box button {
+
+      width: 100%;
+
+      padding: 14px;
+
+      border: none;
+
+      border-radius: 8px;
+
+      background: #2563eb;
+
+      color: white;
+
+      font-size: 16px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+    }
+
+
+    .login-box button:hover {
+
+      background: #1d4ed8;
+
+    }
+
+
+    #login-error {
+
+      color: #dc2626;
+
+      margin-top: 15px;
+
+      display: none;
+
+    }
+
+
+    #login-loading {
+
+      display: none;
+
+      margin-top: 15px;
+
+      color: #6b7280;
+
+    }
+
+
+    /* =====================================
+       APP
+       ===================================== */
+
+    #app {
+
+      display: none;
+
+      min-height: 100vh;
+
+    }
+
+
+    header {
+
+      height: 64px;
+
+      background: #111827;
+
+      color: white;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      padding: 0 25px;
+
+    }
+
+
+    header h2 {
+
+      margin: 0;
+
+      font-size: 20px;
+
+    }
+
+
+    .user-area {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 15px;
+
+    }
+
+
+    #user-email {
+
+      font-size: 14px;
+
+      color: #d1d5db;
+
+    }
+
+
+    .logout {
+
+      border: 1px solid #6b7280;
+
+      background: transparent;
+
+      color: white;
+
+      padding: 7px 12px;
+
+      border-radius: 6px;
+
+      cursor: pointer;
+
+    }
+
+
+    /* =====================================
+       LAYOUT
+       ===================================== */
+
+    .layout {
+
+      display: flex;
+
+      min-height:
+        calc(100vh - 64px);
+
+    }
+
+
+    /* =====================================
+       SIDEBAR
+       ===================================== */
+
+    aside {
+
+      width: 280px;
+
+      background: #1f2937;
+
+      padding: 20px;
+
+      overflow-y: auto;
+
+    }
+
+
+    aside h3 {
+
+      color: white;
+
+      margin-top: 0;
+
+      margin-bottom: 20px;
+
+    }
+
+
+    .clase {
+
+      padding: 14px;
+
+      border-radius: 8px;
+
+      margin-bottom: 8px;
+
+      cursor: pointer;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      color: white;
+
+      background: #374151;
+
+      transition: 0.2s;
+
+    }
+
+
+    .clase:hover {
+
+      background: #4b5563;
+
+    }
+
+
+    .clase.autorizada:hover {
+
+      background: #2563eb;
+
+    }
+
+
+    .clase.activa {
+
+      background: #2563eb;
+
+    }
+
+
+    .clase.bloqueada {
+
+      opacity: 0.45;
+
+      cursor: not-allowed;
+
+    }
+
+
+    /* =====================================
+       CONTENIDO
+       ===================================== */
+
+    main {
+
+      flex: 1;
+
+      padding: 40px;
+
+      background: white;
+
+      overflow-y: auto;
+
+    }
+
+
+    .contenido {
+
+      max-width: 900px;
+
+      margin: auto;
+
+    }
+
+
+    .bienvenida {
+
+      text-align: center;
+
+      margin-top: 100px;
+
+      color: #6b7280;
+
+    }
+
+
+    .bienvenida h1 {
+
+      color: #111827;
+
+    }
+
+
+    .clase-titulo {
+
+      font-size: 32px;
+
+      margin-top: 0;
+
+      margin-bottom: 20px;
+
+      color: #111827;
+
+    }
+
+
+    /* =====================================
+       COMENTARIO
+       ===================================== */
+
+    .comentario {
+
+      background: #f3f4f6;
+
+      border-left: 5px solid #2563eb;
+
+      padding: 20px;
+
+      border-radius: 8px;
+
+      margin-bottom: 30px;
+
+      line-height: 1.6;
+
+      color: #374151;
+
+    }
+
+
+    /* =====================================
+       VIDEO
+       ===================================== */
+
+    .video-container {
+
+      position: relative;
+
+      width: 100%;
+
+      padding-bottom: 56.25%;
+
+      height: 0;
+
+      overflow: hidden;
+
+      background: black;
+
+      border-radius: 12px;
+
+      margin-bottom: 30px;
+
+    }
+
+
+    .video-container iframe {
+
+      position: absolute;
+
+      width: 100%;
+
+      height: 100%;
+
+      top: 0;
+
+      left: 0;
+
+      border: 0;
+
+    }
+
+
+    /* =====================================
+       PDF
+       ===================================== */
+
+    .pdf-button {
+
+      display: inline-block;
+
+      padding: 14px 20px;
+
+      background: #dc2626;
+
+      color: white;
+
+      text-decoration: none;
+
+      border-radius: 8px;
+
+      font-weight: bold;
+
+    }
+
+
+    .pdf-button:hover {
+
+      background: #b91c1c;
+
+    }
+
+
+    .sin-contenido {
+
+      padding: 20px;
+
+      background: #f9fafb;
+
+      border-radius: 8px;
+
+      color: #6b7280;
+
+    }
+
+
+    /* =====================================
+       MOBILE
+       ===================================== */
+
+    @media(max-width: 700px) {
+
+      .layout {
+
+        flex-direction: column;
+
+      }
+
+
+      aside {
+
+        width: 100%;
+
+        max-height: 260px;
+
+      }
+
+
+      main {
+
+        padding: 20px;
+
+      }
+
+
+      header {
+
+        padding: 0 15px;
+
+      }
+
+
+      #user-email {
+
+        display: none;
+
+      }
+
+    }
