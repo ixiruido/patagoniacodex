@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         setTimeout(() => {
                             entrada.target.classList.add('active');
                         }, delay);
-                        miObservador.unobserve(entrada.target);}});}, 
+                        miObservador.unobserve(entrada.target);}});},
                         { root: null, threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
             elementosARevelar.forEach(el => observador.observe(el));
 

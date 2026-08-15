@@ -1100,7 +1100,7 @@ function crearProducto(
             ? ""
             : `
                 <div class="sin-stock">
-                    SIN STOCK
+                    NO DISPONIBLE
                 </div>
             `;
 
@@ -1288,6 +1288,16 @@ function abrirWhatsApp(
     mensaje +=
         " - " +
         producto.precio;
+
+
+    // Agregar año y kilometraje si están disponibles
+    if (producto.anio) {
+        mensaje += " - Año: " + producto.anio;
+    }
+
+    if (producto.kilometraje) {
+        mensaje += " - Kilometraje: " + producto.kilometraje;
+    }
 
 
     const numero =

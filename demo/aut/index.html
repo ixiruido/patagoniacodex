@@ -135,8 +135,7 @@
             <iframe
                 id="catalogoIframe"
                 src="./catalogo.html"
-                title="Catálogo de automóviles usados"
-                loading="lazy">
+                title="Catálogo de automóviles usados">
             </iframe>
 
         </section>
@@ -268,8 +267,18 @@
                         ? ` - ${producto.precio}`
                         : '';
 
+                const mensajeAnio =
+                    producto.anio
+                        ? ` - Año: ${producto.anio}`
+                        : '';
+
+                const mensajeKm =
+                    producto.kilometraje
+                        ? ` - Kilometraje: ${producto.kilometraje}`
+                        : '';
+
                 const mensajeCompleto =
-                    `${mensajeBase} ${mensajeProducto}${mensajePrecio}`;
+                    `${mensajeBase} ${mensajeProducto}${mensajePrecio}${mensajeAnio}${mensajeKm}`;
 
                 if (!numero) {
 
