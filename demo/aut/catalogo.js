@@ -1583,8 +1583,10 @@ modalWhatsapp.addEventListener('click', () => {
         const numero = productoActualModal.whatsappNumero || numeroWhatsapp;
         const mensajeBase = productoActualModal.whatsappMensaje || mensajeWhatsapp || 'Hola, estoy interesado en:';
         const mensajeProducto = productoActualModal.nombre || '';
+        const mensajeAnio = productoActualModal.anio || '';
+        const mensajeKilo = productoActualModal.kilometraje || '';
         const mensajePrecio = productoActualModal.precio ? ` - ${productoActualModal.precio}` : '';
-        const mensajeCompleto = `${mensajeBase} ${mensajeProducto}${mensajePrecio}`;
+        const mensajeCompleto = `${mensajeBase} ${mensajeProducto} ${mensajeAnio} ${mensajeKilo} ${mensajePrecio}`;
         
         if (!numero) {
             alert('No hay un número de WhatsApp configurado.');
