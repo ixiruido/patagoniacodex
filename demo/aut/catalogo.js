@@ -1,5 +1,5 @@
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbyMwgLJGcgwS4XR4nocavKrFxHGDXBJ0nY8Vl5gLNPcWj2x9P_N20GdBSsncYslZ4sA/exec";
+    "https://script.google.com/macros/s/AKfycbyvpfMiaNbCqCdGNTQfrY0NGSf3P8E3c8GTFs7wpoCFDZaeWrGF_fmZVdAnIJuAzBOL/exec";
 
 const productosContenedor =
     document.getElementById("productos");
@@ -58,7 +58,7 @@ async function cargarProductos() {
         productosContenedor.innerHTML = `
             <div class="loader">
                 <div class="loader-spinner"></div>
-                <div class="loader-text">Cargando productos...</div>
+                <div class="loader-text">Cargando vehículos...</div>
             </div>
         `;
 
@@ -83,7 +83,7 @@ async function cargarProductos() {
             datos.mensajeWhatsapp || "";
 
         productos =
-            (datos.productos || [])
+            (datos.vehiculos || [])
                 .filter(
                     producto =>
                         esVisible(producto)
@@ -99,7 +99,7 @@ async function cargarProductos() {
 
         productosContenedor.innerHTML = `
             <p>
-                No se pudieron cargar los productos.
+                No se pudieron cargar los vehículos.
             </p>
         `;
 
@@ -158,8 +158,8 @@ function normalizar(valor) {
 }
 
 
-function obtenerDescripcionCorta(descripcion) {
-    const desc = String(descripcion || "").trim();
+function obtenerDescripcionCorta(detalles) {
+    const desc = String(detalles || "").trim();
     const maxLength = 60; // Máximo de caracteres para la descripción corta
 
     if (desc.length <= maxLength) {
@@ -286,7 +286,7 @@ function mostrarProductos() {
 
                 const descripcion =
                     String(
-                        producto.descripcion || ""
+                        producto.detalles || ""
                     )
                         .toLowerCase();
 
@@ -369,8 +369,8 @@ function mostrarProductos() {
 
     contador.textContent =
         totalProductos === 1
-            ? "1 producto"
-            : `${totalProductos} productos`;
+            ? "1 vehículo"
+            : `${totalProductos} vehículos`;
 
 
     // ============================
@@ -1105,6 +1105,15 @@ function crearProducto(
             `;
 
 
+    // Información específica de vehículos
+    const infoVehiculo = `
+        <div class="producto-info-vehiculo">
+            ${producto.anio ? `<span class="vehiculo-anio">${escaparHTML(producto.anio)}</span>` : ''}
+            ${producto.kilometraje ? `<span class="vehiculo-km">${escaparHTML(producto.kilometraje)}</span>` : ''}
+        </div>
+    `;
+
+
     info.innerHTML = `
 
         ${categoria}
@@ -1115,11 +1124,13 @@ function crearProducto(
             )}
         </h2>
 
+        ${infoVehiculo}
+
         ${
-            producto.descripcion
+            producto.detalles
                 ? `
                     <div class="producto-descripcion">
-                        ${obtenerDescripcionCorta(producto.descripcion)}
+                        ${obtenerDescripcionCorta(producto.detalles)}
                     </div>
                 `
                 : ""
@@ -1387,13 +1398,16 @@ function obtenerAlturaCatalogo() {
         document.documentElement;
 
 
-    return Math.max(
+    const altura = Math.max(
         body.scrollHeight,
         body.offsetHeight,
         html.clientHeight,
         html.scrollHeight,
         html.offsetHeight
     );
+
+    // Añadir un pequeño margen para evitar scroll
+    return altura + 20;
 
 }
 
@@ -1491,7 +1505,26 @@ function abrirModalProducto(producto) {
 
     modalCategoria.textContent = producto.categoria || '';
     modalNombre.textContent = producto.nombre || '';
-    modalDescripcion.textContent = producto.descripcion || '';
+    
+    // Crear HTML para descripción con información del vehículo
+    let modalDetalleHTML = '';
+    if (producto.detalles) {
+        modalDetalleHTML += `<p>${escaparHTML(producto.detalles)}</p>`;
+    }
+    
+    // Agregar información específica del vehículo
+    if (producto.anio || producto.kilometraje) {
+        modalDetalleHTML += '<div class="modal-info-vehiculo">';
+        if (producto.anio) {
+            modalDetalleHTML += `<span class="modal-vehiculo-anio">Año: ${escaparHTML(producto.anio)}</span>`;
+        }
+        if (producto.kilometraje) {
+            modalDetalleHTML += `<span class="modal-vehiculo-km">Kilometraje: ${escaparHTML(producto.kilometraje)}</span>`;
+        }
+        modalDetalleHTML += '</div>';
+    }
+    
+    modalDescripcion.innerHTML = modalDetalleHTML;
     modalPrecio.textContent = producto.precio || '';
 
     const stock = tieneStock(producto);

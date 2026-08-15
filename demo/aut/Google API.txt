@@ -1,13 +1,13 @@
 function doGet() {
 
   const ID_PLANILLA =
-    "1VnwBZClkqqcSm9EEfnHdksr0LctO2591wlIpOSkkXu4";
+    "1cAfHQ2tax_ZvrenvjFssxc2bBCfdB8dz5jpr-UH0iA8";
 
   const planilla =
     SpreadsheetApp.openById(ID_PLANILLA);
 
   const hoja =
-    planilla.getSheetByName("Productos");
+    planilla.getSheetByName("Vehiculos");
 
   const rango =
     hoja.getDataRange();
@@ -22,23 +22,16 @@ function doGet() {
   // CONFIGURACIÓN
   // ============================
 
-  const whatsapp =
-    String(
-      hoja.getRange("L2").getDisplayValue()
-    ).trim();
+  const whatsapp = "5492996100676";
 
-
-  const mensajeWhatsapp =
-    String(
-      hoja.getRange("M2").getDisplayValue()
-    ).trim();
+  const mensajeWhatsapp = "Hola! Estoy interesado en este vehículo: ";
 
 
   // ============================
-  // PRODUCTOS
+  // VEHICULOS
   // ============================
 
-  const productos =
+  const vehiculos =
     datos.map((fila, indice) => {
 
       let foto = "";
@@ -46,7 +39,7 @@ function doGet() {
 
       const celdaFoto =
         rango
-          .getCell(indice + 2, 4)
+          .getCell(indice + 2, 6)
           .getValue();
 
 
@@ -98,33 +91,38 @@ function doGet() {
         nombre:
           fila[0],
 
-        descripcion:
+        precio:
           fila[1],
 
-        precio:
+        anio:
           fila[2],
+
+        detalles:
+          fila[3],
+
+        descuento:
+          fila[4],
 
         foto:
           foto,
 
         categoria:
-          fila[4],
-
-        descuento:
-          fila[5],
-
-        orden:
           fila[6],
 
-        visible:
+        kilometraje:
           fila[7],
 
-        destacado:
+        orden:
           fila[8],
 
-        stock:
-          fila[9]
+        visible:
+          fila[9],
 
+        destacado:
+          fila[10],
+
+        stock:
+          fila[11],
       };
 
     });
@@ -142,8 +140,8 @@ function doGet() {
     mensajeWhatsapp:
       mensajeWhatsapp,
 
-    productos:
-      productos
+    vehiculos:
+      vehiculos
 
   };
 
