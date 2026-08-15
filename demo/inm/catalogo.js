@@ -1,5 +1,5 @@
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbyvpfMiaNbCqCdGNTQfrY0NGSf3P8E3c8GTFs7wpoCFDZaeWrGF_fmZVdAnIJuAzBOL/exec";
+    "https://script.google.com/macros/s/AKfycbyC3t-GyHuyYfPu2LHu0jRYUerdG0eP5g174DITiKyFXtNgVlKGSU7NtxE100kWjNJieg/exec";
 
 const productosContenedor =
     document.getElementById("productos");
@@ -58,7 +58,7 @@ async function cargarProductos() {
         productosContenedor.innerHTML = `
             <div class="loader">
                 <div class="loader-spinner"></div>
-                <div class="loader-text">Cargando vehículos...</div>
+                <div class="loader-text">Cargando propiedades...</div>
             </div>
         `;
 
@@ -83,7 +83,7 @@ async function cargarProductos() {
             datos.mensajeWhatsapp || "";
 
         productos =
-            (datos.vehiculos || [])
+            (datos.propiedades || [])
                 .filter(
                     producto =>
                         esVisible(producto)
@@ -99,7 +99,7 @@ async function cargarProductos() {
 
         productosContenedor.innerHTML = `
             <p>
-                No se pudieron cargar los vehículos.
+                No se pudieron cargar las propiedades.
             </p>
         `;
 
@@ -277,9 +277,23 @@ function mostrarProductos() {
                         categoriaActual;
 
 
-                const nombre =
+                const tipo =
                     String(
-                        producto.nombre || ""
+                        producto.tipo || ""
+                    )
+                        .toLowerCase();
+
+
+                const localidad =
+                    String(
+                        producto.localidad || ""
+                    )
+                        .toLowerCase();
+
+
+                const direccion =
+                    String(
+                        producto.direccion || ""
                     )
                         .toLowerCase();
 
@@ -294,7 +308,9 @@ function mostrarProductos() {
                 return (
                     coincideCategoria &&
                     (
-                        nombre.includes(texto) ||
+                        tipo.includes(texto) ||
+                        localidad.includes(texto) ||
+                        direccion.includes(texto) ||
                         descripcion.includes(texto)
                     )
                 );
@@ -369,8 +385,8 @@ function mostrarProductos() {
 
     contador.textContent =
         totalProductos === 1
-            ? "1 vehículo"
-            : `${totalProductos} vehículos`;
+            ? "1 propiedad"
+            : `${totalProductos} propiedades`;
 
 
     // ============================
@@ -996,7 +1012,7 @@ function crearProducto(
 
 
     imagen.alt =
-        producto.nombre;
+        producto.tipo + " en " + producto.localidad;
 
 
     imagen.loading =
@@ -1105,11 +1121,11 @@ function crearProducto(
             `;
 
 
-    // Información específica de vehículos
-    const infoVehiculo = `
-        <div class="producto-info-vehiculo">
-            ${producto.anio ? `<span class="vehiculo-anio">${escaparHTML(producto.anio)}</span>` : ''}
-            ${producto.kilometraje ? `<span class="vehiculo-km">${escaparHTML(producto.kilometraje)}</span>` : ''}
+    // Información específica de propiedades
+    const infoPropiedad = `
+        <div class="producto-info-propiedad">
+            ${producto.localidad ? `<span class="propiedad-localidad">${escaparHTML(producto.localidad)}</span>` : ''}
+            ${producto.tamanio ? `<span class="propiedad-tamanio">${escaparHTML(producto.tamanio)} m²</span>` : ''}
         </div>
     `;
 
@@ -1120,11 +1136,21 @@ function crearProducto(
 
         <h2>
             ${escaparHTML(
-                producto.nombre
+                producto.tipo
             )}
         </h2>
 
-        ${infoVehiculo}
+        ${infoPropiedad}
+
+        ${
+            producto.direccion
+                ? `
+                    <div class="producto-direccion">
+                        ${escaparHTML(producto.direccion)}
+                    </div>
+                `
+                : ""
+        }
 
         ${
             producto.detalles
@@ -1282,7 +1308,7 @@ function abrirWhatsApp(
 
 
     mensaje +=
-        producto.nombre;
+        producto.tipo;
 
 
     mensaje +=
@@ -1290,13 +1316,17 @@ function abrirWhatsApp(
         producto.precio;
 
 
-    // Agregar año y kilometraje si están disponibles
-    if (producto.anio) {
-        mensaje += " - Año: " + producto.anio;
+    // Agregar información de la propiedad si está disponible
+    if (producto.localidad) {
+        mensaje += " - Ubicación: " + producto.localidad;
     }
 
-    if (producto.kilometraje) {
-        mensaje += " - Kilometraje: " + producto.kilometraje;
+    if (producto.direccion) {
+        mensaje += " - Dirección: " + producto.direccion;
+    }
+
+    if (producto.tamanio) {
+        mensaje += " - Tamaño: " + producto.tamanio + " m²";
     }
 
 
@@ -1514,26 +1544,29 @@ function abrirModalProducto(producto) {
     }
 
     modalCategoria.textContent = producto.categoria || '';
-    modalNombre.textContent = producto.nombre || '';
-    
-    // Crear HTML para descripción con información del vehículo
+    modalNombre.textContent = producto.tipo || '';
+
+    // Crear HTML para descripción con información de la propiedad
     let modalDetalleHTML = '';
     if (producto.detalles) {
         modalDetalleHTML += `<p>${escaparHTML(producto.detalles)}</p>`;
     }
-    
-    // Agregar información específica del vehículo
-    if (producto.anio || producto.kilometraje) {
-        modalDetalleHTML += '<div class="modal-info-vehiculo">';
-        if (producto.anio) {
-            modalDetalleHTML += `<span class="modal-vehiculo-anio">Año: ${escaparHTML(producto.anio)}</span>`;
+
+    // Agregar información específica de la propiedad
+    if (producto.localidad || producto.direccion || producto.tamanio) {
+        modalDetalleHTML += '<div class="modal-info-propiedad">';
+        if (producto.localidad) {
+            modalDetalleHTML += `<span class="modal-propiedad-localidad">Ubicación: ${escaparHTML(producto.localidad)}</span>`;
         }
-        if (producto.kilometraje) {
-            modalDetalleHTML += `<span class="modal-vehiculo-km">Kilometraje: ${escaparHTML(producto.kilometraje)}</span>`;
+        if (producto.direccion) {
+            modalDetalleHTML += `<span class="modal-propiedad-direccion">Dirección: ${escaparHTML(producto.direccion)}</span>`;
+        }
+        if (producto.tamanio) {
+            modalDetalleHTML += `<span class="modal-propiedad-tamanio">Tamaño: ${escaparHTML(producto.tamanio)} m²</span>`;
         }
         modalDetalleHTML += '</div>';
     }
-    
+
     modalDescripcion.innerHTML = modalDetalleHTML;
     modalPrecio.textContent = producto.precio || '';
 
@@ -1592,17 +1625,18 @@ modalWhatsapp.addEventListener('click', () => {
         // Usar función directa de WhatsApp con datos del producto
         const numero = productoActualModal.whatsappNumero || numeroWhatsapp;
         const mensajeBase = productoActualModal.whatsappMensaje || mensajeWhatsapp || 'Hola, estoy interesado en:';
-        const mensajeProducto = productoActualModal.nombre || '';
-        const mensajeAnio = productoActualModal.anio || '';
-        const mensajeKilo = productoActualModal.kilometraje || '';
+        const mensajeProducto = productoActualModal.tipo || '';
+        const mensajeLocalidad = productoActualModal.localidad ? ` - ${productoActualModal.localidad}` : '';
+        const mensajeDireccion = productoActualModal.direccion ? ` - ${productoActualModal.direccion}` : '';
+        const mensajeTamanio = productoActualModal.tamanio ? ` - ${productoActualModal.tamanio} m²` : '';
         const mensajePrecio = productoActualModal.precio ? ` - ${productoActualModal.precio}` : '';
-        const mensajeCompleto = `${mensajeBase} ${mensajeProducto} ${mensajeAnio} ${mensajeKilo} ${mensajePrecio}`;
-        
+        const mensajeCompleto = `${mensajeBase} ${mensajeProducto}${mensajeLocalidad}${mensajeDireccion}${mensajeTamanio}${mensajePrecio}`;
+
         if (!numero) {
             alert('No hay un número de WhatsApp configurado.');
             return;
         }
-        
+
         const numeroLimpio = String(numero).replace(/\D/g, '');
         const whatsappUrl = `https://wa.me/${numeroLimpio}?text=${encodeURIComponent(mensajeCompleto)}`;
         window.open(whatsappUrl, '_blank');

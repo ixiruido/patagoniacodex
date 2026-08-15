@@ -1,13 +1,13 @@
 function doGet() {
 
   const ID_PLANILLA =
-    "1cAfHQ2tax_ZvrenvjFssxc2bBCfdB8dz5jpr-UH0iA8";
+    "1oQC-N91mh9gZdqTkinFRwrKQN7OIXTKEogYDKB5RRA0";
 
   const planilla =
     SpreadsheetApp.openById(ID_PLANILLA);
 
   const hoja =
-    planilla.getSheetByName("Vehiculos");
+    planilla.getSheetByName("Propiedades");
 
   const rango =
     hoja.getDataRange();
@@ -24,14 +24,14 @@ function doGet() {
 
   const whatsapp = "5492996100676";
 
-  const mensajeWhatsapp = "Hola! Estoy interesado en este vehículo: ";
+  const mensajeWhatsapp = "Hola! Estoy interesado en esta propiedad: ";
 
 
   // ============================
-  // VEHICULOS
+  // Propiedades
   // ============================
 
-  const vehiculos =
+  const propiedades =
     datos.map((fila, indice) => {
 
       let foto = "";
@@ -39,7 +39,7 @@ function doGet() {
 
       const celdaFoto =
         rango
-          .getCell(indice + 2, 6)
+          .getCell(indice + 2, 7)
           .getValue();
 
 
@@ -88,41 +88,44 @@ function doGet() {
 
       return {
 
-        nombre:
+        tipo:
           fila[0],
 
-        precio:
+        localidad:
           fila[1],
 
-        anio:
+        direccion:
           fila[2],
 
-        detalles:
+        categoria:
           fila[3],
 
-        descuento:
+        tamanio:
           fila[4],
+
+        precio:
+          fila[5],
 
         foto:
           foto,
 
-        categoria:
-          fila[6],
-
-        kilometraje:
+        detalles:
           fila[7],
 
-        orden:
+        capacidad:
           fila[8],
 
-        visible:
+        orden:
           fila[9],
 
-        destacado:
+        visible:
           fila[10],
-
-        stock:
+  
+        destacado:
           fila[11],
+    
+        stock:
+          fila[12],
       };
 
     });
@@ -140,8 +143,8 @@ function doGet() {
     mensajeWhatsapp:
       mensajeWhatsapp,
 
-    vehiculos:
-      vehiculos
+    propiedades:
+      propiedades
 
   };
 
