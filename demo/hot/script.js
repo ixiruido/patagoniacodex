@@ -76,7 +76,7 @@ async function loadAccommodations() {
     if (!grid) return;
     
     // URL actualizada de tu Google Apps Script
-    const urlScript = "https://script.google.com/macros/s/AKfycbwlGf8Ej8wLEyTGel9mYHtKkFIeLDU1LwEytVF06UNf7V7-zoyckUY-spLvek8roNSg/exec";
+    const urlScript = "https://script.google.com/macros/s/AKfycbwSODsQoRFw3x2jYwDW3A3RdgvyxwbAvUU3jJtNlOpap7hiojNpHFX9hC4Pltpg1m_PMA/exec";
     
     try {
         // Agregar timestamp para evitar cache
