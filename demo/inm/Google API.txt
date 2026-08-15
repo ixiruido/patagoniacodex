@@ -1,0 +1,156 @@
+function doGet() {
+
+  const ID_PLANILLA =
+    "1cAfHQ2tax_ZvrenvjFssxc2bBCfdB8dz5jpr-UH0iA8";
+
+  const planilla =
+    SpreadsheetApp.openById(ID_PLANILLA);
+
+  const hoja =
+    planilla.getSheetByName("Vehiculos");
+
+  const rango =
+    hoja.getDataRange();
+
+  const datos =
+    rango.getValues();
+
+  datos.shift();
+
+
+  // ============================
+  // CONFIGURACIÓN
+  // ============================
+
+  const whatsapp = "5492996100676";
+
+  const mensajeWhatsapp = "Hola! Estoy interesado en este vehículo: ";
+
+
+  // ============================
+  // VEHICULOS
+  // ============================
+
+  const vehiculos =
+    datos.map((fila, indice) => {
+
+      let foto = "";
+
+
+      const celdaFoto =
+        rango
+          .getCell(indice + 2, 6)
+          .getValue();
+
+
+      // Imagen insertada dentro de la celda
+
+      if (
+        celdaFoto &&
+        typeof celdaFoto === "object" &&
+        typeof celdaFoto.getContentUrl === "function"
+      ) {
+
+        foto =
+          celdaFoto.getContentUrl();
+
+      }
+
+
+      // Limpiar URL
+
+      if (
+        typeof foto === "string"
+      ) {
+
+        const match =
+          foto.match(
+            /\((https?:\/\/[^)]+)\)/
+          );
+
+
+        if (match) {
+          foto = match[1];
+        }
+
+
+        const inicio =
+          foto.indexOf("https://");
+
+
+        if (inicio > 0) {
+          foto =
+            foto.substring(inicio);
+        }
+
+      }
+
+
+      return {
+
+        nombre:
+          fila[0],
+
+        precio:
+          fila[1],
+
+        anio:
+          fila[2],
+
+        detalles:
+          fila[3],
+
+        descuento:
+          fila[4],
+
+        foto:
+          foto,
+
+        categoria:
+          fila[6],
+
+        kilometraje:
+          fila[7],
+
+        orden:
+          fila[8],
+
+        visible:
+          fila[9],
+
+        destacado:
+          fila[10],
+
+        stock:
+          fila[11],
+      };
+
+    });
+
+
+  // ============================
+  // RESPUESTA
+  // ============================
+
+  const respuesta = {
+
+    whatsapp:
+      whatsapp,
+
+    mensajeWhatsapp:
+      mensajeWhatsapp,
+
+    vehiculos:
+      vehiculos
+
+  };
+
+
+  return ContentService
+    .createTextOutput(
+      JSON.stringify(respuesta)
+    )
+    .setMimeType(
+      ContentService.MimeType.JSON
+    );
+}
