@@ -1,35 +1,70 @@
 function doGet() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  // Leemos la fila 2 desde la columna A (1) hasta la columna J (10) para incluir el mensaje completo
-  var data = sheet.getRange(2, 1, 1, 10).getValues()[0]; 
-  
-  // Mapeo exacto según tu estructura de Google Sheets
-  var cabanaNombre        = data[0].toString(); // Columna A (Cabaña 1)
-  var estado              = data[1].toString(); // Columna B (Disponible)
-  var precioBase          = data[2].toString(); // Columna C ($45.000 x día)
-  var descuento           = data[3].toString(); // Columna D (15% +2 días)
-  var aviso               = data[4].toString(); // Columna E (Sin disponibilidad...)
-  var ultimaActualizacion = data[5].toString(); // Columna F (9 de Agosto 2026)
-  var telefono            = data[8].toString().replace(/[^0-9]/g, ''); // Columna H (Limpia caracteres extraños)
-  var mensajeOriginal     = data[9].toString(); // Columna I (Mensaje base)
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    
+    // Verificar cuántas filas hay
+    var lastRow = sheet.getLastRow();
+    Logger.log("Última fila: " + lastRow);
+    
+    // Si hay menos de 2 filas (solo encabezados), devolver array vacío
+    if (lastRow < 2) {
+      return ContentService.createTextOutput(JSON.stringify([]))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // Leemos todas las filas con datos (desde la fila 2 hasta la última fila)
+    var data = sheet.getRange(2, 1, lastRow - 1, 10).getValues();
+    Logger.log("Filas leídas: " + data.length);
+    
+    var alojamientos = [];
+    
+    // Procesamos cada fila
+    for (var i = 0; i < data.length; i++) {
+    var row = data[i];
+    Logger.log("Procesando fila " + (i + 2) + ": " + row[0]);
+    
+    // Verificamos que la fila tenga datos (nombre no vacío)
+    if (row[0] && row[0].toString().trim() !== "") {
+      // Mapeo exacto según tu estructura de Google Sheets
+      var cabanaNombre        = row[0].toString(); // Columna A
+      var estado              = row[1] ? row[1].toString() : ""; // Columna B
+      var precioBase          = row[2] ? row[2].toString() : ""; // Columna C
+      var descuento           = row[3] ? row[3].toString() : ""; // Columna D
+      var aviso               = row[4] ? row[4].toString() : ""; // Columna E
+      var ultimaActualizacion = row[5] ? row[5].toString() : ""; // Columna F
 
-  // Concatenamos el mensaje original con el nombre de la cabaña automáticamente
-  var mensajeCompleto = mensajeOriginal + " " + cabanaNombre;
-  var mensajeCodificado = encodeURIComponent(mensajeCompleto);
-  
-  // Generamos el link correcto con la barra "/" integrada
-  var linkWhatsapp = "https://wa.me/" + telefono + "?text=" + mensajeCodificado;
+      // Solo procesar si hay nombre
+      if (cabanaNombre.trim() !== "") {
+        // Concatenamos el mensaje original con el nombre de la cabaña
+        var mensajeCompleto = "Hola!%20Estoy%20interesado%20en%20este%20alojamiento%3A%20" + " " + cabanaNombre + " " + precioBase + " ";
+        var mensajeCodificado = encodeURIComponent(mensajeCompleto);
+        
+        // Generamos el link de WhatsApp
+        var linkWhatsapp = "https://wa.me/" + "5492996100676" + "?text=" + mensajeCodificado;
 
-  var resultado = {
-    nombre: cabanaNombre,
-    estado: estado,
-    precioBase: precioBase,
-    descuento: descuento,
-    aviso: aviso,
-    ultimaActualizacion: ultimaActualizacion,
-    whatsappLink: linkWhatsapp
-  };
+        var resultado = {
+          nombre: cabanaNombre,
+          estado: estado,
+          precioBase: precioBase,
+          descuento: descuento,
+          aviso: aviso,
+          ultimaActualizacion: ultimaActualizacion,
+          whatsappLink: linkWhatsapp
+        };
+        
+        alojamientos.push(resultado);
+        Logger.log("Alojamiento agregado: " + cabanaNombre);
+      }
+    }
+  }
 
-  return ContentService.createTextOutput(JSON.stringify(resultado))
+  Logger.log("Total alojamientos: " + alojamientos.length);
+  return ContentService.createTextOutput(JSON.stringify(alojamientos))
     .setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    Logger.log("Error: " + error.toString());
+    return ContentService.createTextOutput(JSON.stringify([]))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }
