@@ -163,6 +163,31 @@ body {
     box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.1);
 }
 
+/* =========================
+   LOCALIDADES
+========================= */
+
+.localidades-select {
+    min-width: 180px;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.localidades-select:hover {
+    border-color: #bbb;
+}
+
+.localidades-select:focus {
+    outline: none;
+    border-color: #c8102e;
+    box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.1);
+}
+
 
 /* =========================
    INFORMACIÓN
@@ -188,6 +213,8 @@ body {
         repeat(4, minmax(0, 1fr));
 
     gap: 20px;
+
+    align-items: stretch;
 }
 
 
@@ -214,7 +241,7 @@ body {
         transform 0.2s,
         box-shadow 0.2s;
 
-    min-height: 320px;
+    min-height: 380px;
     height: 100%;
 }
 
@@ -423,7 +450,14 @@ body {
     color: #999999;
 }
 
-.sin-stock {
+.producto.sin-stock .producto-boton {
+    background: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.sin-stock-text {
     display: inline-block;
 
     margin-top: 8px;
@@ -856,9 +890,8 @@ body {
     }
 
     .producto {
-        min-height: auto;
-        height: auto;
-        min-height: 260px;
+        min-height: 320px;
+        height: 100%;
     }
 
     .producto-imagen-contenedor {

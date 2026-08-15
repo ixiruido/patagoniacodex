@@ -7,6 +7,9 @@ const productosContenedor =
 const categoriasContenedor =
     document.getElementById("categorias-select");
 
+const localidadesContenedor =
+    document.getElementById("localidades-select");
+
 const buscador =
     document.getElementById("buscador");
 
@@ -25,6 +28,8 @@ const paginacion =
 let productos = [];
 
 let categoriaActual = "Todas";
+
+let localidadActual = "Todas";
 
 let ordenActual = "orden";
 
@@ -90,6 +95,8 @@ async function cargarProductos() {
                 );
 
         crearCategorias();
+
+        crearLocalidades();
 
         mostrarProductos();
 
@@ -205,6 +212,37 @@ function crearCategorias() {
 }
 
 
+function crearLocalidades() {
+
+    const localidades =
+        [
+            ...new Set(
+                productos
+                    .map(
+                        producto =>
+                            producto.localidad
+                    )
+                    .filter(Boolean)
+            )
+        ]
+        .sort();
+
+    localidadesContenedor.innerHTML =
+        '<option value="Todas">Localidades</option>';
+
+    localidades.forEach(
+        localidad => {
+
+            crearOpcionLocalidad(
+                localidad
+            );
+
+        }
+    );
+
+}
+
+
 function crearOpcionCategoria(
     categoria
 ) {
@@ -237,6 +275,39 @@ function crearOpcionCategoria(
 
 }
 
+
+function crearOpcionLocalidad(
+    localidad
+) {
+
+    const opcion =
+        document.createElement(
+            "option"
+        );
+
+    opcion.value =
+        localidad;
+
+    opcion.textContent =
+        localidad;
+
+    if (
+        localidad ===
+        localidadActual
+    ) {
+
+        opcion.selected =
+            true;
+
+    }
+
+    localidadesContenedor
+        .appendChild(
+            opcion
+        );
+
+}
+
 // Event listener para el select de categorías
 categoriasContenedor.addEventListener(
     "change",
@@ -244,6 +315,23 @@ categoriasContenedor.addEventListener(
 
         categoriaActual =
             categoriasContenedor.value;
+
+        paginaActual =
+            1;
+
+        mostrarProductos();
+
+    }
+);
+
+
+// Event listener para el select de localidades
+localidadesContenedor.addEventListener(
+    "change",
+    () => {
+
+        localidadActual =
+            localidadesContenedor.value;
 
         paginaActual =
             1;
@@ -277,6 +365,13 @@ function mostrarProductos() {
                         categoriaActual;
 
 
+                const coincideLocalidad =
+                    localidadActual ===
+                        "Todas" ||
+                    producto.localidad ===
+                        localidadActual;
+
+
                 const tipo =
                     String(
                         producto.tipo || ""
@@ -307,6 +402,7 @@ function mostrarProductos() {
 
                 return (
                     coincideCategoria &&
+                    coincideLocalidad &&
                     (
                         tipo.includes(texto) ||
                         localidad.includes(texto) ||
@@ -1115,7 +1211,7 @@ function crearProducto(
         stock
             ? ""
             : `
-                <div class="sin-stock">
+                <div class="sin-stock-text">
                     NO DISPONIBLE
                 </div>
             `;
