@@ -1,15 +1,15 @@
 -MONOTRIBUTO
 
-Abogado, Salud
-Cabaña, Landing Page, 
-Corralón, Restaurante
-Hotel, Autos
-Plataforma de Video Curso
+Abogado, Salud (Ver margenes, poner botón de compartir, alinear cards)
+Cabaña, hotel, (Ver margenes, poner popout q coincida y botón de compartir, alinear cards)
+Corralón, Restaurante (alinear cards, boton de compartir, popout q coincida, menu)
+Autos, inmobiliara (alinear cards, boton de compartir, popout q coincida)
+Plataforma de Video Curso, landing page (info de resumen en cursos no disponible, index, instrucciones) (landing completo con popout y compattir)
 
--PRECIOS EN PATAGONIA CODEX
-Términos y Condiciones
-Instructivos: Registro NIC.ar, Renovación, Colaborador Github, Colaborador Drive
+-PRECIOS EN PATAGONIA CODEX (completar precios matematicamente y que incluye)
+Términos y Condiciones (en pie de pagina, contenidos, facturas, devolucion etc)
+Instructivos: Registro NIC.ar, Renovación, Colaborador Github, Colaborador Drive (mas adelante con clientes voy armandO)
 
--CUIDADO CON LINKS DE API NOMAS
-Cliente: NIC.AR - Cloudflare - Github - Google Drive
+-CUIDADO CON LINKS DE API NOMAS, que cambian al modificar
+Cliente: NIC.AR - CloudflarePages - Github - Google Drive (Yo puedo configurarle la cuenta y devolverla)
 PatagoniaCodex: Colaborador Github - Colaborador Google Drive
