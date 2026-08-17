@@ -256,7 +256,7 @@ function crearOpcionCategoria(
         opcion.selected =
             true;
 
-    }
+    } 
 
     categoriasContenedor
         .appendChild(
