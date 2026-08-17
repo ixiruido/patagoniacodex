@@ -15,16 +15,14 @@ function doGet() {
   const datos =
     rango.getValues();
 
-  datos.shift();
-
-
   // ============================
   // CONFIGURACIÓN
   // ============================
 
   const whatsapp = "5492996100676";
 
-  const mensajeWhatsapp = "Hola! Estoy interesado en este vehículo: ";
+  const mensajeWhatsapp =
+    "Hola! Estoy interesado en este vehículo: ";
 
 
   // ============================
@@ -32,100 +30,115 @@ function doGet() {
   // ============================
 
   const vehiculos =
-    datos.map((fila, indice) => {
+    datos
+      .slice(1) // quitar encabezado
 
-      let foto = "";
+      // Agregar número de fila real
+      .map((fila, indice) => ({
+        fila: fila,
+        numeroFila: indice + 2
+      }))
 
+      // ELIMINAR PRODUCTOS SIN NOMBRE
+      .filter(item =>
+        item.fila[0] !== null &&
+        item.fila[0] !== undefined &&
+        String(item.fila[0]).trim() !== ""
+      )
 
-      const celdaFoto =
-        rango
-          .getCell(indice + 2, 6)
-          .getValue();
+      // Crear objeto del vehículo
+      .map(item => {
 
+        const fila = item.fila;
+        const numeroFila = item.numeroFila;
 
-      // Imagen insertada dentro de la celda
-
-      if (
-        celdaFoto &&
-        typeof celdaFoto === "object" &&
-        typeof celdaFoto.getContentUrl === "function"
-      ) {
-
-        foto =
-          celdaFoto.getContentUrl();
-
-      }
-
-
-      // Limpiar URL
-
-      if (
-        typeof foto === "string"
-      ) {
-
-        const match =
-          foto.match(
-            /\((https?:\/\/[^)]+)\)/
-          );
+        let foto = "";
 
 
-        if (match) {
-          foto = match[1];
-        }
+        // ============================
+        // FOTO
+        // ============================
+
+        const celdaFoto =
+          rango
+            .getCell(numeroFila, 6)
+            .getValue();
 
 
-        const inicio =
-          foto.indexOf("https://");
+        if (
+          celdaFoto &&
+          typeof celdaFoto === "object" &&
+          typeof celdaFoto.getContentUrl === "function"
+        ) {
 
-
-        if (inicio > 0) {
           foto =
-            foto.substring(inicio);
+            celdaFoto.getContentUrl();
+
         }
 
-      }
+
+        // ============================
+        // LIMPIAR URL
+        // ============================
+
+        if (typeof foto === "string") {
+
+          const match =
+            foto.match(
+              /\((https?:\/\/[^)]+)\)/
+            );
+
+          if (match) {
+            foto = match[1];
+          }
 
 
-      return {
+          const inicio =
+            foto.indexOf("https://");
 
-        nombre:
-          fila[0],
+          if (inicio > 0) {
+            foto =
+              foto.substring(inicio);
+          }
 
-        precio:
-          fila[1],
+        }
 
-        anio:
-          fila[2],
 
-        detalles:
-          fila[3],
+        // ============================
+        // VEHÍCULO
+        // ============================
 
-        descuento:
-          fila[4],
+        return {
 
-        foto:
-          foto,
+          nombre: fila[0],
 
-        categoria:
-          fila[6],
+          precio: fila[1],
 
-        kilometraje:
-          fila[7],
+          anio: fila[2],
 
-        orden:
-          fila[8],
+          detalles: fila[3],
 
-        visible:
-          fila[9],
+          descuento: fila[4],
 
-        destacado:
-          fila[10],
+          foto: foto,
 
-        stock:
-          fila[11],
-      };
+          categoria: fila[6],
 
-    });
+          kilometraje: fila[7],
+
+          orden: fila[8],
+
+          visible: fila[9],
+
+          destacado: fila[10],
+
+          stock: fila[11],
+
+          linkid: fila[12]
+
+        };
+
+      });
 
 
   // ============================
@@ -153,4 +166,5 @@ function doGet() {
     .setMimeType(
       ContentService.MimeType.JSON
     );
+
 }

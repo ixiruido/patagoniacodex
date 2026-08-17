@@ -1,5 +1,5 @@
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbyvpfMiaNbCqCdGNTQfrY0NGSf3P8E3c8GTFs7wpoCFDZaeWrGF_fmZVdAnIJuAzBOL/exec";
+    "https://script.google.com/macros/s/AKfycbzsPfAVFsQk9ztFCFxdD1ztZnxCiFAEiB15Tb6Tn-WpeSheAwhwveo7uPCd4aiHyyRs/exec";
 
 const productosContenedor =
     document.getElementById("productos");
@@ -88,6 +88,34 @@ async function cargarProductos() {
                     producto =>
                         esVisible(producto)
                 );
+
+        // Verificar si hay linkid en la URL ANTES de renderizar para evitar delay
+        const urlParams = new URLSearchParams(window.location.search);
+        const linkid = urlParams.get('linkid');
+        const hash = window.location.hash;
+        
+        if (linkid && (hash === '#catalogo' || hash === '')) {
+            // Notificar inmediatamente a la página principal con los datos ya cargados
+            try {
+                if (window.parent && window.parent !== window) {
+                    // Enviar los datos del producto directamente para evitar otra petición API
+                    const producto = productos.find(p => p.linkid === linkid);
+                    if (producto) {
+                        window.parent.postMessage({
+                            type: 'abrirModalDesdeURL',
+                            producto: {
+                                ...producto,
+                                whatsappNumero: numeroWhatsapp,
+                                whatsappMensaje: mensajeWhatsapp
+                            },
+                            linkid: linkid
+                        }, '*');
+                    }
+                }
+            } catch (e) {
+                console.log('No se puede comunicar con la página principal');
+            }
+        }
 
         crearCategorias();
 
@@ -1496,8 +1524,18 @@ function abrirModalProducto(producto) {
                     ...producto,
                     whatsappNumero: numeroWhatsapp,
                     whatsappMensaje: mensajeWhatsapp
-                }
+                },
+                linkid: producto.linkid
             }, '*');
+            
+            // Actualizar URL del iframe para incluir el linkid
+            if (producto.linkid) {
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.set('linkid', producto.linkid);
+                newUrl.hash = 'catalogo';
+                window.history.replaceState({}, '', newUrl);
+            }
+            
             return;
         }
     } catch (e) {
@@ -1614,6 +1652,8 @@ modalWhatsapp.addEventListener('click', () => {
 // ============================
 
 cargarProductos();
+
+
 
 
 window.addEventListener(

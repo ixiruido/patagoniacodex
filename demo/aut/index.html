@@ -134,7 +134,7 @@
 
             <iframe
                 id="catalogoIframe"
-                src="./catalogo.html"
+                src=""
                 title="Catálogo de automóviles usados">
             </iframe>
 
@@ -169,9 +169,14 @@
 
                     <div id="modal-stock" class="modal-stock"></div>
 
-                    <button id="modal-whatsapp" class="modal-whatsapp-btn">
-                        Consultar por WhatsApp
-                    </button>
+                    <div class="modal-botones">
+                        <button id="modal-whatsapp" class="modal-whatsapp-btn">
+                            Consultar por WhatsApp
+                        </button>
+                        <button id="modal-compartir" class="modal-compartir-btn">
+                            📋 Compartir
+                        </button>
+                    </div>
 
                 </div>
 
@@ -180,18 +185,48 @@
     </div>
 
     <script>
+        // ============================
+        // CONFIGURACIÓN API
+        // ============================
+        const API_URL = "https://script.google.com/macros/s/AKfycbzsPfAVFsQk9ztFCFxdD1ztZnxCiFAEiB15Tb6Tn-WpeSheAwhwveo7uPCd4aiHyyRs/exec";
+        
+        // Configurar iframe con parámetros de URL
+        function configurarIframe() {
+            const iframe = document.getElementById('catalogoIframe');
+            const urlParams = new URLSearchParams(window.location.search);
+            const linkid = urlParams.get('linkid');
+            const hash = window.location.hash;
+            
+            let iframeSrc = './catalogo.html';
+            
+            // Pasar parámetros al iframe
+            if (linkid) {
+                iframeSrc += `?linkid=${linkid}`;
+            }
+            
+            if (hash) {
+                iframeSrc += hash;
+            }
+            
+            iframe.src = iframeSrc;
+        }
+        
+        // Configurar iframe al cargar
+        configurarIframe();
+        
         // Escuchar mensajes del iframe para abrir el modal
         window.addEventListener('message', function(event) {
 
             if (event.data.type === 'abrirModalProducto') {
                 const producto = event.data.producto;
-                abrirModalProductoPrincipal(producto);
+                const linkid = event.data.linkid;
+                abrirModalProductoPrincipal(producto, linkid);
             }
 
         });
 
         // Función para abrir el modal en la página principal
-        function abrirModalProductoPrincipal(producto) {
+        function abrirModalProductoPrincipal(producto, linkid) {
 
             const modal = document.getElementById('producto-modal');
             const modalImg = document.getElementById('modal-img');
@@ -201,6 +236,54 @@
             const modalPrecio = document.getElementById('modal-precio');
             const modalStock = document.getElementById('modal-stock');
             const modalWhatsapp = document.getElementById('modal-whatsapp');
+            const modalCompartir = document.getElementById('modal-compartir');
+
+            // Actualizar URL con el linkid del producto
+            if (linkid) {
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.set('linkid', linkid);
+                newUrl.hash = 'catalogo';
+                window.history.replaceState({}, '', newUrl);
+            }
+
+            // Sincronización con la API (no bloqueante)
+            const linkidABuscar = linkid || producto.linkid;
+            
+            if (linkidABuscar) {
+                fetch(API_URL)
+                    .then(respuesta => respuesta.json())
+                    .then(datos => {
+                        const productoFresco = datos.vehiculos.find(v => v.linkid === linkidABuscar);
+                        if (productoFresco) {
+                            // Actualizar datos del modal con información fresca
+                            modalCategoria.textContent = productoFresco.categoria || producto.categoria || '';
+                            modalNombre.textContent = productoFresco.nombre || producto.nombre || '';
+                            modalDescripcion.textContent = productoFresco.detalles || producto.detalles || producto.descripcion || '';
+                            modalPrecio.textContent = productoFresco.precio || producto.precio || '';
+                            
+                            const stock = String(productoFresco.stock || '').trim().toLowerCase() !== 'no';
+                            modalStock.textContent = stock ? 'Disponible' : 'Vendido';
+                            modalStock.className = stock ? 'modal-stock' : 'modal-stock sin-stock';
+                            
+                            // Actualizar también la información del vehículo
+                            let infoVehiculoHTML = '';
+                            if (productoFresco.anio || productoFresco.kilometraje) {
+                                infoVehiculoHTML = '<div class="modal-info-vehiculo">';
+                                if (productoFresco.anio) {
+                                    infoVehiculoHTML += `<span class="modal-vehiculo-anio">Año: ${productoFresco.anio}</span>`;
+                                }
+                                if (productoFresco.kilometraje) {
+                                    infoVehiculoHTML += `<span class="modal-vehiculo-km">Kilometraje: ${productoFresco.kilometraje}</span>`;
+                                }
+                                infoVehiculoHTML += '</div>';
+                            }
+                            document.getElementById('modal-info-vehiculo').innerHTML = infoVehiculoHTML;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al sincronizar datos de la API:', error);
+                    });
+            }
 
             // Imagen
             if (producto.foto) {
@@ -235,12 +318,12 @@
             modalDescripcion.textContent = producto.detalles || producto.descripcion || '';
             modalPrecio.textContent = producto.precio || '';
 
-            // Disponibilidad
-            const stock = producto.stock !== 'no';
+            // Disponibilidad - usar la misma lógica que catalogo.js
+            const stock = String(producto.stock || '').trim().toLowerCase() !== 'no';
 
             modalStock.textContent = stock
                 ? 'Disponible'
-                : 'Vendido';
+                : 'Reservado';
 
             modalStock.className = stock
                 ? 'modal-stock'
@@ -296,6 +379,60 @@
                 window.open(whatsappUrl, '_blank');
 
             };
+
+            // Compartir
+            modalCompartir.onclick = function() {
+                const urlActual = window.location.href;
+                const titulo = producto.nombre || 'Vehículo de Patagonia Automóviles';
+                
+                // Usar Web Share API si está disponible
+                if (navigator.share) {
+                    navigator.share({
+                        title: titulo,
+                        text: `Mirá este vehículo: ${titulo}`,
+                        url: urlActual
+                    }).then(() => {
+                        console.log('Compartido exitosamente');
+                    }).catch((error) => {
+                        console.log('Error al compartir:', error);
+                        // Fallback: copiar al portapapeles
+                        copiarAlPortapapeles(urlActual);
+                    });
+                } else {
+                    // Fallback para navegadores que no soportan Web Share API
+                    copiarAlPortapapeles(urlActual);
+                }
+            };
+            
+            function copiarAlPortapapeles(texto) {
+                navigator.clipboard.writeText(texto).then(() => {
+                    const textoOriginal = modalCompartir.textContent;
+                    modalCompartir.textContent = '✓ Copiado';
+                    modalCompartir.classList.add('copiado');
+                    
+                    setTimeout(() => {
+                        modalCompartir.textContent = textoOriginal;
+                        modalCompartir.classList.remove('copiado');
+                    }, 2000);
+                }).catch(err => {
+                    // Fallback para navegadores antiguos
+                    const textarea = document.createElement('textarea');
+                    textarea.value = texto;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    
+                    const textoOriginal = modalCompartir.textContent;
+                    modalCompartir.textContent = '✓ Copiado';
+                    modalCompartir.classList.add('copiado');
+                    
+                    setTimeout(() => {
+                        modalCompartir.textContent = textoOriginal;
+                        modalCompartir.classList.remove('copiado');
+                    }, 2000);
+                });
+            }
 
             // Mostrar modal
             modal.classList.remove('oculto');
@@ -575,6 +712,21 @@
     <script src="./script.js"></script>
 
     <script>
+        // ============================
+        // DETECCIÓN DE LINKID EN URL
+        // ============================
+        
+        // Escuchar mensaje del iframe para abrir modal automáticamente cuando el catálogo detecta linkid
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'abrirModalDesdeURL') {
+                const producto = event.data.producto;
+                const linkid = event.data.linkid;
+                if (producto && linkid) {
+                    // Usar los datos que envía el iframe directamente (ya están sincronizados)
+                    abrirModalProductoPrincipal(producto, linkid);
+                }
+            }
+        });
     </script>
 
 </body>
