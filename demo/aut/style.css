@@ -18,7 +18,7 @@
 
 * {margin: 0; padding: 0; box-sizing: border-box;
     scroll-behavior: smooth; font-family: var(--font-main);}
-
+ 
 h1, h2, h3, h4, .logo, header h1, header h2, .card h3, .contact-card h3 {
     font-family: var(--font-headers) !important;
     font-weight: 600; letter-spacing: 0.5px;}
