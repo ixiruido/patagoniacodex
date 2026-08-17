@@ -26,7 +26,8 @@
 <h1>MATERIALES DE CONSTRUCCIÓN Y FERRETERÍA</h1>
      <p>Tu socio estratégico en construcción. Contamos con la más amplia variedad de materiales, herramientas y ferretería para que tu proyecto sea un éxito. Atención profesional y asesoramiento técnico.</p>
 
-<a href="#catalogo" class="btn-gold">Ver Catálogo</a></section><section class="about" id="sobre-mi">
+<a href="#catalogo" class="btn-gold">Ver Catálogo</a></section>
+<section class="about reveal" id="sobre-mi">
     <div class="about-img"><img src="./images/foto.jpg" alt="Corralón Patagonia"></div>
     <div class="about-content">  <h2>Más de 20 años construyendo confianza</h2>
           <p>Somos líderes en la venta de materiales de construcción y ferretería en distrito. Contamos con un equipo de profesionales 
@@ -103,6 +104,16 @@
 </div>
 
 <script>
+// Función de fallback para copiar al portapapeles
+function fallbackToClipboard(link) {
+    navigator.clipboard.writeText(link).then(() => {
+        alert('Link copiado al portapapeles: ' + link);
+    }).catch(err => {
+        console.error('Error al copiar el link:', err);
+        alert('Error al copiar el link');
+    });
+}
+
 // Escuchar mensajes del iframe para abrir el modal
 window.addEventListener('message', function(event) {
     if (event.data.type === 'abrirModalProducto') {
@@ -116,12 +127,22 @@ window.addEventListener('message', function(event) {
             const url = new URL(window.location.href);
             url.searchParams.set('linkid', producto.linkid);
             const link = url.toString();
-            navigator.clipboard.writeText(link).then(() => {
-                alert('Link copiado al portapapeles: ' + link);
-            }).catch(err => {
-                console.error('Error al copiar el link:', err);
-                alert('Error al copiar el link');
-            });
+            
+            // Usar Web Share API si está disponible (móviles)
+            if (navigator.share) {
+                navigator.share({
+                    title: producto.nombre || 'Producto',
+                    text: producto.descripcion || 'Mira este producto',
+                    url: link
+                }).catch(err => {
+                    console.error('Error al compartir:', err);
+                    // Fallback al portapapeles si falla
+                    fallbackToClipboard(link);
+                });
+            } else {
+                // Fallback al portapapeles en escritorio
+                fallbackToClipboard(link);
+            }
         } else {
             alert('Este producto no tiene un link ID configurado');
         }
@@ -209,12 +230,22 @@ function abrirModalProductoPrincipal(producto) {
             const url = new URL(window.location.href);
             url.searchParams.set('linkid', producto.linkid);
             const link = url.toString();
-            navigator.clipboard.writeText(link).then(() => {
-                alert('Link copiado al portapapeles: ' + link);
-            }).catch(err => {
-                console.error('Error al copiar el link:', err);
-                alert('Error al copiar el link');
-            });
+            
+            // Usar Web Share API si está disponible (móviles)
+            if (navigator.share) {
+                navigator.share({
+                    title: producto.nombre || 'Producto',
+                    text: producto.descripcion || 'Mira este producto',
+                    url: link
+                }).catch(err => {
+                    console.error('Error al compartir:', err);
+                    // Fallback al portapapeles si falla
+                    fallbackToClipboard(link);
+                });
+            } else {
+                // Fallback al portapapeles en escritorio
+                fallbackToClipboard(link);
+            }
         } else {
             alert('Este producto no tiene un link ID configurado');
         }
