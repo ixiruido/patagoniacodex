@@ -1,13 +1,13 @@
 function doGet() {
 
   const ID_PLANILLA =
-    "1cAfHQ2tax_ZvrenvjFssxc2bBCfdB8dz5jpr-UH0iA8";
+    "1oQC-N91mh9gZdqTkinFRwrKQN7OIXTKEogYDKB5RRA0";
 
   const planilla =
     SpreadsheetApp.openById(ID_PLANILLA);
 
   const hoja =
-    planilla.getSheetByName("Vehiculos");
+    planilla.getSheetByName("Propiedades");
 
   const rango =
     hoja.getDataRange();
@@ -15,130 +15,120 @@ function doGet() {
   const datos =
     rango.getValues();
 
+  datos.shift();
+
+
   // ============================
   // CONFIGURACIÓN
   // ============================
 
   const whatsapp = "5492996100676";
 
-  const mensajeWhatsapp =
-    "Hola! Estoy interesado en este vehículo: ";
+  const mensajeWhatsapp = "Hola! Estoy interesado en esta propiedad: ";
 
 
   // ============================
-  // VEHICULOS
+  // Propiedades
   // ============================
 
-  const vehiculos =
-    datos
-      .slice(1) // quitar encabezado
+  const propiedades =
+    datos.map((fila, indice) => {
 
-      // Agregar número de fila real
-      .map((fila, indice) => ({
-        fila: fila,
-        numeroFila: indice + 2
-      }))
-
-      // ELIMINAR PRODUCTOS SIN NOMBRE
-      .filter(item =>
-        item.fila[0] !== null &&
-        item.fila[0] !== undefined &&
-        String(item.fila[0]).trim() !== ""
-      )
-
-      // Crear objeto del vehículo
-      .map(item => {
-
-        const fila = item.fila;
-        const numeroFila = item.numeroFila;
-
-        let foto = "";
+      let foto = "";
 
 
-        // ============================
-        // FOTO
-        // ============================
-
-        const celdaFoto =
-          rango
-            .getCell(numeroFila, 6)
-            .getValue();
+      const celdaFoto =
+        rango
+          .getCell(indice + 2, 7)
+          .getValue();
 
 
-        if (
-          celdaFoto &&
-          typeof celdaFoto === "object" &&
-          typeof celdaFoto.getContentUrl === "function"
-        ) {
+      // Imagen insertada dentro de la celda
 
+      if (
+        celdaFoto &&
+        typeof celdaFoto === "object" &&
+        typeof celdaFoto.getContentUrl === "function"
+      ) {
+
+        foto =
+          celdaFoto.getContentUrl();
+
+      }
+
+
+      // Limpiar URL
+
+      if (
+        typeof foto === "string"
+      ) {
+
+        const match =
+          foto.match(
+            /\((https?:\/\/[^)]+)\)/
+          );
+
+
+        if (match) {
+          foto = match[1];
+        }
+
+
+        const inicio =
+          foto.indexOf("https://");
+
+
+        if (inicio > 0) {
           foto =
-            celdaFoto.getContentUrl();
-
+            foto.substring(inicio);
         }
 
-
-        // ============================
-        // LIMPIAR URL
-        // ============================
-
-        if (typeof foto === "string") {
-
-          const match =
-            foto.match(
-              /\((https?:\/\/[^)]+)\)/
-            );
-
-          if (match) {
-            foto = match[1];
-          }
+      }
 
 
-          const inicio =
-            foto.indexOf("https://");
+      return {
 
-          if (inicio > 0) {
-            foto =
-              foto.substring(inicio);
-          }
+        tipo:
+          fila[0],
 
-        }
+        localidad:
+          fila[1],
 
+        direccion:
+          fila[2],
 
-        // ============================
-        // VEHÍCULO
-        // ============================
+        categoria:
+          fila[3],
 
-        return {
+        tamanio:
+          fila[4],
 
-          nombre: fila[0],
+        precio:
+          fila[5],
 
-          precio: fila[1],
+        foto:
+          foto,
 
-          anio: fila[2],
+        detalles:
+          fila[7],
 
-          detalles: fila[3],
+        capacidad:
+          fila[8],
 
-          descuento: fila[4],
+        orden:
+          fila[9],
 
-          foto: foto,
+        visible:
+          fila[10],
+  
+        destacado:
+          fila[11],
+    
+        stock:
+          fila[12],
+      };
 
-          categoria: fila[6],
-
-          kilometraje: fila[7],
-
-          orden: fila[8],
-
-          visible: fila[9],
-
-          destacado: fila[10],
-
-          stock: fila[11],
-
-          linkid: fila[12]
-
-        };
-
-      });
+    });
 
 
   // ============================
@@ -153,8 +143,8 @@ function doGet() {
     mensajeWhatsapp:
       mensajeWhatsapp,
 
-    vehiculos:
-      vehiculos
+    propiedades:
+      propiedades
 
   };
 
@@ -166,5 +156,4 @@ function doGet() {
     .setMimeType(
       ContentService.MimeType.JSON
     );
-
 }
