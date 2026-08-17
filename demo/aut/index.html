@@ -9,7 +9,7 @@
         html, body {
             max-width: 100%;
             overflow-x: hidden;
-        } 
+        }
     </style>
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
@@ -144,12 +144,13 @@
     <!-- MODAL DE VEHÍCULO -->
     <div id="producto-modal" class="producto-modal oculto">
         <div class="modal-content">
-
-            <button class="modal-close" aria-label="Cerrar modal">
+            
+            <button class="modal-close oculto" aria-label="Cerrar modal">
                 ✕
             </button>
 
-            <div class="modal-body">
+            <div class="modal-content-wrapper">
+                <div class="modal-body">
 
                 <div class="modal-imagen">
                     <img id="modal-img" src="" alt="">
@@ -180,6 +181,7 @@
 
                 </div>
 
+            </div>
             </div>
         </div>
     </div>
@@ -436,6 +438,7 @@
 
             // Mostrar modal
             modal.classList.remove('oculto');
+            document.querySelector('.modal-close').classList.remove('oculto');
             document.body.style.overflow = 'hidden';
 
         }
@@ -446,8 +449,12 @@
             const modal = document.getElementById('producto-modal');
 
             modal.classList.add('oculto');
+            this.classList.add('oculto');
 
             document.body.style.overflow = '';
+
+            // Eliminar linkid de la URL al cerrar el modal
+            limpiarURL();
 
         });
 
@@ -457,8 +464,12 @@
             if (event.target === this) {
 
                 this.classList.add('oculto');
+                document.querySelector('.modal-close').classList.add('oculto');
 
                 document.body.style.overflow = '';
+
+                // Eliminar linkid de la URL al cerrar el modal
+                limpiarURL();
 
             }
 
@@ -474,14 +485,25 @@
                 if (!modal.classList.contains('oculto')) {
 
                     modal.classList.add('oculto');
+                    document.querySelector('.modal-close').classList.add('oculto');
 
                     document.body.style.overflow = '';
+
+                    // Eliminar linkid de la URL al cerrar el modal
+                    limpiarURL();
 
                 }
 
             }
 
         });
+
+        // Función para limpiar el linkid de la URL
+        function limpiarURL() {
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.delete('linkid');
+            window.history.replaceState({}, '', newUrl);
+        }
     </script>
 
     <section class="contact" id="contacto">
