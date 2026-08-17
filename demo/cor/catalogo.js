@@ -1,5 +1,5 @@
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbwToAVq_QtDteuW6aGx9TwH0wuKsLU5P273e3zUm89HLXut7PmihXcKzCNt6YcWmugs/exec";
+    "https://script.google.com/macros/s/AKfycbywjlF-uLj0RJPfgOpIGECQRKi16K5xyyZvoq6wnIuf7JJRksIWp8Z_q_2QmZzLZc4/exec";
 
 const productosContenedor =
     document.getElementById("productos");
@@ -92,6 +92,30 @@ async function cargarProductos() {
         crearCategorias();
 
         mostrarProductos();
+
+        // Notificar a la página principal que el catálogo está listo
+        try {
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'catalogoListo'
+                }, '*');
+            }
+        } catch (e) {
+            console.log('No se puede comunicar con la página principal');
+        }
+
+        // Verificar si hay un linkid en la URL para abrir un producto específico
+        const urlParams = new URLSearchParams(window.location.search);
+        const linkid = urlParams.get('linkid');
+        if (linkid) {
+            const productoEspecifico = productos.find(p => p.linkid === linkid);
+            if (productoEspecifico) {
+                // Esperar un momento para que el catálogo se renderice
+                setTimeout(() => {
+                    abrirModalProducto(productoEspecifico);
+                }, 500);
+            }
+        }
 
     } catch (error) {
 
@@ -1458,6 +1482,7 @@ const modalPrecio = document.getElementById('modal-precio');
 const modalDescuento = document.getElementById('modal-descuento');
 const modalStock = document.getElementById('modal-stock');
 const modalWhatsapp = document.getElementById('modal-whatsapp');
+const modalShare = document.getElementById('modal-share');
 
 let productoActualModal = null;
 
@@ -1571,6 +1596,90 @@ modalWhatsapp.addEventListener('click', () => {
         const numeroLimpio = String(numero).replace(/\D/g, '');
         const whatsappUrl = `https://wa.me/${numeroLimpio}?text=${encodeURIComponent(mensajeCompleto)}`;
         window.open(whatsappUrl, '_blank');
+    }
+});
+
+// Evento para el botón de compartir del modal
+modalShare.addEventListener('click', () => {
+    if (productoActualModal) {
+        // Enviar mensaje a la página principal para que genere el link
+        try {
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'compartirProducto',
+                    producto: productoActualModal
+                }, '*');
+                return;
+            }
+        } catch (e) {
+            console.log('No se puede comunicar con la página principal');
+        }
+        
+        // Fallback: generar link desde el iframe
+        copiarLinkProducto(productoActualModal);
+    }
+});
+
+// ============================
+// GENERAR LINK DE PRODUCTO
+// ============================
+
+function generarLinkProducto(producto) {
+    if (!producto.linkid) {
+        return null;
+    }
+
+    // Generar URL usando la URL de la página principal (parent)
+    let baseUrl;
+    try {
+        if (window.parent && window.parent !== window) {
+            baseUrl = window.parent.location.href;
+        } else {
+            baseUrl = window.location.href;
+        }
+    } catch (e) {
+        // Si no se puede acceder al padre, usar la URL actual
+        baseUrl = window.location.href;
+    }
+
+    const url = new URL(baseUrl);
+    url.searchParams.set('linkid', producto.linkid);
+    return url.toString();
+}
+
+function copiarLinkProducto(producto) {
+    const link = generarLinkProducto(producto);
+    if (link) {
+        navigator.clipboard.writeText(link).then(() => {
+            alert('Link copiado al portapapeles: ' + link);
+        }).catch(err => {
+            console.error('Error al copiar el link:', err);
+            alert('Error al copiar el link');
+        });
+    } else {
+        alert('Este producto no tiene un link ID configurado');
+    }
+}
+
+// ============================
+// ESCUCHAR MENSAJES DE LA PÁGINA PRINCIPAL
+// ============================
+
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'abrirProductoPorLinkid') {
+        const linkid = event.data.linkid;
+        console.log('Recibido mensaje para abrir producto con linkid:', linkid);
+        
+        const productoEspecifico = productos.find(p => p.linkid === linkid);
+        if (productoEspecifico) {
+            console.log('Producto encontrado:', productoEspecifico.nombre);
+            // Esperar un momento para que el catálogo se renderice
+            setTimeout(() => {
+                abrirModalProducto(productoEspecifico);
+            }, 100);
+        } else {
+            console.log('Producto no encontrado con linkid:', linkid);
+        }
     }
 });
 

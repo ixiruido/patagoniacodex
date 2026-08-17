@@ -22,17 +22,9 @@ function doGet() {
   // CONFIGURACIÓN
   // ============================
 
-  const whatsapp =
-    String(
-      hoja.getRange("L2").getDisplayValue()
-    ).trim();
+  const whatsapp = "5492996100676";
 
-
-  const mensajeWhatsapp =
-    String(
-      hoja.getRange("M2").getDisplayValue()
-    ).trim();
-
+  const mensajeWhatsapp = "Hola! Estoy interesado en este producto: ";
 
   // ============================
   // PRODUCTOS
@@ -123,8 +115,11 @@ function doGet() {
           fila[8],
 
         stock:
-          fila[9]
+          fila[9],
 
+        linkid:
+          fila[10],
+          
       };
 
     });

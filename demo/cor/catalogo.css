@@ -678,6 +678,32 @@ body {
     opacity: 0.88;
 }
 
+.modal-botones {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-share-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 14px 20px;
+    border-radius: 8px;
+    background: #4a90e2;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    transition: opacity 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-share-btn:hover {
+    opacity: 0.88;
+}
+
 /* Responsive para el modal */
 @media (max-width: 768px) {
     .producto-modal {
@@ -716,6 +742,15 @@ body {
 
     .modal-precio {
         font-size: 24px;
+    }
+
+    .modal-botones {
+        flex-direction: column;
+    }
+
+    .modal-whatsapp-btn,
+    .modal-link-btn {
+        width: 100%;
     }
 }
 

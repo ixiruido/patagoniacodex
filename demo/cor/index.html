@@ -89,9 +89,14 @@
                 <div id="modal-precio" class="modal-precio"></div>
                 <div id="modal-descuento" class="modal-descuento"></div>
                 <div id="modal-stock" class="modal-stock"></div>
-                <button id="modal-whatsapp" class="modal-whatsapp-btn">
-                    Consultar
-                </button>
+                <div class="modal-botones">
+                    <button id="modal-whatsapp" class="modal-whatsapp-btn">
+                        Consultar
+                    </button>
+                    <button id="modal-share" class="modal-share-btn">
+                        🔗 Compartir
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -103,6 +108,40 @@ window.addEventListener('message', function(event) {
     if (event.data.type === 'abrirModalProducto') {
         const producto = event.data.producto;
         abrirModalProductoPrincipal(producto);
+    }
+    
+    if (event.data.type === 'compartirProducto') {
+        const producto = event.data.producto;
+        if (producto.linkid) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('linkid', producto.linkid);
+            const link = url.toString();
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Link copiado al portapapeles: ' + link);
+            }).catch(err => {
+                console.error('Error al copiar el link:', err);
+                alert('Error al copiar el link');
+            });
+        } else {
+            alert('Este producto no tiene un link ID configurado');
+        }
+    }
+    
+    if (event.data.type === 'catalogoListo') {
+        // El catálogo está listo, verificar si hay un linkid para abrir
+        const urlParams = new URLSearchParams(window.location.search);
+        const linkid = urlParams.get('linkid');
+        if (linkid) {
+            const iframe = document.getElementById('catalogoIframe');
+            if (iframe) {
+                setTimeout(() => {
+                    iframe.contentWindow.postMessage({
+                        type: 'abrirProductoPorLinkid',
+                        linkid: linkid
+                    }, '*');
+                }, 500);
+            }
+        }
     }
 });
 
@@ -117,6 +156,7 @@ function abrirModalProductoPrincipal(producto) {
     const modalDescuento = document.getElementById('modal-descuento');
     const modalStock = document.getElementById('modal-stock');
     const modalWhatsapp = document.getElementById('modal-whatsapp');
+    const modalShare = document.getElementById('modal-share');
     
     // Llenar datos del modal
     if (producto.foto) {
@@ -163,6 +203,30 @@ function abrirModalProductoPrincipal(producto) {
         window.open(whatsappUrl, '_blank');
     };
     
+    // Configurar botón de compartir
+    modalShare.onclick = function() {
+        if (producto.linkid) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('linkid', producto.linkid);
+            const link = url.toString();
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Link copiado al portapapeles: ' + link);
+            }).catch(err => {
+                console.error('Error al copiar el link:', err);
+                alert('Error al copiar el link');
+            });
+        } else {
+            alert('Este producto no tiene un link ID configurado');
+        }
+    };
+    
+    // Cambiar la URL cuando se abre el modal
+    if (producto.linkid) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('linkid', producto.linkid);
+        window.history.pushState({ linkid: producto.linkid }, '', url.toString());
+    }
+    
     // Mostrar modal
     modal.classList.remove('oculto');
     document.body.style.overflow = 'hidden';
@@ -173,6 +237,11 @@ document.querySelector('.modal-close').addEventListener('click', function() {
     const modal = document.getElementById('producto-modal');
     modal.classList.add('oculto');
     document.body.style.overflow = '';
+    
+    // Limpiar la URL al cerrar el modal
+    const url = new URL(window.location.href);
+    url.searchParams.delete('linkid');
+    window.history.pushState({}, '', url.toString());
 });
 
 // Cerrar modal al hacer clic fuera del contenido
@@ -180,6 +249,11 @@ document.getElementById('producto-modal').addEventListener('click', function(eve
     if (event.target === this) {
         this.classList.add('oculto');
         document.body.style.overflow = '';
+        
+        // Limpiar la URL al cerrar el modal
+        const url = new URL(window.location.href);
+        url.searchParams.delete('linkid');
+        window.history.pushState({}, '', url.toString());
     }
 });
 
@@ -190,6 +264,31 @@ document.addEventListener('keydown', function(event) {
         if (!modal.classList.contains('oculto')) {
             modal.classList.add('oculto');
             document.body.style.overflow = '';
+            
+            // Limpiar la URL al cerrar el modal
+            const url = new URL(window.location.href);
+            url.searchParams.delete('linkid');
+            window.history.pushState({}, '', url.toString());
+        }
+    }
+});
+
+// Verificar si hay un linkid en la URL al cargar la página
+window.addEventListener('load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const linkid = urlParams.get('linkid');
+    if (linkid) {
+        console.log('Linkid detectado en URL:', linkid);
+        // Esperar a que el catálogo esté listo para enviar el mensaje
+        const iframe = document.getElementById('catalogoIframe');
+        if (iframe) {
+            // Esperar un tiempo prudencial para que el catálogo cargue
+            setTimeout(() => {
+                iframe.contentWindow.postMessage({
+                    type: 'abrirProductoPorLinkid',
+                    linkid: linkid
+                }, '*');
+            }, 2000);
         }
     }
 });
