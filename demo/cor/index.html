@@ -126,6 +126,8 @@ window.addEventListener('message', function(event) {
         if (producto.linkid) {
             const url = new URL(window.location.href);
             url.searchParams.set('linkid', producto.linkid);
+            // Asegurar que siempre incluya #catalogo
+            url.hash = 'catalogo';
             const link = url.toString();
             
             // Usar Web Share API si está disponible (móviles)
@@ -161,6 +163,12 @@ window.addEventListener('message', function(event) {
                         linkid: linkid
                     }, '*');
                 }, 500);
+            }
+            // Asegurar que la URL tenga #catalogo
+            if (!window.location.hash.includes('catalogo')) {
+                const url = new URL(window.location.href);
+                url.hash = 'catalogo';
+                window.history.replaceState({}, '', url.toString());
             }
         }
     }
@@ -229,6 +237,8 @@ function abrirModalProductoPrincipal(producto) {
         if (producto.linkid) {
             const url = new URL(window.location.href);
             url.searchParams.set('linkid', producto.linkid);
+            // Asegurar que siempre incluya #catalogo
+            url.hash = 'catalogo';
             const link = url.toString();
             
             // Usar Web Share API si está disponible (móviles)
@@ -255,6 +265,8 @@ function abrirModalProductoPrincipal(producto) {
     if (producto.linkid) {
         const url = new URL(window.location.href);
         url.searchParams.set('linkid', producto.linkid);
+        // Asegurar que siempre incluya #catalogo
+        url.hash = 'catalogo';
         window.history.pushState({ linkid: producto.linkid }, '', url.toString());
     }
     
@@ -269,9 +281,13 @@ document.querySelector('.modal-close').addEventListener('click', function() {
     modal.classList.add('oculto');
     document.body.style.overflow = '';
     
-    // Limpiar la URL al cerrar el modal
+    // Limpiar la URL al cerrar el modal pero mantener #catalogo
     const url = new URL(window.location.href);
     url.searchParams.delete('linkid');
+    // Mantener #catalogo si estamos en esa sección
+    if (window.location.hash.includes('catalogo')) {
+        url.hash = 'catalogo';
+    }
     window.history.pushState({}, '', url.toString());
 });
 
@@ -281,9 +297,13 @@ document.getElementById('producto-modal').addEventListener('click', function(eve
         this.classList.add('oculto');
         document.body.style.overflow = '';
         
-        // Limpiar la URL al cerrar el modal
+        // Limpiar la URL al cerrar el modal pero mantener #catalogo
         const url = new URL(window.location.href);
         url.searchParams.delete('linkid');
+        // Mantener #catalogo si estamos en esa sección
+        if (window.location.hash.includes('catalogo')) {
+            url.hash = 'catalogo';
+        }
         window.history.pushState({}, '', url.toString());
     }
 });
@@ -296,9 +316,13 @@ document.addEventListener('keydown', function(event) {
             modal.classList.add('oculto');
             document.body.style.overflow = '';
             
-            // Limpiar la URL al cerrar el modal
+            // Limpiar la URL al cerrar el modal pero mantener #catalogo
             const url = new URL(window.location.href);
             url.searchParams.delete('linkid');
+            // Mantener #catalogo si estamos en esa sección
+            if (window.location.hash.includes('catalogo')) {
+                url.hash = 'catalogo';
+            }
             window.history.pushState({}, '', url.toString());
         }
     }
