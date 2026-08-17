@@ -882,6 +882,10 @@ body {
     .categorias-select {
         width: 100%;
     }
+    
+    .localidades-select {
+        width: 100%;
+    }
 
 
   .productos {
