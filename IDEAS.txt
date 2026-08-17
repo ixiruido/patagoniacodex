@@ -2,7 +2,9 @@
 
 Abogado, Salud (Ver margenes, poner botón de compartir, alinear cards)
 Cabaña, hotel, (Ver margenes, poner popout q coincida y botón de compartir (id, 5 fotos), alinear cards)
+
 Corralón, Restaurante (alinear cards, boton de compartir, popout q coincida, menu)
+
 Autos, inmobiliara (ids, y mas fotos, alinear cards, boton de compartir, popout q coincida)
 Plataforma de Video Curso, landing page (info de resumen en cursos no disponible, index, instrucciones, opcino compartir para cuando quieren pagar una clase nueva) (landing completo con popout y compattir)
 
