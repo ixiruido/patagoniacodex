@@ -36,23 +36,23 @@
             Nuestro objetivo es ser tu aliado confiable en cada etapa de tu construcción, 
             desde la planificación hasta la entrega final.</p></div></section>
 
-<section class="services" id="servicios"><h2>Nuestros Servicios</h2><div class="services-grid">
-            <div class="card reveal"><h3>🏗️ Materiales de Construcción</h3>
+<section class="services reveal" id="servicios"><h2>Nuestros Servicios</h2><div class="services-grid">
+            <div class="card"><h3>🏗️ Materiales de Construcción</h3>
 
 <p>Cemento, ladrillos, arena, cal, acero, tejas, pisos, revestimientos y todo lo que necesitas para tu obra.</p></div>
-            <div class="card reveal"><h3>🔧 Ferretería Completa</h3>
+            <div class="card"><h3>🔧 Ferretería Completa</h3>
 
 <p>Herramientas eléctricas y manuales, tornillería, pinturas, sanitarios, cañerías y accesorios.</p></div>
-            <div class="card reveal"><h3>🚚 Reparto y Delivery</h3>
+            <div class="card"><h3>🚚 Reparto y Delivery</h3>
 
 <p>Entregamos en toda la zona con nuestra flota propia. Transporte rápido y seguro para materiales de todo tipo.</p></div>
-            <div class="card reveal"><h3>💵 Métodos de Pago</h3>
+            <div class="card"><h3>💵 Métodos de Pago</h3>
 
 <p>Aceptamos efectivo, tarjetas de crédito y débito, transferencias bancarias y cuentas corrientes para empresas.</p></div>
-            <div class="card reveal"><h3>🛠️ Asesoramiento Técnico</h3>
+            <div class="card"><h3>🛠️ Asesoramiento Técnico</h3>
 
 <p>Equipo especializado para ayudarte a calcular materiales, optimizar costos y resolver dudas técnicas.</p></div>
-            <div class="card reveal"><h3>🏢 Venta Mayorista</h3>
+            <div class="card"><h3>🏢 Venta Mayorista</h3>
 
 <p>Descuentos especiales para constructores, empresas y obras de envergadura. Precios competitivos por volumen.</p></div>
         </div></section>
@@ -65,7 +65,7 @@
         id="catalogoIframe"
         src="./catalogo.html"
         title="Catálogo de productos"
-        loading="lazy">
+        loading="eager">
     </iframe>
 
 </section>
@@ -87,6 +87,7 @@
                 <h2 id="modal-nombre"></h2>
                 <div id="modal-descripcion" class="modal-descripcion"></div>
                 <div id="modal-precio" class="modal-precio"></div>
+                <div id="modal-descuento" class="modal-descuento"></div>
                 <div id="modal-stock" class="modal-stock"></div>
                 <button id="modal-whatsapp" class="modal-whatsapp-btn">
                     Consultar
@@ -113,6 +114,7 @@ function abrirModalProductoPrincipal(producto) {
     const modalNombre = document.getElementById('modal-nombre');
     const modalDescripcion = document.getElementById('modal-descripcion');
     const modalPrecio = document.getElementById('modal-precio');
+    const modalDescuento = document.getElementById('modal-descuento');
     const modalStock = document.getElementById('modal-stock');
     const modalWhatsapp = document.getElementById('modal-whatsapp');
     
@@ -129,7 +131,16 @@ function abrirModalProductoPrincipal(producto) {
     modalDescripcion.textContent = producto.descripcion || '';
     modalPrecio.textContent = producto.precio || '';
     
-    const stock = producto.stock !== 'no';
+    // Mostrar descuento si existe
+    if (producto.descuento) {
+        modalDescuento.textContent = producto.descuento;
+        modalDescuento.style.display = 'block';
+    } else {
+        modalDescuento.style.display = 'none';
+    }
+    
+    // Usar el estado de stock calculado por el catálogo
+    const stock = producto.tieneStock !== false;
     modalStock.textContent = stock ? 'En stock' : 'Sin stock';
     modalStock.className = stock ? 'modal-stock' : 'modal-stock sin-stock';
     

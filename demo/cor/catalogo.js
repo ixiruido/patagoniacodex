@@ -1097,9 +1097,9 @@ function crearProducto(
 
     const estadoStock =
         stock
-            ? ""
+            ? `<div class="stock-indicator"></div>`
             : `
-                <div class="sin-stock">
+                <div class="stock-indicator sin-stock">
                     SIN STOCK
                 </div>
             `;
@@ -1455,6 +1455,7 @@ const modalCategoria = document.getElementById('modal-categoria');
 const modalNombre = document.getElementById('modal-nombre');
 const modalDescripcion = document.getElementById('modal-descripcion');
 const modalPrecio = document.getElementById('modal-precio');
+const modalDescuento = document.getElementById('modal-descuento');
 const modalStock = document.getElementById('modal-stock');
 const modalWhatsapp = document.getElementById('modal-whatsapp');
 
@@ -1471,7 +1472,8 @@ function abrirModalProducto(producto) {
                 producto: {
                     ...producto,
                     whatsappNumero: numeroWhatsapp,
-                    whatsappMensaje: mensajeWhatsapp
+                    whatsappMensaje: mensajeWhatsapp,
+                    tieneStock: tieneStock(producto)
                 }
             }, '*');
             return;
@@ -1493,6 +1495,14 @@ function abrirModalProducto(producto) {
     modalNombre.textContent = producto.nombre || '';
     modalDescripcion.textContent = producto.descripcion || '';
     modalPrecio.textContent = producto.precio || '';
+
+    // Mostrar descuento si existe
+    if (producto.descuento) {
+        modalDescuento.textContent = producto.descuento;
+        modalDescuento.style.display = 'block';
+    } else {
+        modalDescuento.style.display = 'none';
+    }
 
     const stock = tieneStock(producto);
     modalStock.textContent = stock ? 'En stock' : 'Sin stock';
