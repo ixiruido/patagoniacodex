@@ -1,12 +1,12 @@
 :root {
     --bg-dark: #2a2d33;
     --bg-card: #353942;
-    --gold-primary: #c9a227;
-    --gold-hover: #e8c863;
+    --gold-primary: #d4b896;
+    --gold-hover: #e8d4b8;
     --text-light: #f5f0e6;
     --text-muted: #d4c9b8;
-    --font-main: 'Inter', sans-serif;
-    --font-headers: 'Playfair Display', serif;}
+    --font-main: 'Montserrat', sans-serif;
+    --font-headers: 'Merriweather', serif;}
 
 * { margin: 0; padding: 0; box-sizing: border-box;
     scroll-behavior: smooth; font-family: var(--font-main);}
@@ -147,8 +147,9 @@ section { padding: 3rem 8%; }
         border-color: var(--gold-hover);
         background-color: var(--gold-hover);}}
 
-.about {display: flex; gap: 4rem; align-items: center;
-    max-width: 1200px; margin: 0 auto; padding: 6rem 8%;}
+.about {max-width: 1200px; margin: 0 auto; padding: 6rem 8%;}
+.about-header {display: flex; gap: 4rem; align-items: center;
+    margin-bottom: 4rem;}
 .about-img {flex: 1; min-width: 300px;
     max-width: 500px; position: relative;
     overflow: visible;
@@ -164,6 +165,8 @@ section { padding: 3rem 8%; }
     text-transform: uppercase; letter-spacing: 2px;}
 .about-content p {color: var(--text-muted);
     margin-bottom: 1.5rem; font-size: 1.05rem;}
+
+.professionals-container {margin-top: 0;}
 
 .professionals-container {margin-top: 3rem;}
 .professionals-container h3 {font-size: 1.8rem;
@@ -389,7 +392,7 @@ a[href^="tel"] {color: inherit; text-decoration: none;}
     .card p { font-size: 1.1rem; color: #c4c8d5; }
     .about-content h2 { font-size: 2.1rem; }
     .about-content p { font-size: 1.15rem; color: #c4c8d5; line-height: 1.7; }
-    .about { flex-direction: column; gap: 2.5rem; }
+    .about-header {flex-direction: column; gap: 2.5rem;}
     .about-img { max-width: 320px; margin: 0 auto; aspect-ratio: 1.1 / 1; }
     .card:active,
     .contact-card:active {transform: scale(0.98);border-color: rgba(212, 175, 55, 0.6);
