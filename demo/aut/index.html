@@ -262,7 +262,7 @@
                             modalPrecio.textContent = productoFresco.precio || producto.precio || '';
                             
                             const stock = String(productoFresco.stock || '').trim().toLowerCase() !== 'no';
-                            modalStock.textContent = stock ? 'Disponible' : 'Vendido';
+                            modalStock.textContent = stock ? 'Disponible' : 'Reservado';
                             modalStock.className = stock ? 'modal-stock' : 'modal-stock sin-stock';
                             
                             // Actualizar también la información del vehículo
