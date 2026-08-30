@@ -23,7 +23,7 @@ jobs:
 
       - name: Descargar JSON desde Google Apps Script
         run: |
-          curl -fL "https://script.google.com/macros/s/AKfycbw65vn4wBJ6h1qFI4_Jb_APC7Ug3gKdaMzOra2yLb_sZCIl8ZgON7iVeuA-you5pcLrFA/exec" -o avisos_nuevo.json
+          curl -fL "https://script.google.com/macros/s/AKfycbxIDeM_j4FZ-WT68Fa7PUVZ6dVW7Tr0uMI3CKhLGbOSo6K_obHW7qfpctCKrbYXq52FUQ/exec" -o avisos_nuevo.json
 
       - name: Mostrar respuesta recibida
         run: |
