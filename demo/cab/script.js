@@ -60,7 +60,7 @@ window.addEventListener('scroll', () => {let current = '';
 const urlScript = "./cabanas.json";
 
 async function loadCabinData() {
-    const cardElement = document.getElementById("cabin-card");
+    const globalLoader = document.getElementById("global-loader");
     try {
         // Agregar timestamp para evitar cache
         const urlWithTimestamp = `${urlScript}?t=${new Date().getTime()}`;
@@ -78,68 +78,111 @@ async function loadCabinData() {
         } else {
             // Datos de ejemplo por defecto
             processCabinData({
-                nombre: "Cabaña del Bosque",
-                precioBase: "$150/noche",
-                estado: "Disponible",
-                ultimaActualizacion: "Hoy",
-                whatsappLink: "https://wa.me",
-                descuento: "",
-                aviso: ""
+                cabanas: [{
+                    nombre: "Cabaña del Bosque",
+                    precioBase: "$150/noche",
+                    estado: "Disponible",
+                    ultimaActualizacion: "Hoy",
+                    whatsappLink: "https://wa.me",
+                    descuento: "",
+                    aviso: ""
+                }]
             });
         }
     } finally {
-        // Quitamos la pantalla de carga e iniciamos la animación de la tarjeta
-        if (cardElement) {
-            cardElement.classList.add("loaded");
+        // Quitamos la pantalla de carga global
+        if (globalLoader) {
+            globalLoader.style.display = "none";
         }
     }
 }
 
 function processCabinData(data) {
-    // 1. Asignar los textos básicos de las celdas
-    document.getElementById("cabin-title").textContent = data.nombre || "Cabaña";
-    document.getElementById("cabin-price").textContent = data.precioBase;
-    document.getElementById("cabin-update").textContent = data.ultimaActualizacion;
-
-    // 2. Control de Disponibilidad e Interfaz del Botón de WhatsApp
-    const statusBadge = document.getElementById("cabin-status");
-    const whatsappBtn = document.getElementById("whatsapp-btn");
+    // Verificar si data contiene un array de cabañas
+    const cabanas = data.cabanas || (Array.isArray(data) ? data : [data]);
     
-    statusBadge.textContent = data.estado;
-
-    if (data.estado && data.estado.toLowerCase() === "disponible") {
-        statusBadge.className = "status-badge status-disponible";
+    // Obtener el contenedor de tarjetas
+    const container = document.querySelector('.cabin-card-container');
+    
+    // Limpiar el contenedor actual
+    container.innerHTML = '';
+    
+    // Generar tarjetas para cada cabaña
+    cabanas.forEach((cabin, index) => {
+        // Crear la tarjeta HTML
+        const cardHTML = `
+            <div class="cabin-card loading" id="cabin-card-${index}">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 id="cabin-title-${index}">${cabin.nombre || "Cabaña"}</h3>
+                        <span class="status-badge" id="cabin-status-${index}">${cabin.estado || "-"}</span>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="price-section">
+                            <p class="price-label">Precio por día</p>
+                            <p class="price-value" id="cabin-price-${index}">${cabin.precioBase || "-"}</p>
+                            <p class="discount-tag" id="cabin-discount-${index}" style="display: none;"></p>
+                        </div>
+                        
+                        <div class="notice-box" id="cabin-notice-box-${index}" style="display: none;">
+                            <strong>⚠️ Aviso:</strong> <span id="cabin-notice-${index}">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <a href="#" id="whatsapp-btn-${index}" class="btn-whatsapp" target="_blank">
+                            💬 Reservar por WhatsApp
+                        </a>
+                        <p class="update-text">Actualizado: <span id="cabin-update-${index}">${cabin.ultimaActualizacion || "-"}</span></p>
+                    </div>
+                </div>
+            </div>
+        `;
         
-        // CORRECCIÓN: Asignamos DIRECTAMENTE el link limpio que ya construyó tu API
-        whatsappBtn.href = data.whatsappLink; 
+        // Agregar la tarjeta al contenedor
+        container.innerHTML += cardHTML;
         
-        // Removemos la clase de deshabilitado si quedó guardada de un estado anterior
-        whatsappBtn.classList.remove("btn-disabled");
-        whatsappBtn.innerHTML = "💬 Reservar por WhatsApp";
-    } else {
-        statusBadge.className = "status-badge status-reservado";
-        whatsappBtn.href = "#";
-        whatsappBtn.classList.add("btn-disabled");
-        whatsappBtn.innerHTML = "❌ No disponible para reserva";
-    }
-
-    // 3. Renderizado de Descuentos
-    const discountTag = document.getElementById("cabin-discount");
-    if (data.descuento && data.descuento.trim() !== "" && data.descuento !== "0" && data.descuento !== "0%") {
-        discountTag.textContent = `🔥 ¡Descuento! ${data.descuento}`;
-        discountTag.style.display = "inline-block";
-    } else {
-        discountTag.style.display = "none";
-    }
-
-    // 4. Renderizado de Avisos Especiales
-    const noticeBox = document.getElementById("cabin-notice-box");
-    if (data.aviso && data.aviso.trim() !== "") {
-        document.getElementById("cabin-notice").textContent = data.aviso;
-        noticeBox.style.display = "block";
-    } else {
-        noticeBox.style.display = "none";
-    }
+        // Configurar cada tarjeta individualmente
+        const statusBadge = document.getElementById(`cabin-status-${index}`);
+        const whatsappBtn = document.getElementById(`whatsapp-btn-${index}`);
+        const discountTag = document.getElementById(`cabin-discount-${index}`);
+        const noticeBox = document.getElementById(`cabin-notice-box-${index}`);
+        
+        // Control de Disponibilidad e Interfaz del Botón de WhatsApp
+        if (cabin.estado && cabin.estado.toLowerCase() === "disponible") {
+            statusBadge.className = "status-badge status-disponible";
+            whatsappBtn.href = cabin.whatsappLink || "#";
+            whatsappBtn.classList.remove("btn-disabled");
+            whatsappBtn.innerHTML = "💬 Reservar por WhatsApp";
+        } else {
+            statusBadge.className = "status-badge status-reservado";
+            whatsappBtn.href = "#";
+            whatsappBtn.classList.add("btn-disabled");
+            whatsappBtn.innerHTML = "❌ No disponible para reserva";
+        }
+        
+        // Renderizado de Descuentos
+        if (cabin.descuento && cabin.descuento.trim() !== "" && cabin.descuento !== "0" && cabin.descuento !== "0%") {
+            discountTag.textContent = `🔥 ¡Descuento! ${cabin.descuento}`;
+            discountTag.style.display = "inline-block";
+        }
+        
+        // Renderizado de Avisos Especiales
+        if (cabin.aviso && cabin.aviso.trim() !== "") {
+            document.getElementById(`cabin-notice-${index}`).textContent = cabin.aviso;
+            noticeBox.style.display = "block";
+        }
+        
+        // Quitar la clase de carga
+        setTimeout(() => {
+            const cardElement = document.getElementById(`cabin-card-${index}`);
+            if (cardElement) {
+                cardElement.classList.remove("loading");
+                cardElement.classList.add("loaded");
+            }
+        }, 100 + (index * 200));
+    });
 }
 
 // Actualizar datos cada 30 segundos para reflejar cambios en Google Sheets

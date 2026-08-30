@@ -135,39 +135,10 @@
         <h2>Disponibilidad y Precios</h2>
         <p class="cabin-subtitle">Consulta precios actualizados</p>
         <div class="cabin-card-container reveal">
-            <div class="cabin-card loading" id="cabin-card">
-                <!-- Spinner de carga inicial -->
-                <div class="card-loader">
-                    <div class="spinner"></div>
-                    <p>Cargando alojamiento...</p>
-                </div>
-
-                <!-- Contenido de la tarjeta (oculto durante la carga) -->
-                <div class="card-content">
-                    <div class="card-header">
-                        <h3 id="cabin-title">Cabaña</h3>
-                        <span class="status-badge" id="cabin-status">-</span>
-                    </div>
-                    
-                    <div class="card-body">
-                        <div class="price-section">
-                            <p class="price-label">Precio por día</p>
-                            <p class="price-value" id="cabin-price">-</p>
-                            <p class="discount-tag" id="cabin-discount"></p>
-                        </div>
-                        
-                        <div class="notice-box" id="cabin-notice-box">
-                            <strong>⚠️ Aviso:</strong> <span id="cabin-notice">-</span>
-                        </div>
-                    </div>
-                    
-                    <div class="card-footer">
-                        <a href="#" id="whatsapp-btn" class="btn-whatsapp" target="_blank">
-                            💬 Reservar por WhatsApp
-                        </a>
-                        <p class="update-text">Actualizado: <span id="cabin-update">-</span></p>
-                    </div>
-                </div>
+            <!-- Las tarjetas de cabañas se generarán dinámicamente desde JavaScript -->
+            <div class="card-loader" id="global-loader">
+                <div class="spinner"></div>
+                <p>Cargando alojamientos...</p>
             </div>
         </div>
     </section>

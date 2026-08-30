@@ -305,11 +305,13 @@ section { padding: 3rem 8%; }
 }
 
 .cabin-card-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 2rem;
     justify-content: center;
-    align-items: center;
-    max-width: 400px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 20px;
 }
 
 .cabin-iframe {
@@ -423,7 +425,7 @@ a[href^="tel"] {color: inherit; text-decoration: none;}
 .cabin-card {
     font-family: 'Inter', sans-serif;
     width: 100%;
-    max-width: 360px;
+    max-width: 100%;
     background: rgba(45, 74, 45, 0.6);
     border-radius: 6px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -431,6 +433,7 @@ a[href^="tel"] {color: inherit; text-decoration: none;}
     border: 1px solid rgba(212, 184, 150, 0.25);
     position: relative;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    justify-self: center;
 }
 
 .cabin-card:hover {
@@ -451,8 +454,33 @@ a[href^="tel"] {color: inherit; text-decoration: none;}
     font-size: 0.9rem;
 }
 
+/* Loader global */
+#global-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    color: #c4b8a8;
+    font-size: 1rem;
+    width: 100%;
+    grid-column: 1 / -1;
+}
+
 .cabin-card.loaded .card-content { display: block; animation: fadeIn 0.5s ease-out; }
 .cabin-card.loaded .card-loader { display: none; }
+
+/* Estilos para tarjetas generadas dinámicamente */
+.cabin-card-container .cabin-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.cabin-card-container .cabin-card.loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
 
 /* Spinner animación */
 .spinner {
