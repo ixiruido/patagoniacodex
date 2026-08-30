@@ -12,7 +12,9 @@ permissions:
   contents: write
 
 jobs:
+
   actualizar:
+
     runs-on: ubuntu-latest
 
     steps:
@@ -31,11 +33,12 @@ jobs:
 
       - name: Descargar JSON desde Google Apps Script
         run: |
+
           curl -fL \
-            --retry 5 \ 
-            --retry-delay 5 \ 
+            --retry 5 \
+            --retry-delay 5 \
             --retry-all-errors \
-            "https://script.google.com/macros/s/AKfycbxHILBf5tPgE_fuW16bZ4CisfplPXKES8KwCwJvofOAqs6rUGSO98n1wxLQi_0K2lQv/exec" \
+            "https://script.google.com/macros/s/AKfycbx1ylo0WBgrI29lg2tOHh2bWxrc_0p1doqFcG7rZMs-JdQy96iZ5g-cajphbX4Fpuig/exec" \
             -o catalogo_nuevo.json
 
 
@@ -45,6 +48,7 @@ jobs:
 
       - name: Mostrar respuesta recibida
         run: |
+
           echo "Tamaño:"
           wc -c catalogo_nuevo.json
 
@@ -62,7 +66,11 @@ jobs:
 
       - name: Validar JSON
         run: |
-          python -m json.tool catalogo_nuevo.json > /dev/null
+
+          python -m json.tool \
+            catalogo_nuevo.json \
+            > /dev/null
+
           echo "JSON válido."
 
 
@@ -72,7 +80,9 @@ jobs:
 
       - name: Preparar carpetas
         run: |
+
           TARGET_DIR="demo/${{ github.event.inputs.demo_target }}"
+
           IMAGE_DIR="$TARGET_DIR/imagenes"
 
           mkdir -p "$TARGET_DIR"
@@ -81,102 +91,165 @@ jobs:
           echo "TARGET_DIR=$TARGET_DIR" >> "$GITHUB_ENV"
           echo "IMAGE_DIR=$IMAGE_DIR" >> "$GITHUB_ENV"
 
-          echo "Carpeta destino: $TARGET_DIR"
-          echo "Carpeta imágenes: $IMAGE_DIR"
+          echo "Carpeta destino:"
+          echo "$TARGET_DIR"
+
+          echo "Carpeta imágenes:"
+          echo "$IMAGE_DIR"
 
 
       # ==========================================
-      # 6. DESCARGAR IMÁGENES
+      # 6. DESCARGAR Y VERSIONAR IMÁGENES
       # ==========================================
 
-      - name: Descargar imágenes
+      - name: Descargar y versionar imágenes
         run: |
+
           python << 'PY'
+
           import json
           import os
+          import hashlib
           import subprocess
           import sys
+          import mimetypes
+          import glob
+
+
+          # --------------------------------------
+          # LEER JSON
+          # --------------------------------------
 
           with open(
               "catalogo_nuevo.json",
               "r",
               encoding="utf-8"
           ) as f:
+
               data = json.load(f)
 
-          vehiculos = data.get("vehiculos", [])
 
-          image_dir = os.environ["IMAGE_DIR"]
+          vehiculos = data.get(
+              "vehiculos",
+              []
+          )
 
-          print(f"Vehículos encontrados: {len(vehiculos)}")
+
+          image_dir = os.environ[
+              "IMAGE_DIR"
+          ]
+
+
+          print(
+              f"Vehículos encontrados: {len(vehiculos)}"
+          )
+
+
+          # --------------------------------------
+          # PROCESAR CADA VEHÍCULO
+          # --------------------------------------
 
           for vehiculo in vehiculos:
 
               nombre = str(
-                  vehiculo.get("nombre", "")
+                  vehiculo.get(
+                      "nombre",
+                      ""
+                  )
               )
 
+
               fuente = str(
-                  vehiculo.get("fotoFuente", "")
+                  vehiculo.get(
+                      "fotoFuente",
+                      ""
+                  )
               ).strip()
 
-              destino = str(
-                  vehiculo.get("foto", "")
+
+              destino_base = str(
+                  vehiculo.get(
+                      "foto",
+                      ""
+                  )
               ).strip()
+
 
               # ----------------------------------
               # SIN IMAGEN
               # ----------------------------------
 
-              if not fuente or not destino:
+              if not fuente:
+
                   print(
                       f"Sin imagen: {nombre}"
                   )
+
+                  vehiculo["foto"] = ""
+
                   continue
 
+
+              if not destino_base:
+
+                  print(
+                      f"Sin destino de imagen: {nombre}"
+                  )
+
+                  vehiculo["foto"] = ""
+
+                  continue
+
+
               # ----------------------------------
-              # NOMBRE DEL ARCHIVO
+              # NOMBRE BASE
               # ----------------------------------
 
-              archivo = os.path.basename(destino)
-
-              ruta = os.path.join(
-                  image_dir,
-                  archivo
+              nombre_archivo_base = os.path.basename(
+                  destino_base
               )
+
+
+              # ----------------------------------
+              # DESCARGAR A ARCHIVO TEMPORAL
+              # ----------------------------------
+
+              temporal = os.path.join(
+                  image_dir,
+                  nombre_archivo_base + ".tmp"
+              )
+
 
               print(
-                  f"Descargando {archivo} para: {nombre}"
+                  f"Descargando imagen de: {nombre}"
               )
 
-              # ----------------------------------
-              # DESCARGAR IMAGEN
-              # ----------------------------------
 
               resultado = subprocess.run(
+
                   [
                       "curl",
                       "-fL",
                       "--retry",
-                      "3",
+                      "5",
                       "--retry-delay",
-                      "2",
+                      "3",
+                      "--retry-all-errors",
                       "-o",
-                      ruta,
+                      temporal,
                       fuente
                   ],
+
                   capture_output=True,
+
                   text=True
               )
 
-              # ----------------------------------
-              # COMPROBAR DESCARGA
-              # ----------------------------------
 
               if resultado.returncode != 0:
 
                   print(
-                      f"ERROR descargando {archivo}"
+                      "ERROR descargando imagen:"
                   )
 
                   print(
@@ -185,78 +258,298 @@ jobs:
 
                   sys.exit(1)
 
+
               # ----------------------------------
               # COMPROBAR ARCHIVO
               # ----------------------------------
 
               if (
-                  not os.path.exists(ruta)
-                  or os.path.getsize(ruta) == 0
+                  not os.path.exists(temporal)
+                  or os.path.getsize(temporal) == 0
               ):
 
                   print(
-                      f"ERROR: imagen vacía: {archivo}"
+                      f"Imagen vacía: {nombre}"
                   )
 
                   sys.exit(1)
 
-              print(
-                  f"OK: {archivo} "
-                  f"({os.path.getsize(ruta)} bytes)"
+
+              # ----------------------------------
+              # DETECTAR TIPO DE IMAGEN
+              # ----------------------------------
+
+              resultado_tipo = subprocess.run(
+
+                  [
+                      "file",
+                      "--brief",
+                      "--mime-type",
+                      temporal
+                  ],
+
+                  capture_output=True,
+
+                  text=True
               )
 
-          print("Descarga de imágenes terminada.")
 
-          PY
+              mime = (
+                  resultado_tipo.stdout
+                  .strip()
+                  .lower()
+              )
 
 
-      # ==========================================
-      # 7. PREPARAR JSON FINAL
-      # ==========================================
+              extensiones = {
 
-      - name: Preparar JSON final
-        run: |
-          python << 'PY'
-          import json
+                  "image/jpeg":
+                      ".jpg",
 
-          archivo = "catalogo_nuevo.json"
+                  "image/png":
+                      ".png",
 
-          with open(
-              archivo,
-              "r",
-              encoding="utf-8"
-          ) as f:
-              data = json.load(f)
+                  "image/webp":
+                      ".webp",
 
-          for vehiculo in data.get("vehiculos", []):
+                  "image/gif":
+                      ".gif",
 
-              # fotoFuente solamente se utiliza
-              # durante el workflow para descargar
-              # la imagen desde Google.
+                  "image/bmp":
+                      ".bmp",
+
+                  "image/tiff":
+                      ".tiff"
+
+              }
+
+
+              extension = extensiones.get(
+                  mime,
+                  ".jpg"
+              )
+
+
+              # ----------------------------------
+              # NOMBRE DEFINITIVO
+              # ----------------------------------
+
+              nombre_archivo = (
+                  nombre_archivo_base +
+                  extension
+              )
+
+
+              ruta_final = os.path.join(
+                  image_dir,
+                  nombre_archivo
+              )
+
+
+              # ----------------------------------
+              # ELIMINAR OTRAS EXTENSIONES
+              # ----------------------------------
+              #
+              # Si antes era:
+              #
+              # vehiculo-F2.jpg
+              #
+              # y ahora es PNG:
+              #
+              # vehiculo-F2.png
+              #
+              # eliminamos el jpg anterior.
+              #
+
+              patrones = [
+
+                  os.path.join(
+                      image_dir,
+                      nombre_archivo_base + ".jpg"
+                  ),
+
+                  os.path.join(
+                      image_dir,
+                      nombre_archivo_base + ".jpeg"
+                  ),
+
+                  os.path.join(
+                      image_dir,
+                      nombre_archivo_base + ".png"
+                  ),
+
+                  os.path.join(
+                      image_dir,
+                      nombre_archivo_base + ".webp"
+                  ),
+
+                  os.path.join(
+                      image_dir,
+                      nombre_archivo_base + ".gif"
+                  ),
+
+                  os.path.join(
+                      image_dir,
+                      nombre_archivo_base + ".bmp"
+                  ),
+
+                  os.path.join(
+                      image_dir,
+                      nombre_archivo_base + ".tiff"
+                  )
+
+              ]
+
+
+              for patron in patrones:
+
+                  if os.path.exists(patron):
+
+                      if patron != ruta_final:
+
+                          os.remove(
+                              patron
+                          )
+
+
+              # ----------------------------------
+              # MOVER IMAGEN
+              # ----------------------------------
+
+              os.replace(
+                  temporal,
+                  ruta_final
+              )
+
+
+              # ----------------------------------
+              # CALCULAR SHA-256
+              # ----------------------------------
+
+              sha256 = hashlib.sha256()
+
+
+              with open(
+                  ruta_final,
+                  "rb"
+              ) as f:
+
+                  while True:
+
+                      bloque = f.read(
+                          1024 * 1024
+                      )
+
+                      if not bloque:
+                          break
+
+                      sha256.update(
+                          bloque
+                      )
+
+
+              hash_completo = sha256.hexdigest()
+
+
+              # Usamos solamente los primeros
+              # 12 caracteres.
+              hash_corto = hash_completo[:12]
+
+
+              # ----------------------------------
+              # RUTA FINAL DEL JSON
+              # ----------------------------------
+
+              ruta_json = (
+                  "imagenes/" +
+                  nombre_archivo +
+                  "?v=" +
+                  hash_corto
+              )
+
+
+              vehiculo["foto"] = ruta_json
+
+
+              print(
+                  f"OK: {nombre_archivo}"
+              )
+
+              print(
+                  f"Hash: {hash_corto}"
+              )
+
+              print(
+                  f"URL JSON: {ruta_json}"
+              )
+
+
+              # ----------------------------------
+              # ELIMINAR URL TEMPORAL
+              # ----------------------------------
 
               vehiculo.pop(
                   "fotoFuente",
                   None
               )
 
+
+          # --------------------------------------
+          # ELIMINAR fotoFuente DE VEHÍCULOS
+          # SIN IMAGEN
+          # --------------------------------------
+
+          for vehiculo in vehiculos:
+
+              vehiculo.pop(
+                  "fotoFuente",
+                  None
+              )
+
+
+          # --------------------------------------
+          # GUARDAR JSON FINAL
+          # --------------------------------------
+
           with open(
-              archivo,
+              "catalogo_nuevo.json",
               "w",
               encoding="utf-8"
           ) as f:
 
               json.dump(
+
                   data,
+
                   f,
+
                   ensure_ascii=False,
+
                   indent=2
+
               )
 
+
           print(
-              "JSON final preparado."
+              "JSON final generado correctamente."
           )
 
           PY
+
+
+      # ==========================================
+      # 7. MOSTRAR JSON FINAL
+      # ==========================================
+
+      - name: Mostrar JSON final
+        run: |
+
+          echo "Primeros 3000 caracteres del JSON final:"
+
+          head -c 3000 \
+            catalogo_nuevo.json
+
+          echo ""
 
 
       # ==========================================
@@ -268,11 +561,10 @@ jobs:
 
           TARGET_FILE="$TARGET_DIR/catalogo.json"
 
+
           echo "Procesando:"
           echo "$TARGET_FILE"
 
-
-          # Si no existe todavía, simplemente lo copiamos.
 
           if [ ! -f "$TARGET_FILE" ]; then
 
@@ -287,11 +579,13 @@ jobs:
             if cmp -s \
               "$TARGET_FILE" \
               "catalogo_nuevo.json"
+
             then
 
               echo "El catálogo no cambió."
 
-              rm catalogo_nuevo.json
+              rm \
+                catalogo_nuevo.json
 
             else
 
@@ -307,35 +601,48 @@ jobs:
 
 
       # ==========================================
-      # 9. ELIMINAR IMÁGENES ANTIGUAS
+      # 9. ELIMINAR IMÁGENES QUE YA NO EXISTEN
       # ==========================================
 
       - name: Eliminar imágenes antiguas
         run: |
+
           python << 'PY'
+
           import json
           import os
           import glob
 
+
           catalogo = os.path.join(
+
               os.environ["TARGET_DIR"],
+
               "catalogo.json"
+
           )
 
-          image_dir = os.environ["IMAGE_DIR"]
+
+          image_dir = os.environ[
+              "IMAGE_DIR"
+          ]
+
 
           with open(
               catalogo,
               "r",
               encoding="utf-8"
           ) as f:
+
               data = json.load(f)
 
-          # --------------------------------------
-          # IMÁGENES ACTUALES
-          # --------------------------------------
 
           imagenes_actuales = set()
+
+
+          # --------------------------------------
+          # OBTENER IMÁGENES UTILIZADAS
+          # --------------------------------------
 
           for vehiculo in data.get(
               "vehiculos",
@@ -349,65 +656,90 @@ jobs:
                   )
               ).strip()
 
-              if foto:
 
-                  imagen = os.path.basename(
-                      foto
-                  )
+              if not foto:
+                  continue
 
-                  imagenes_actuales.add(
-                      imagen
-                  )
+
+              # Eliminar ?v=HASH
+              foto_sin_version = foto.split("?", 1)[0]
+
+
+              imagen = os.path.basename(foto_sin_version)
+
+
+              imagenes_actuales.add(
+                  imagen
+              )
+
 
           print(
               "Imágenes actualmente utilizadas:"
           )
 
+
           for imagen in sorted(
               imagenes_actuales
           ):
+
               print(
-                  f"  {imagen}"
+                  "  " + imagen
               )
 
+
           # --------------------------------------
-          # IMÁGENES EXISTENTES EN GITHUB
+          # TODAS LAS IMÁGENES DE VEHÍCULOS
           # --------------------------------------
 
-          existentes = glob.glob(
+          patrones = [
+
               os.path.join(
                   image_dir,
-                  "vehiculo-F*.jpg"
+                  "vehiculo-F*"
               )
-          )
 
-          print(
-              f"Imágenes existentes: {len(existentes)}"
-          )
+          ]
+
+
+          existentes = []
+
+
+          for patron in patrones:
+
+              existentes.extend(
+                  glob.glob(patron)
+              )
+
 
           # --------------------------------------
-          # ELIMINAR HUÉRFANAS
+          # ELIMINAR ARCHIVOS NO UTILIZADOS
           # --------------------------------------
 
           for archivo in existentes:
 
-              nombre = os.path.basename(
-                  archivo
-              )
+              if archivo.endswith(
+                  ".tmp"
+              ):
+                  continue
+
+
+              nombre = os.path.basename(archivo)
+
 
               if nombre not in imagenes_actuales:
 
                   print(
-                      f"Eliminando imagen antigua: "
-                      f"{nombre}"
+                      "Eliminando imagen antigua: " +
+                      nombre
                   )
 
                   os.remove(
                       archivo
                   )
 
+
           print(
-              "Limpieza de imágenes terminada."
+              "Limpieza terminada."
           )
 
           PY
@@ -423,33 +755,31 @@ jobs:
           git config user.name \
             "github-actions[bot]"
 
+
           git config user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"
 
-
-          # Agregar catálogo e imágenes
 
           git add \
             "$TARGET_DIR"
 
 
-          # ----------------------------------------
-          # COMPROBAR SI HAY CAMBIOS
-          # ----------------------------------------
-
           if git diff --cached --quiet
+
           then
 
             echo "No hay cambios para guardar."
 
           else
 
-            echo "Hay cambios. Creando commit..."
+            echo "Hay cambios."
 
             git commit \
               -m "Actualizar vehículos e imágenes: ${{ github.event.inputs.demo_target }}"
 
+
             git push
+
 
             echo "Cambios enviados correctamente."
 
