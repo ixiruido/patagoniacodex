@@ -1,21 +1,28 @@
 name: Actualizar propiedades
 
 on:
+
   workflow_dispatch:
+
     inputs:
+
       demo_target:
         description: 'Nombre de la subcarpeta de la demo'
         required: true
         default: 'inm'
 
+
 permissions:
+
   contents: write
+
 
 jobs:
 
   actualizar:
 
     runs-on: ubuntu-latest
+
 
     steps:
 
@@ -24,17 +31,19 @@ jobs:
       # ==========================================
 
       - name: Descargar repositorio
+
         uses: actions/checkout@v5
 
 
       # ==========================================
-      # DESCARGAR JSON DESDE GOOGLE APPS SCRIPT
+      # DESCARGAR JSON
       # ==========================================
 
       - name: Descargar JSON desde Google Apps Script
+
         run: |
 
-          URL="https://script.google.com/macros/s/AKfycbzcXtkgMbeHwEClEnAqi35bPKmA4AvucJKRrUTs-77hR3KZALS1ljP5byFtQG792dbbIA/exec"
+          URL="https://script.google.com/macros/s/AKfycbzxOBarAlJ_G4TFpknreYtwDv3RcIKybCIf8UadpipnsrNclSomTlRS1nsZrdLP5IB6vA/exec"
 
           echo "Descargando catálogo..."
 
@@ -43,7 +52,13 @@ jobs:
 
             echo "Intento $i..."
 
-            if curl -fL --retry 3 --retry-delay 2 "$URL" -o catalogo_nuevo.json
+            if curl -fL \
+              --retry 3 \
+              --retry-delay 2 \
+              --connect-timeout 15 \
+              --max-time 60 \
+              "$URL" \
+              -o catalogo_nuevo.json
             then
 
               echo "Descarga correcta."
@@ -51,6 +66,7 @@ jobs:
               break
 
             fi
+
 
             if [ "$i" -eq 5 ]
             then
@@ -60,6 +76,7 @@ jobs:
               exit 1
 
             fi
+
 
             sleep 3
 
@@ -71,9 +88,11 @@ jobs:
       # ==========================================
 
       - name: Mostrar respuesta recibida
+
         run: |
 
           echo "Tamaño:"
+
           wc -c catalogo_nuevo.json
 
           echo ""
@@ -90,11 +109,40 @@ jobs:
       # ==========================================
 
       - name: Validar JSON
+
         run: |
 
-          python -m json.tool catalogo_nuevo.json > /dev/null
+          python -m json.tool \
+            catalogo_nuevo.json \
+            > /dev/null
 
           echo "JSON válido."
+
+
+      # ==========================================
+      # DEFINIR CARPETAS
+      # ==========================================
+
+      - name: Preparar rutas
+
+        run: |
+
+          echo "TARGET_DIR=demo/${{ github.event.inputs.demo_target }}" >> "$GITHUB_ENV"
+
+          echo "IMAGE_DIR=demo/${{ github.event.inputs.demo_target }}/imagenes" >> "$GITHUB_ENV"
+
+          echo "TARGET_FILE=demo/${{ github.event.inputs.demo_target }}/catalogo.json" >> "$GITHUB_ENV"
+
+
+      # ==========================================
+      # CREAR CARPETAS
+      # ==========================================
+
+      - name: Crear carpeta de imágenes
+
+        run: |
+
+          mkdir -p "$IMAGE_DIR"
 
 
       # ==========================================
@@ -102,31 +150,21 @@ jobs:
       # ==========================================
 
       - name: Descargar imágenes
-        env:
-          SHEET_URL: "https://script.google.com/macros/s/AKfycbzT4BcKg8xNPhjJOZJbHJJvYPBeDBYxO9VRLSaiAX5uUZ582Q_OJ5V0aH-XvLyDgXDigA/exec"
+
         run: |
 
           python << 'PY'
 
           import json
           import os
-          import re
-          import subprocess
           import urllib.request
+          import urllib.error
+          import time
+
 
           JSON_FILE = "catalogo_nuevo.json"
 
-          TARGET_DIR = "demo/${{ github.event.inputs.demo_target }}"
-
-          IMAGE_DIR = os.path.join(
-              TARGET_DIR,
-              "imagenes"
-          )
-
-          os.makedirs(
-              IMAGE_DIR,
-              exist_ok=True
-          )
+          IMAGE_DIR = os.environ["IMAGE_DIR"]
 
 
           # ==========================================
@@ -135,270 +173,6 @@ jobs:
 
           with open(
               JSON_FILE,
-              "r",
-              encoding="utf-8"
-          ) as archivo:
-
-              catalogo = json.load(archivo)
-
-
-          propiedades = catalogo.get(
-              "propiedades",
-              []
-          )
-
-
-          print(
-              "Propiedades encontradas:",
-              len(propiedades)
-          )
-
-
-          # ==========================================
-          # OBTENER URL TEMPORAL DE GOOGLE
-          # ==========================================
-
-          sheet_url = os.environ["SHEET_URL"]
-
-
-          try:
-
-              with urllib.request.urlopen(
-                  sheet_url,
-                  timeout=30
-              ) as response:
-
-                  sheet_json = json.loads(
-                      response.read().decode("utf-8")
-                  )
-
-          except Exception as error:
-
-              print(
-                  "No se pudo consultar nuevamente Google:",
-                  error
-              )
-
-              sheet_json = None
-
-
-          # ==========================================
-          # SI EL JSON PRINCIPAL NO TRAE URLS,
-          # OBTENEMOS LAS IMÁGENES DESDE SHEETS
-          # ==========================================
-
-          # En este sistema el nombre de la imagen
-          # depende de la fila:
-          #
-          # propiedad-2.jpg
-          # propiedad-3.jpg
-          # propiedad-4.jpg
-          #
-          # Las imágenes reales se descargan usando
-          # las URLs temporales generadas por Sheets.
-
-
-          if sheet_json:
-
-              propiedades_sheet = sheet_json.get(
-                  "propiedades",
-                  []
-              )
-
-              print(
-                  "Propiedades disponibles para imágenes:",
-                  len(propiedades_sheet)
-              )
-
-
-          # ==========================================
-          # DESCARGAR IMÁGENES
-          # ==========================================
-
-          # NOTA:
-          #
-          # Este bloque busca URLs de imagen que puedan
-          # existir en el JSON recibido.
-          #
-          # Si la imagen no tiene URL descargable,
-          # conserva la imagen existente en GitHub.
-
-
-          for propiedad in propiedades:
-
-              nombre_archivo = propiedad.get(
-                  "foto",
-                  ""
-              )
-
-
-              if not nombre_archivo:
-                  continue
-
-
-              destino = os.path.join(
-                  IMAGE_DIR,
-                  nombre_archivo
-              )
-
-
-              # --------------------------------------
-              # Buscar URL
-              # --------------------------------------
-
-              url = propiedad.get(
-                  "fotoUrl",
-                  ""
-              )
-
-
-              if not url:
-
-                  url = propiedad.get(
-                      "foto",
-                      ""
-                  )
-
-
-              # --------------------------------------
-              # Si no es URL, no descargar
-              # --------------------------------------
-
-              if not isinstance(url, str):
-
-                  continue
-
-
-              if not url.startswith(
-                  "http://"
-              ) and not url.startswith(
-                  "https://"
-              ):
-
-                  continue
-
-
-              print(
-                  "Descargando:",
-                  nombre_archivo
-              )
-
-
-              try:
-
-                  urllib.request.urlretrieve(
-                      url,
-                      destino
-                  )
-
-                  print(
-                      "OK:",
-                      destino
-                  )
-
-              except Exception as error:
-
-                  print(
-                      "ERROR:",
-                      error
-                  )
-
-
-          print(
-              "Proceso de imágenes terminado."
-          )
-
-          PY
-
-
-      # ==========================================
-      # ACTUALIZAR CATÁLOGO
-      # ==========================================
-
-      - name: Actualizar catálogo
-        run: |
-
-          TARGET_DIR="demo/${{ github.event.inputs.demo_target }}"
-
-          TARGET_FILE="$TARGET_DIR/catalogo.json"
-
-
-          echo "Procesando: $TARGET_FILE"
-
-
-          mkdir -p "$TARGET_DIR"
-
-
-          if cmp -s "$TARGET_FILE" "catalogo_nuevo.json"
-          then
-
-            echo "El catálogo no cambió."
-
-            rm catalogo_nuevo.json
-
-          else
-
-            echo "El catálogo cambió."
-
-            mv catalogo_nuevo.json "$TARGET_FILE"
-
-          fi
-
-
-      # ==========================================
-      # ELIMINAR IMÁGENES QUE YA NO EXISTEN
-      # ==========================================
-
-      - name: Limpiar imágenes antiguas
-        run: |
-
-          TARGET_DIR="demo/${{ github.event.inputs.demo_target }}"
-
-          IMAGE_DIR="$TARGET_DIR/imagenes"
-
-
-          if [ ! -d "$IMAGE_DIR" ]
-          then
-
-            echo "No existe carpeta de imágenes."
-
-            exit 0
-
-          fi
-
-
-          python << 'PY'
-
-          import json
-          import os
-          import glob
-
-          TARGET_DIR = "demo/${{ github.event.inputs.demo_target }}"
-
-          IMAGE_DIR = os.path.join(
-              TARGET_DIR,
-              "imagenes"
-          )
-
-          CATALOG_FILE = os.path.join(
-              TARGET_DIR,
-              "catalogo.json"
-          )
-
-
-          if not os.path.exists(
-              CATALOG_FILE
-          ):
-
-              print(
-                  "No existe catálogo."
-              )
-
-              exit(0)
-
-
-          with open(
-              CATALOG_FILE,
               "r",
               encoding="utf-8"
           ) as archivo:
@@ -414,6 +188,225 @@ jobs:
           )
 
 
+          print(
+              "Propiedades:",
+              len(propiedades)
+          )
+
+
+          # ==========================================
+          # DESCARGAR CADA IMAGEN
+          # ==========================================
+
+          for propiedad in propiedades:
+
+              nombre = propiedad.get(
+                  "foto",
+                  ""
+              )
+
+              url = propiedad.get(
+                  "fotoUrl",
+                  ""
+              )
+
+
+              if not nombre:
+
+                  continue
+
+
+              if not url:
+
+                  print(
+                      "Sin imagen:",
+                      nombre
+                  )
+
+                  continue
+
+
+              destino = os.path.join(
+                  IMAGE_DIR,
+                  nombre
+              )
+
+
+              print(
+                  "Descargando:",
+                  nombre
+              )
+
+
+              descargada = False
+
+
+              # --------------------------------------
+              # RETRIES
+              # --------------------------------------
+
+              for intento in range(1, 6):
+
+                  try:
+
+                      request = urllib.request.Request(
+
+                          url,
+
+                          headers={
+                              "User-Agent":
+                                  "Mozilla/5.0"
+                          }
+
+                      )
+
+
+                      with urllib.request.urlopen(
+                          request,
+                          timeout=60
+                      ) as response:
+
+                          contenido =
+                              response.read()
+
+
+                      if not contenido:
+
+                          raise Exception(
+                              "Imagen vacía"
+                          )
+
+
+                      with open(
+                          destino,
+                          "wb"
+                      ) as archivo:
+
+                          archivo.write(
+                              contenido
+                          )
+
+
+                      print(
+                          "OK:",
+                          nombre,
+                          "(",
+                          len(contenido),
+                          "bytes)"
+                      )
+
+
+                      descargada = True
+
+                      break
+
+
+                  except Exception as error:
+
+                      print(
+                          "Error intento",
+                          intento,
+                          "para",
+                          nombre,
+                          ":",
+                          error
+                      )
+
+
+                      if intento < 5:
+
+                          time.sleep(3)
+
+
+              if not descargada:
+
+                  print(
+                      "NO SE PUDO DESCARGAR:",
+                      nombre
+                  )
+
+
+          print(
+              "Descarga de imágenes terminada."
+          )
+
+          PY
+
+
+      # ==========================================
+      # ACTUALIZAR CATÁLOGO
+      # ==========================================
+
+      - name: Actualizar catálogo
+
+        run: |
+
+          mkdir -p "$TARGET_DIR"
+
+
+          mv \
+            catalogo_nuevo.json \
+            "$TARGET_FILE"
+
+
+          echo "Catálogo actualizado:"
+
+
+          ls -lh "$TARGET_FILE"
+
+
+      # ==========================================
+      # LIMPIAR IMÁGENES ANTIGUAS
+      # ==========================================
+
+      - name: Limpiar imágenes antiguas
+
+        run: |
+
+          python << 'PY'
+
+          import json
+          import os
+          import glob
+
+
+          IMAGE_DIR = os.environ["IMAGE_DIR"]
+
+          TARGET_FILE = os.environ["TARGET_FILE"]
+
+
+          if not os.path.exists(
+              TARGET_FILE
+          ):
+
+              print(
+                  "No existe el catálogo."
+              )
+
+              exit(0)
+
+
+          with open(
+              TARGET_FILE,
+              "r",
+              encoding="utf-8"
+          ) as archivo:
+
+              catalogo = json.load(
+                  archivo
+              )
+
+
+          propiedades = catalogo.get(
+              "propiedades",
+              []
+          )
+
+
+          # ==========================================
+          # IMÁGENES QUE DEBERÍAN EXISTIR
+          # ==========================================
+
           imagenes_validas = set()
 
 
@@ -423,6 +416,7 @@ jobs:
                   "foto",
                   ""
               )
+
 
               if foto:
 
@@ -437,6 +431,10 @@ jobs:
           )
 
 
+          # ==========================================
+          # BORRAR SOBRANTES
+          # ==========================================
+
           for archivo in glob.glob(
               os.path.join(
                   IMAGE_DIR,
@@ -444,15 +442,23 @@ jobs:
               )
           ):
 
-              nombre = os.path.basename(
+              if not os.path.isfile(
                   archivo
-              )
+              ):
+
+                  continue
+
+
+              nombre =
+                  os.path.basename(
+                      archivo
+                  )
 
 
               if nombre not in imagenes_validas:
 
                   print(
-                      "Eliminando imagen antigua:",
+                      "Eliminando:",
                       nombre
                   )
 
@@ -460,19 +466,23 @@ jobs:
                       archivo
                   )
 
+
           PY
 
 
       # ==========================================
-      # COMMIT Y PUSH
+      # GUARDAR EN GITHUB
       # ==========================================
 
       - name: Guardar cambios en GitHub
+
         run: |
 
-          git config user.name "github-actions[bot]"
+          git config user.name \
+            "github-actions[bot]"
 
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
 
           git add "$TARGET_DIR"
@@ -485,7 +495,8 @@ jobs:
 
           else
 
-            git commit -m "Actualizar propiedades: ${{ github.event.inputs.demo_target }}"
+            git commit \
+              -m "Actualizar propiedades: ${{ github.event.inputs.demo_target }}"
 
             git push
 
