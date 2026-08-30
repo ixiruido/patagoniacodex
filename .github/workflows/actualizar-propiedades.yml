@@ -1,28 +1,21 @@
 name: Actualizar propiedades
 
 on:
-
   workflow_dispatch:
-
     inputs:
-
       demo_target:
         description: 'Nombre de la subcarpeta de la demo'
         required: true
         default: 'inm'
 
-
 permissions:
-
   contents: write
-
 
 jobs:
 
   actualizar:
 
     runs-on: ubuntu-latest
-
 
     steps:
 
@@ -36,7 +29,22 @@ jobs:
 
 
       # ==========================================
-      # DESCARGAR JSON
+      # DEFINIR RUTAS
+      # ==========================================
+
+      - name: Preparar rutas
+
+        run: |
+
+          echo "TARGET_DIR=demo/${{ github.event.inputs.demo_target }}" >> "$GITHUB_ENV"
+
+          echo "IMAGE_DIR=demo/${{ github.event.inputs.demo_target }}/imagenes" >> "$GITHUB_ENV"
+
+          echo "TARGET_FILE=demo/${{ github.event.inputs.demo_target }}/catalogo.json" >> "$GITHUB_ENV"
+
+
+      # ==========================================
+      # DESCARGAR JSON DESDE GOOGLE
       # ==========================================
 
       - name: Descargar JSON desde Google Apps Script
@@ -71,14 +79,16 @@ jobs:
             if [ "$i" -eq 5 ]
             then
 
-              echo "No se pudo descargar el JSON."
+              echo "ERROR: No se pudo descargar el JSON."
 
               exit 1
 
             fi
 
 
-            sleep 3
+            echo "Esperando antes de volver a intentar..."
+
+            sleep 5
 
           done
 
@@ -97,9 +107,9 @@ jobs:
 
           echo ""
 
-          echo "Primeros 2000 caracteres:"
+          echo "Primeros 3000 caracteres:"
 
-          head -c 2000 catalogo_nuevo.json
+          head -c 3000 catalogo_nuevo.json
 
           echo ""
 
@@ -120,22 +130,7 @@ jobs:
 
 
       # ==========================================
-      # DEFINIR CARPETAS
-      # ==========================================
-
-      - name: Preparar rutas
-
-        run: |
-
-          echo "TARGET_DIR=demo/${{ github.event.inputs.demo_target }}" >> "$GITHUB_ENV"
-
-          echo "IMAGE_DIR=demo/${{ github.event.inputs.demo_target }}/imagenes" >> "$GITHUB_ENV"
-
-          echo "TARGET_FILE=demo/${{ github.event.inputs.demo_target }}/catalogo.json" >> "$GITHUB_ENV"
-
-
-      # ==========================================
-      # CREAR CARPETAS
+      # CREAR CARPETA DE IMÁGENES
       # ==========================================
 
       - name: Crear carpeta de imágenes
@@ -158,7 +153,6 @@ jobs:
           import json
           import os
           import urllib.request
-          import urllib.error
           import time
 
 
@@ -189,13 +183,13 @@ jobs:
 
 
           print(
-              "Propiedades:",
+              "Cantidad de propiedades:",
               len(propiedades)
           )
 
 
           # ==========================================
-          # DESCARGAR CADA IMAGEN
+          # PROCESAR CADA PROPIEDAD
           # ==========================================
 
           for propiedad in propiedades:
@@ -211,20 +205,26 @@ jobs:
               )
 
 
-              if not nombre:
+              # --------------------------------------
+              # SI NO TIENE IMAGEN
+              # --------------------------------------
+
+              if not nombre or not url:
+
+                  propiedad["foto"] = ""
+
+
+                  if "fotoUrl" in propiedad:
+
+                      del propiedad["fotoUrl"]
+
 
                   continue
 
 
-              if not url:
-
-                  print(
-                      "Sin imagen:",
-                      nombre
-                  )
-
-                  continue
-
+              # --------------------------------------
+              # RUTA DESTINO
+              # --------------------------------------
 
               destino = os.path.join(
                   IMAGE_DIR,
@@ -232,22 +232,38 @@ jobs:
               )
 
 
+              print("")
               print(
-                  "Descargando:",
+                  "================================"
+              )
+
+              print(
+                  "Imagen:",
                   nombre
+              )
+
+              print(
+                  "URL:",
+                  url
               )
 
 
               descargada = False
 
 
-              # --------------------------------------
-              # RETRIES
-              # --------------------------------------
+              # ======================================
+              # REINTENTAR HASTA 5 VECES
+              # ======================================
 
               for intento in range(1, 6):
 
                   try:
+
+                      print(
+                          "Intento:",
+                          intento
+                      )
+
 
                       request = urllib.request.Request(
 
@@ -272,9 +288,13 @@ jobs:
                       if not contenido:
 
                           raise Exception(
-                              "Imagen vacía"
+                              "La imagen está vacía."
                           )
 
+
+                      # --------------------------------
+                      # GUARDAR IMAGEN
+                      # --------------------------------
 
                       with open(
                           destino,
@@ -287,11 +307,12 @@ jobs:
 
 
                       print(
-                          "OK:",
-                          nombre,
-                          "(",
-                          len(contenido),
-                          "bytes)"
+                          "Imagen descargada correctamente."
+                      )
+
+                      print(
+                          "Bytes:",
+                          len(contenido)
                       )
 
 
@@ -303,37 +324,102 @@ jobs:
                   except Exception as error:
 
                       print(
-                          "Error intento",
-                          intento,
-                          "para",
-                          nombre,
-                          ":",
+                          "ERROR:",
                           error
                       )
 
 
                       if intento < 5:
 
-                          time.sleep(3)
+                          print(
+                              "Esperando 5 segundos..."
+                          )
+
+                          time.sleep(5)
 
 
-              if not descargada:
+              # ======================================
+              # ACTUALIZAR JSON
+              # ======================================
+
+              if descargada:
+
+                  propiedad["foto"] = (
+                      "imagenes/" + nombre
+                  )
+
+              else:
 
                   print(
-                      "NO SE PUDO DESCARGAR:",
+                      "ADVERTENCIA: No se pudo descargar:",
                       nombre
                   )
 
+                  propiedad["foto"] = ""
+
+
+              # --------------------------------------
+              # ELIMINAR URL TEMPORAL
+              # --------------------------------------
+
+              if "fotoUrl" in propiedad:
+
+                  del propiedad["fotoUrl"]
+
+
+          # ==========================================
+          # GUARDAR JSON MODIFICADO
+          # ==========================================
+
+          with open(
+              JSON_FILE,
+              "w",
+              encoding="utf-8"
+          ) as archivo:
+
+              json.dump(
+                  catalogo,
+                  archivo,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+
+          print("")
+          print(
+              "================================"
+          )
 
           print(
-              "Descarga de imágenes terminada."
+              "JSON actualizado."
+          )
+
+          print(
+              "Las URLs temporales fueron eliminadas."
+          )
+
+          print(
+              "Las fotos ahora apuntan a /imagenes/."
           )
 
           PY
 
 
       # ==========================================
-      # ACTUALIZAR CATÁLOGO
+      # MOSTRAR JSON FINAL
+      # ==========================================
+
+      - name: Mostrar JSON final
+
+        run: |
+
+          echo "Contenido final de catalogo.json:"
+
+          cat catalogo_nuevo.json
+
+
+      # ==========================================
+      # ACTUALIZAR CATALOGO
       # ==========================================
 
       - name: Actualizar catálogo
@@ -342,14 +428,12 @@ jobs:
 
           mkdir -p "$TARGET_DIR"
 
-
           mv \
             catalogo_nuevo.json \
             "$TARGET_FILE"
 
 
           echo "Catálogo actualizado:"
-
 
           ls -lh "$TARGET_FILE"
 
@@ -374,6 +458,10 @@ jobs:
           TARGET_FILE = os.environ["TARGET_FILE"]
 
 
+          # ==========================================
+          # VERIFICAR CATÁLOGO
+          # ==========================================
+
           if not os.path.exists(
               TARGET_FILE
           ):
@@ -384,6 +472,10 @@ jobs:
 
               exit(0)
 
+
+          # ==========================================
+          # LEER CATALOGO
+          # ==========================================
 
           with open(
               TARGET_FILE,
@@ -403,7 +495,7 @@ jobs:
 
 
           # ==========================================
-          # IMÁGENES QUE DEBERÍAN EXISTIR
+          # OBTENER IMÁGENES VÁLIDAS
           # ==========================================
 
           imagenes_validas = set()
@@ -419,27 +511,51 @@ jobs:
 
               if foto:
 
-                  imagenes_validas.add(
+                  # Solo guardar el nombre
+                  # imagenes/propiedad-2.jpg
+                  # -> propiedad-2.jpg
+
+                  nombre = os.path.basename(
                       foto
                   )
 
 
+                  imagenes_validas.add(
+                      nombre
+                  )
+
+
           print(
-              "Imágenes válidas:",
-              imagenes_validas
+              "Imágenes que deben existir:"
           )
 
+          for imagen in sorted(
+              imagenes_validas
+          ):
+
+              print(
+                  "-",
+                  imagen
+              )
+
 
           # ==========================================
-          # BORRAR SOBRANTES
+          # BUSCAR ARCHIVOS ACTUALES
           # ==========================================
 
-          for archivo in glob.glob(
+          archivos = glob.glob(
               os.path.join(
                   IMAGE_DIR,
                   "*"
               )
-          ):
+          )
+
+
+          # ==========================================
+          # ELIMINAR SOBRANTES
+          # ==========================================
+
+          for archivo in archivos:
 
               if not os.path.isfile(
                   archivo
@@ -448,13 +564,15 @@ jobs:
                   continue
 
 
-              nombre = os.path.basename(archivo)
+              nombre = os.path.basename(
+                  archivo
+              )
 
 
               if nombre not in imagenes_validas:
 
                   print(
-                      "Eliminando:",
+                      "Eliminando imagen antigua:",
                       nombre
                   )
 
@@ -463,11 +581,32 @@ jobs:
                   )
 
 
+          print(
+              "Limpieza de imágenes terminada."
+          )
+
           PY
 
 
       # ==========================================
-      # GUARDAR EN GITHUB
+      # MOSTRAR CAMBIOS
+      # ==========================================
+
+      - name: Mostrar cambios
+
+        run: |
+
+          echo "================================="
+
+          echo "CAMBIOS DETECTADOS"
+
+          echo "================================="
+
+          git status --short
+
+
+      # ==========================================
+      # GUARDAR CAMBIOS EN GITHUB
       # ==========================================
 
       - name: Guardar cambios en GitHub
@@ -477,12 +616,19 @@ jobs:
           git config user.name \
             "github-actions[bot]"
 
+
           git config user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"
 
 
+          # Agregar catálogo e imágenes
+
           git add "$TARGET_DIR"
 
+
+          # ==========================================
+          # COMPROBAR SI HAY CAMBIOS
+          # ==========================================
 
           if git diff --cached --quiet
           then
@@ -491,9 +637,14 @@ jobs:
 
           else
 
+            echo "Hay cambios."
+
             git commit \
               -m "Actualizar propiedades: ${{ github.event.inputs.demo_target }}"
 
+
             git push
+
+            echo "Cambios enviados a GitHub."
 
           fi
