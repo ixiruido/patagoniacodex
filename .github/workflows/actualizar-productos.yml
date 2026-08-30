@@ -50,6 +50,7 @@ jobs:
             then
 
               echo "Descarga correcta."
+
               break
 
             fi
@@ -70,7 +71,7 @@ jobs:
 
 
       # ==========================================
-      # MOSTRAR JSON
+      # MOSTRAR RESPUESTA RECIBIDA
       # ==========================================
 
       - name: Mostrar respuesta recibida
@@ -103,22 +104,26 @@ jobs:
 
 
       # ==========================================
-      # DESCARGAR Y PROCESAR IMÁGENES
+      # DESCARGAR IMÁGENES
       # ==========================================
 
       - name: Descargar imágenes
         env:
           DEMO_TARGET: ${{ github.event.inputs.demo_target }}
+
         run: |
 
           python << 'PY'
 
           import json
           import os
-          import re
-          import shutil
+          import time
           import urllib.request
-          import urllib.error
+
+
+          # ==========================================
+          # CONFIGURACIÓN
+          # ==========================================
 
           JSON_FILE = "catalogo_nuevo.json"
 
@@ -126,7 +131,13 @@ jobs:
 
           IMAGE_DIR = f"demo/{DEMO}/imagenes"
 
-          os.makedirs(IMAGE_DIR, exist_ok=True)
+
+          # Crear carpeta de imágenes
+
+          os.makedirs(
+              IMAGE_DIR,
+              exist_ok=True
+          )
 
 
           # ==========================================
@@ -154,7 +165,7 @@ jobs:
 
 
           # ==========================================
-          # FUNCIONES
+          # FUNCIÓN: OBTENER EXTENSIÓN
           # ==========================================
 
           def extension_desde_url(url):
@@ -162,11 +173,14 @@ jobs:
               if not url:
                   return ".jpg"
 
+
               url_limpia = url.split("?")[0]
+
 
               extension = os.path.splitext(
                   url_limpia
               )[1].lower()
+
 
               if extension in [
                   ".jpg",
@@ -178,24 +192,30 @@ jobs:
 
                   return extension
 
+
               return ".jpg"
 
+
+          # ==========================================
+          # FUNCIÓN: DESCARGAR IMAGEN
+          # ==========================================
 
           def descargar_imagen(url, destino):
 
               if not url:
                   return False
 
+
               request = urllib.request.Request(
 
                   url,
 
                   headers={
-                      "User-Agent":
-                      "Mozilla/5.0"
+                      "User-Agent": "Mozilla/5.0"
                   }
 
               )
+
 
               try:
 
@@ -204,20 +224,26 @@ jobs:
                       timeout=60
                   ) as response:
 
-                      contenido =
-                          response.read()
+                      contenido = response.read()
+
 
                   if not contenido:
+
                       return False
+
 
                   with open(
                       destino,
                       "wb"
                   ) as f:
 
-                      f.write(contenido)
+                      f.write(
+                          contenido
+                      )
+
 
                   return True
+
 
               except Exception as error:
 
@@ -229,16 +255,21 @@ jobs:
 
 
           # ==========================================
-          # PROCESAR PRODUCTOS
+          # ARCHIVOS QUE DEBEN EXISTIR
           # ==========================================
 
           archivos_actuales = set()
 
 
+          # ==========================================
+          # PROCESAR PRODUCTOS
+          # ==========================================
+
           for indice, producto in enumerate(
               productos,
               start=2
           ):
+
 
               foto = producto.get(
                   "foto",
@@ -247,7 +278,7 @@ jobs:
 
 
               # ------------------------------------------
-              # SI NO HAY FOTO
+              # SIN FOTO
               # ------------------------------------------
 
               if not foto:
@@ -265,25 +296,32 @@ jobs:
               # EXTENSIÓN
               # ------------------------------------------
 
-              extension =
-                  extension_desde_url(
-                      foto
-                  )
+              extension = extension_desde_url(
+                  foto
+              )
 
 
               # ------------------------------------------
-              # NOMBRE BASADO EN FILA
+              # NOMBRE DE ARCHIVO
+              # ------------------------------------------
+              #
+              # El nombre depende de la fila:
+              #
+              # D2 -> fila-2.jpg
+              # D3 -> fila-3.jpg
+              # D4 -> fila-4.jpg
+              #
               # ------------------------------------------
 
-              nombre_archivo =
+              nombre_archivo = (
                   f"fila-{indice}{extension}"
+              )
 
 
-              archivo =
-                  os.path.join(
-                      IMAGE_DIR,
-                      nombre_archivo
-                  )
+              archivo = os.path.join(
+                  IMAGE_DIR,
+                  nombre_archivo
+              )
 
 
               # ------------------------------------------
@@ -318,10 +356,14 @@ jobs:
                       break
 
 
-                  import time
+                  if intento < 3:
 
-                  time.sleep(3)
+                      time.sleep(3)
 
+
+              # ------------------------------------------
+              # ERROR
+              # ------------------------------------------
 
               if not descargada:
 
@@ -329,8 +371,8 @@ jobs:
                       f"  ERROR: no se pudo descargar la imagen de fila {indice}"
                   )
 
-                  # Conservamos la URL original
-                  # para no perder información.
+                  # No reemplazamos la URL si falló.
+                  # Esto evita perder información.
 
                   continue
 
@@ -345,11 +387,12 @@ jobs:
 
 
               # ------------------------------------------
-              # REEMPLAZAR URL EN JSON
+              # REEMPLAZAR URL
               # ------------------------------------------
 
-              producto["foto"] =
+              producto["foto"] = (
                   f"imagenes/{nombre_archivo}"
+              )
 
 
               print(
@@ -358,18 +401,22 @@ jobs:
 
 
           # ==========================================
-          # ELIMINAR IMÁGENES QUE YA NO EXISTEN
+          # ELIMINAR IMÁGENES ANTIGUAS
           # ==========================================
+
+          print(
+              "Comprobando imágenes antiguas..."
+          )
+
 
           for nombre in os.listdir(
               IMAGE_DIR
           ):
 
-              ruta =
-                  os.path.join(
-                      IMAGE_DIR,
-                      nombre
-                  )
+              ruta = os.path.join(
+                  IMAGE_DIR,
+                  nombre
+              )
 
 
               if not os.path.isfile(
@@ -391,7 +438,7 @@ jobs:
 
 
           # ==========================================
-          # GUARDAR JSON ACTUALIZADO
+          # GUARDAR JSON FINAL
           # ==========================================
 
           with open(
@@ -450,7 +497,7 @@ jobs:
 
 
           # ==========================================
-          # COPIAR JSON
+          # COPIAR JSON SI CAMBIÓ
           # ==========================================
 
           if cmp -s \
@@ -472,7 +519,7 @@ jobs:
 
 
           # ==========================================
-          # VERIFICAR CAMBIOS REALES
+          # COMPROBAR CAMBIOS
           # ==========================================
 
           if git diff --quiet
@@ -486,24 +533,37 @@ jobs:
 
 
           # ==========================================
-          # GIT
+          # CONFIGURAR GIT
           # ==========================================
 
           git config \
             user.name \
             "github-actions[bot]"
 
+
           git config \
             user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"
 
 
+          # ==========================================
+          # AGREGAR CARPETA COMPLETA
+          # ==========================================
+
           git add \
             "$TARGET_DIR"
 
 
+          # ==========================================
+          # COMMIT
+          # ==========================================
+
           git commit \
             -m "Actualizar productos: ${{ github.event.inputs.demo_target }}"
 
+
+          # ==========================================
+          # PUSH
+          # ==========================================
 
           git push
