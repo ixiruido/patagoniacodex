@@ -58,6 +58,22 @@ let observador;
             // Cargar avisos desde JSON
             cargarAvisos();});
 
+// Función auxiliar para parsear fechas en formato dd/mm/yyyy (argentino)
+function parseFechaArgentina(fechaStr) {
+    if (!fechaStr) return new Date(0);
+    
+    const partes = fechaStr.split('/');
+    if (partes.length !== 3) return new Date(0);
+    
+    const dia = parseInt(partes[0], 10);
+    const mes = parseInt(partes[1], 10) - 1; // Los meses en JS son 0-11
+    const anio = parseInt(partes[2], 10);
+    
+    if (isNaN(dia) || isNaN(mes) || isNaN(anio)) return new Date(0);
+    
+    return new Date(anio, mes, dia);
+}
+
 // Función para cargar y mostrar avisos desde avisos.json
 async function cargarAvisos() {
     const avisosContainer = document.getElementById('avisos-container');
@@ -76,11 +92,12 @@ async function cargarAvisos() {
         }
         
         // Ordenar avisos por fecha (más recientes primero)
-        const avisosOrdenados = avisos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        const avisosOrdenados = avisos.sort((a, b) => parseFechaArgentina(b.fecha) - parseFechaArgentina(a.fecha));
         
         // Generar HTML para cada aviso
         const avisosHTML = avisosOrdenados.map(aviso => {
-            const fechaFormateada = new Date(aviso.fecha).toLocaleDateString('es-AR', {
+            const fecha = parseFechaArgentina(aviso.fecha);
+            const fechaFormateada = fecha.toLocaleDateString('es-AR', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
