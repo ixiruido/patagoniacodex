@@ -1,5 +1,5 @@
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbzsPfAVFsQk9ztFCFxdD1ztZnxCiFAEiB15Tb6Tn-WpeSheAwhwveo7uPCd4aiHyyRs/exec";
+    "./catalogo.json";
 
 const productosContenedor =
     document.getElementById("productos");
