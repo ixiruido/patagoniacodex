@@ -20,17 +20,27 @@ jobs:
         run: |
           curl -fL "https://script.google.com/macros/s/AKfycbykLfJ-t4N3i6In5g8QytlIYNxG7-1pjLHvrVYl8qb9iaODiKTb3pX9g4O6iuzQ5618kw/exec" -o avisos_nuevo.json
 
+      - name: Mostrar respuesta recibida
+        run: |
+          echo "Tamaño:"
+          wc -c avisos_nuevo.json
+          echo ""
+          echo "Primeros 2000 caracteres:"
+          head -c 2000 avisos_nuevo.json
+          echo ""
+
       - name: Validar JSON
         run: |
           python -m json.tool avisos_nuevo.json > /dev/null
+          echo "JSON válido."
 
       - name: Comparar y actualizar
         run: |
           if cmp -s "demo/regazziharina/avisos.json" "avisos_nuevo.json"; then
-            echo "El archivo no cambió."
+            echo "El catálogo no cambió."
             rm avisos_nuevo.json
           else
-            echo "El archivo cambió."
+            echo "El catálogo cambió."
             mv avisos_nuevo.json "demo/regazziharina/avisos.json"
 
             git config user.name "github-actions[bot]"
