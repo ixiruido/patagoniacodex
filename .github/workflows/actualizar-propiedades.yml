@@ -266,8 +266,7 @@ jobs:
                           timeout=60
                       ) as response:
 
-                          contenido =
-                              response.read()
+                          contenido = response.read()
 
 
                       if not contenido:
@@ -449,10 +448,7 @@ jobs:
                   continue
 
 
-              nombre =
-                  os.path.basename(
-                      archivo
-                  )
+              nombre = os.path.basename(archivo)
 
 
               if nombre not in imagenes_validas:
