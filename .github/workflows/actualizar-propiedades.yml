@@ -1,10 +1,8 @@
 name: Actualizar propiedades
 
 on:
-  # Eliminamos el schedule porque ahora Google Sheets se encarga de avisar en tiempo real
   workflow_dispatch:
     inputs:
-      # Agregamos esta entrada para recibir la carpeta desde Google Sheets
       demo_target:
         description: 'Nombre de la subcarpeta de la demo'
         required: true
@@ -14,54 +12,776 @@ permissions:
   contents: write
 
 jobs:
+
   actualizar:
+
     runs-on: ubuntu-latest
 
     steps:
+
+      # ==========================================
+      # 1. DESCARGAR REPOSITORIO
+      # ==========================================
+
       - name: Descargar repositorio
         uses: actions/checkout@v5
 
+
+      # ==========================================
+      # 2. DESCARGAR JSON DESDE GOOGLE SHEETS
+      # ==========================================
+
       - name: Descargar JSON desde Google Apps Script
         run: |
-          curl -fL "https://script.google.com/macros/s/AKfycbzT4BcKg8xNPhjJOZJbHJJvYPBeDBYxO9VRLSaiAX5uUZ582Q_OJ5V0aH-XvLyDgXDigA/exec" -o catalogo_nuevo.json
+
+          curl -fL \
+            --retry 5 \
+            --retry-delay 5 \
+            --retry-all-errors \
+            "https://script.google.com/macros/s/AKfycbykwUALKWYpkXvYiBjb1DBGOCJQcwR5D6ykdzfsMFcHGPTIPpc5knvDBeSMucgl81z86Q/exec" \
+            -o catalogo_nuevo.json
+
+
+      # ==========================================
+      # 3. MOSTRAR RESPUESTA
+      # ==========================================
 
       - name: Mostrar respuesta recibida
         run: |
+
           echo "Tamaño:"
           wc -c catalogo_nuevo.json
+
           echo ""
-          echo "Primeros 2000 caracteres:"
-          head -c 2000 catalogo_nuevo.json
+
+          echo "Primeros 3000 caracteres:"
+          head -c 3000 catalogo_nuevo.json
+
           echo ""
+
+
+      # ==========================================
+      # 4. VALIDAR JSON
+      # ==========================================
 
       - name: Validar JSON
         run: |
-          python -m json.tool catalogo_nuevo.json > /dev/null
+
+          python -m json.tool \
+            catalogo_nuevo.json \
+            > /dev/null
+
           echo "JSON válido."
 
-      - name: Comparar y actualizar
+
+      # ==========================================
+      # 5. PREPARAR CARPETAS
+      # ==========================================
+
+      - name: Preparar carpetas
         run: |
-          # 1. Definimos las rutas dinámicas usando la variable que manda Google
+
           TARGET_DIR="demo/${{ github.event.inputs.demo_target }}"
-          TARGET_FILE="$TARGET_DIR/catalogo.json"
-          
-          echo "Procesando la demo en: $TARGET_FILE"
-          
-          # Asegura que la carpeta exista (por si creas una demo nueva)
+
+          IMAGE_DIR="$TARGET_DIR/imagenes"
+
           mkdir -p "$TARGET_DIR"
 
-          # 2. Reemplazamos la ruta fija por la variable $TARGET_FILE
-          if cmp -s "$TARGET_FILE" "catalogo_nuevo.json"; then
-            echo "El catálogo de ${{ github.event.inputs.demo_target }} no cambió."
-            rm catalogo_nuevo.json
+          mkdir -p "$IMAGE_DIR"
+
+          echo "TARGET_DIR=$TARGET_DIR" >> "$GITHUB_ENV"
+
+          echo "IMAGE_DIR=$IMAGE_DIR" >> "$GITHUB_ENV"
+
+          echo "Carpeta destino:"
+          echo "$TARGET_DIR"
+
+          echo "Carpeta imágenes:"
+          echo "$IMAGE_DIR"
+
+
+      # ==========================================
+      # 6. DESCARGAR Y VERSIONAR IMÁGENES
+      # ==========================================
+
+      - name: Descargar y versionar imágenes
+        run: |
+
+          python << 'PY'
+
+          import json
+          import os
+          import hashlib
+          import subprocess
+          import sys
+
+
+          # --------------------------------------
+          # LEER JSON
+          # --------------------------------------
+
+          with open(
+              "catalogo_nuevo.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
+
+              data = json.load(f)
+
+
+          propiedades = data.get(
+              "propiedades",
+              []
+          )
+
+
+          image_dir = os.environ[
+              "IMAGE_DIR"
+          ]
+
+
+          print(
+              f"Propiedades encontradas: {len(propiedades)}"
+          )
+
+
+          # --------------------------------------
+          # PROCESAR CADA PROPIEDAD
+          # --------------------------------------
+
+          for propiedad in propiedades:
+
+              nombre = str(
+                  propiedad.get(
+                      "direccion",
+                      propiedad.get(
+                          "tipo",
+                          ""
+                      )
+                  )
+              )
+
+
+              fuente = str(
+                  propiedad.get(
+                      "fotoFuente",
+                      ""
+                  )
+              ).strip()
+
+
+              destino_base = str(
+                  propiedad.get(
+                      "foto",
+                      ""
+                  )
+              ).strip()
+
+
+              # ----------------------------------
+              # SIN IMAGEN
+              # ----------------------------------
+
+              if not fuente:
+
+                  print(
+                      f"Sin imagen: {nombre}"
+                  )
+
+                  propiedad["foto"] = ""
+
+                  propiedad.pop(
+                      "fotoFuente",
+                      None
+                  )
+
+                  continue
+
+
+              if not destino_base:
+
+                  print(
+                      f"Sin destino de imagen: {nombre}"
+                  )
+
+                  propiedad["foto"] = ""
+
+                  propiedad.pop(
+                      "fotoFuente",
+                      None
+                  )
+
+                  continue
+
+
+              # ----------------------------------
+              # NOMBRE BASE
+              # ----------------------------------
+
+              nombre_archivo_base =
+                  os.path.basename(
+                      destino_base
+                  )
+
+
+              # ----------------------------------
+              # ARCHIVO TEMPORAL
+              # ----------------------------------
+
+              temporal =
+                  os.path.join(
+                      image_dir,
+                      nombre_archivo_base + ".tmp"
+                  )
+
+
+              print(
+                  f"Descargando imagen de: {nombre}"
+              )
+
+
+              resultado =
+                  subprocess.run(
+
+                      [
+                          "curl",
+                          "-fL",
+                          "--retry",
+                          "5",
+                          "--retry-delay",
+                          "3",
+                          "--retry-all-errors",
+                          "-o",
+                          temporal,
+                          fuente
+                      ],
+
+                      capture_output=True,
+
+                      text=True
+
+                  )
+
+
+              if resultado.returncode != 0:
+
+                  print(
+                      "ERROR descargando imagen:"
+                  )
+
+                  print(
+                      resultado.stderr
+                  )
+
+                  sys.exit(1)
+
+
+              # ----------------------------------
+              # COMPROBAR ARCHIVO
+              # ----------------------------------
+
+              if (
+                  not os.path.exists(
+                      temporal
+                  )
+                  or
+                  os.path.getsize(
+                      temporal
+                  ) == 0
+              ):
+
+                  print(
+                      f"Imagen vacía: {nombre}"
+                  )
+
+                  sys.exit(1)
+
+
+              # ----------------------------------
+              # DETECTAR TIPO DE IMAGEN
+              # ----------------------------------
+
+              resultado_tipo =
+                  subprocess.run(
+
+                      [
+                          "file",
+                          "--brief",
+                          "--mime-type",
+                          temporal
+                      ],
+
+                      capture_output=True,
+
+                      text=True
+
+                  )
+
+
+              mime =
+                  resultado_tipo.stdout.strip().lower()
+
+
+              extensiones = {
+
+                  "image/jpeg":
+                      ".jpg",
+
+                  "image/png":
+                      ".png",
+
+                  "image/webp":
+                      ".webp",
+
+                  "image/gif":
+                      ".gif",
+
+                  "image/bmp":
+                      ".bmp",
+
+                  "image/tiff":
+                      ".tiff"
+
+              }
+
+
+              extension =
+                  extensiones.get(
+                      mime,
+                      ".jpg"
+                  )
+
+
+              # ----------------------------------
+              # NOMBRE DEFINITIVO
+              # ----------------------------------
+
+              nombre_archivo =
+                  nombre_archivo_base +
+                  extension
+
+
+              ruta_final =
+                  os.path.join(
+                      image_dir,
+                      nombre_archivo
+                  )
+
+
+              # ----------------------------------
+              # ELIMINAR EXTENSIONES ANTERIORES
+              # ----------------------------------
+
+              extensiones_posibles = [
+
+                  ".jpg",
+                  ".jpeg",
+                  ".png",
+                  ".webp",
+                  ".gif",
+                  ".bmp",
+                  ".tiff"
+
+              ]
+
+
+              for ext in extensiones_posibles:
+
+                  archivo_anterior =
+                      os.path.join(
+                          image_dir,
+                          nombre_archivo_base +
+                          ext
+                      )
+
+
+                  if (
+                      os.path.exists(
+                          archivo_anterior
+                      )
+                      and
+                      archivo_anterior !=
+                      ruta_final
+                  ):
+
+                      print(
+                          "Eliminando extensión anterior: " +
+                          os.path.basename(
+                              archivo_anterior
+                          )
+                      )
+
+                      os.remove(
+                          archivo_anterior
+                      )
+
+
+              # ----------------------------------
+              # MOVER IMAGEN
+              # ----------------------------------
+
+              os.replace(
+                  temporal,
+                  ruta_final
+              )
+
+
+              # ----------------------------------
+              # CALCULAR SHA-256
+              # ----------------------------------
+
+              sha256 =
+                  hashlib.sha256()
+
+
+              with open(
+                  ruta_final,
+                  "rb"
+              ) as f:
+
+                  while True:
+
+                      bloque =
+                          f.read(
+                              1024 * 1024
+                          )
+
+                      if not bloque:
+                          break
+
+                      sha256.update(
+                          bloque
+                      )
+
+
+              hash_completo =
+                  sha256.hexdigest()
+
+
+              # Utilizamos solamente 12 caracteres.
+
+              hash_corto =
+                  hash_completo[:12]
+
+
+              # ----------------------------------
+              # RUTA FINAL PARA EL JSON
+              # ----------------------------------
+
+              ruta_json =
+                  "imagenes/" +
+                  nombre_archivo +
+                  "?v=" +
+                  hash_corto
+
+
+              propiedad["foto"] =
+                  ruta_json
+
+
+              # ----------------------------------
+              # ELIMINAR URL TEMPORAL
+              # ----------------------------------
+
+              propiedad.pop(
+                  "fotoFuente",
+                  None
+              )
+
+
+              print(
+                  f"OK: {nombre_archivo}"
+              )
+
+              print(
+                  f"Hash: {hash_corto}"
+              )
+
+              print(
+                  f"URL JSON: {ruta_json}"
+              )
+
+
+          # --------------------------------------
+          # GUARDAR JSON FINAL
+          # --------------------------------------
+
+          with open(
+              "catalogo_nuevo.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              json.dump(
+                  data,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+
+          print(
+              "JSON final generado correctamente."
+          )
+
+          PY
+
+
+      # ==========================================
+      # 7. MOSTRAR JSON FINAL
+      # ==========================================
+
+      - name: Mostrar JSON final
+        run: |
+
+          echo "Primeros 3000 caracteres del JSON final:"
+
+          head -c 3000 \
+            catalogo_nuevo.json
+
+          echo ""
+
+
+      # ==========================================
+      # 8. ACTUALIZAR CATÁLOGO
+      # ==========================================
+
+      - name: Actualizar catálogo
+        run: |
+
+          TARGET_FILE="$TARGET_DIR/catalogo.json"
+
+
+          echo "Procesando:"
+          echo "$TARGET_FILE"
+
+
+          if [ ! -f "$TARGET_FILE" ]; then
+
+            echo "El catálogo todavía no existe."
+
+            mv \
+              catalogo_nuevo.json \
+              "$TARGET_FILE"
+
           else
-            echo "El catálogo cambió."
-            mv catalogo_nuevo.json "$TARGET_FILE"
 
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            if cmp -s \
+              "$TARGET_FILE" \
+              "catalogo_nuevo.json"
 
-            git add "$TARGET_FILE"
-            git commit -m "Actualizar avisos: ${{ github.event.inputs.demo_target }}"
+            then
+
+              echo "El catálogo no cambió."
+
+              rm \
+                catalogo_nuevo.json
+
+            else
+
+              echo "El catálogo cambió."
+
+              mv \
+                catalogo_nuevo.json \
+                "$TARGET_FILE"
+
+            fi
+
+          fi
+
+
+      # ==========================================
+      # 9. ELIMINAR IMÁGENES ANTIGUAS
+      # ==========================================
+
+      - name: Eliminar imágenes antiguas
+        run: |
+
+          python << 'PY'
+
+          import json
+          import os
+          import glob
+
+
+          catalogo =
+              os.path.join(
+                  os.environ["TARGET_DIR"],
+                  "catalogo.json"
+              )
+
+
+          image_dir =
+              os.environ["IMAGE_DIR"]
+
+
+          with open(
+              catalogo,
+              "r",
+              encoding="utf-8"
+          ) as f:
+
+              data = json.load(f)
+
+
+          imagenes_actuales = set()
+
+
+          # --------------------------------------
+          # OBTENER IMÁGENES UTILIZADAS
+          # --------------------------------------
+
+          for propiedad in data.get(
+              "propiedades",
+              []
+          ):
+
+              foto =
+                  str(
+                      propiedad.get(
+                          "foto",
+                          ""
+                      )
+                  ).strip()
+
+
+              if not foto:
+                  continue
+
+
+              # ----------------------------------
+              # QUITAR ?v=HASH
+              # ----------------------------------
+
+              foto_sin_version =
+                  foto.split(
+                      "?",
+                      1
+                  )[0]
+
+
+              imagen =
+                  os.path.basename(
+                      foto_sin_version
+                  )
+
+
+              imagenes_actuales.add(
+                  imagen
+              )
+
+
+          print(
+              "Imágenes actualmente utilizadas:"
+          )
+
+
+          for imagen in sorted(
+              imagenes_actuales
+          ):
+
+              print(
+                  "  " + imagen
+              )
+
+
+          # --------------------------------------
+          # BUSCAR IMÁGENES EXISTENTES
+          # --------------------------------------
+
+          existentes =
+              glob.glob(
+                  os.path.join(
+                      image_dir,
+                      "propiedad-G*"
+                  )
+              )
+
+
+          print(
+              f"Imágenes existentes: {len(existentes)}"
+          )
+
+
+          # --------------------------------------
+          # ELIMINAR IMÁGENES NO UTILIZADAS
+          # --------------------------------------
+
+          for archivo in existentes:
+
+              if archivo.endswith(
+                  ".tmp"
+              ):
+
+                  continue
+
+
+              nombre =
+                  os.path.basename(
+                      archivo
+                  )
+
+
+              if (
+                  nombre
+                  not in
+                  imagenes_actuales
+              ):
+
+                  print(
+                      "Eliminando imagen antigua: " +
+                      nombre
+                  )
+
+
+                  os.remove(
+                      archivo
+                  )
+
+
+          print(
+              "Limpieza de imágenes terminada."
+          )
+
+          PY
+
+
+      # ==========================================
+      # 10. GUARDAR CAMBIOS EN GITHUB
+      # ==========================================
+
+      - name: Guardar cambios en GitHub
+        run: |
+
+          git config user.name \
+            "github-actions[bot]"
+
+
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+
+          git add \
+            "$TARGET_DIR"
+
+
+          if git diff --cached --quiet
+
+          then
+
+            echo "No hay cambios para guardar."
+
+          else
+
+            echo "Hay cambios."
+
+            git commit \
+              -m "Actualizar propiedades e imágenes: ${{ github.event.inputs.demo_target }}"
+
+
             git push
+
+
+            echo "Cambios enviados correctamente."
+
           fi
