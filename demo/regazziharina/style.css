@@ -366,6 +366,36 @@ footer {background-color: #06070a;
     font-size: 1.2rem; font-style: italic;
     opacity: 0.7;}
 
+.aviso-card {background-color: rgba(36, 40, 48, 0.9);
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 8px; padding: 2rem;
+    margin-bottom: 2rem; text-align: left;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;}
+.aviso-card:hover {transform: translateY(-5px);
+    border-color: rgba(201, 162, 39, 0.5);
+    box-shadow: 0 8px 25px rgba(201, 162, 39, 0.2);}
+.aviso-header {display: flex;
+    justify-content: space-between; align-items: center;
+    margin-bottom: 1rem; padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);}
+.aviso-titulo {color: var(--gold-primary);
+    font-size: 1.5rem; margin: 0;
+    letter-spacing: 0.5px;}
+.aviso-fecha {color: var(--text-muted);
+    font-size: 0.9rem; font-style: italic;}
+.aviso-autor {color: var(--gold-primary);
+    font-size: 0.85rem; margin-bottom: 1rem;
+    font-style: italic; opacity: 0.8;}
+.aviso-texto {color: var(--text-muted);
+    font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem;}
+.btn-adjunto {display: inline-block;
+    padding: 0.6rem 1.2rem; background-color: var(--gold-primary);
+    color: #1a1d23; text-decoration: none;
+    font-weight: bold; font-size: 0.85rem;
+    border-radius: 4px; transition: background-color 0.3s ease;
+    text-transform: uppercase; letter-spacing: 1px;}
+.btn-adjunto:hover {background-color: var(--gold-hover);}
+
 a[href^="tel"] {color: inherit; text-decoration: none;}    
 
 @media (max-width: 768px) {
