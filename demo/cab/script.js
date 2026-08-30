@@ -57,7 +57,7 @@ window.addEventListener('scroll', () => {let current = '';
 // ==================== CÓDIGO INTEGRADO DE CARDCABIN.JS ====================
 
 // REEMPLAZA CON TU URL GENERADA EN DEPLOY DE APPS SCRIPT
-const urlScript = "https://script.google.com/macros/s/AKfycbwKidhzD9TIt9lA5W3LE3XNIg62MepeM-vjEHxIeU5LEQOREnaf-CNgFgK_1adgFroUEw/exec";
+const urlScript = "./cabanas.json";
 
 async function loadCabinData() {
     const cardElement = document.getElementById("cabin-card");
