@@ -38,7 +38,7 @@ jobs:
             --retry 5 \
             --retry-delay 5 \
             --retry-all-errors \
-            "https://script.google.com/macros/s/AKfycbx1ylo0WBgrI29lg2tOHh2bWxrc_0p1doqFcG7rZMs-JdQy96iZ5g-cajphbX4Fpuig/exec" \
+            "https://script.google.com/macros/s/AKfycbzlk9cj9IAwHoF94gy9yVLCfx5EdVpKbp2mcbf2bwjDWxQ1-sRP81Gydh9D_YcjHV8x/exec" \
             -o catalogo_nuevo.json
 
 
