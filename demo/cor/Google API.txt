@@ -1,13 +1,60 @@
+/**
+ * ==========================================
+ * CONFIGURACIÓN
+ * ==========================================
+ */
+
+const CONFIG = {
+
+  // ID de la planilla de productos
+  idPlanilla:
+    "1VnwBZClkqqcSm9EEfnHdksr0LctO2591wlIpOSkkXu4",
+
+  // Nombre de la hoja
+  nombreHoja:
+    "Productos",
+
+  // GitHub
+  usuario:
+    "ixiruido",
+
+  repositorio:
+    "patagoniacodex",
+
+  workflow:
+    "actualizar-productos.yml",
+
+  rama:
+    "main",
+
+  // Identificador que recibe GitHub Actions
+  nombreDemo:
+    "cor"
+};
+
+
+/**
+ * ==========================================
+ * GENERAR JSON
+ * ==========================================
+ *
+ * GitHub Actions utiliza esta función
+ * para descargar los productos.
+ *
+ * NO modifica GitHub.
+ */
+
 function doGet() {
 
-  const ID_PLANILLA =
-    "1VnwBZClkqqcSm9EEfnHdksr0LctO2591wlIpOSkkXu4";
-
   const planilla =
-    SpreadsheetApp.openById(ID_PLANILLA);
+    SpreadsheetApp.openById(
+      CONFIG.idPlanilla
+    );
 
   const hoja =
-    planilla.getSheetByName("Productos");
+    planilla.getSheetByName(
+      CONFIG.nombreHoja
+    );
 
   const rango =
     hoja.getDataRange();
@@ -15,114 +62,173 @@ function doGet() {
   const datos =
     rango.getValues();
 
+  // Eliminar encabezados
   datos.shift();
 
 
   // ============================
-  // CONFIGURACIÓN
+  // CONFIGURACIÓN WHATSAPP
   // ============================
 
-  const whatsapp = "5492996100676";
+  const whatsapp =
+    "5492996100676";
 
-  const mensajeWhatsapp = "Hola! Estoy interesado en este producto: ";
+  const mensajeWhatsapp =
+    "Hola! Estoy interesado en este producto: ";
+
 
   // ============================
   // PRODUCTOS
   // ============================
 
   const productos =
-    datos.map((fila, indice) => {
 
-      let foto = "";
+    datos
 
+      .map((fila, indice) => {
 
-      const celdaFoto =
-        rango
-          .getCell(indice + 2, 4)
-          .getValue();
+        // =================================
+        // IGNORAR FILAS SIN NOMBRE
+        // =================================
 
+        if (
+          !fila[0] ||
+          String(fila[0]).trim() === ""
+        ) {
 
-      // Imagen insertada dentro de la celda
+          return null;
 
-      if (
-        celdaFoto &&
-        typeof celdaFoto === "object" &&
-        typeof celdaFoto.getContentUrl === "function"
-      ) {
-
-        foto =
-          celdaFoto.getContentUrl();
-
-      }
-
-
-      // Limpiar URL
-
-      if (
-        typeof foto === "string"
-      ) {
-
-        const match =
-          foto.match(
-            /\((https?:\/\/[^)]+)\)/
-          );
-
-
-        if (match) {
-          foto = match[1];
         }
 
 
-        const inicio =
-          foto.indexOf("https://");
+        let foto = "";
 
 
-        if (inicio > 0) {
+        // =================================
+        // FOTO
+        // =================================
+        //
+        // La imagen está en la columna D.
+        //
+        // La fila real empieza en la fila 2.
+        //
+        // D2 = producto 1
+        // D3 = producto 2
+        // D4 = producto 3
+        // etc.
+        //
+
+        const numeroFila =
+          indice + 2;
+
+        const celdaFoto =
+          rango.getCell(
+            numeroFila,
+            4
+          ).getValue();
+
+
+        // Imagen insertada dentro de la celda
+        if (
+          celdaFoto &&
+          typeof celdaFoto === "object" &&
+          typeof celdaFoto.getContentUrl === "function"
+        ) {
+
           foto =
-            foto.substring(inicio);
+            celdaFoto.getContentUrl();
+
         }
 
-      }
+
+        // =================================
+        // LIMPIAR URL
+        // =================================
+
+        if (
+          typeof foto === "string"
+        ) {
+
+          const match =
+            foto.match(
+              /\((https?:\/\/[^)]+)\)/
+            );
 
 
-      return {
+          if (match) {
 
-        nombre:
-          fila[0],
+            foto =
+              match[1];
 
-        descripcion:
-          fila[1],
+          }
 
-        precio:
-          fila[2],
 
-        foto:
-          foto,
+          const inicio =
+            foto.indexOf(
+              "https://"
+            );
 
-        categoria:
-          fila[4],
 
-        descuento:
-          fila[5],
+          if (inicio > 0) {
 
-        orden:
-          fila[6],
+            foto =
+              foto.substring(
+                inicio
+              );
 
-        visible:
-          fila[7],
+          }
 
-        destacado:
-          fila[8],
+        }
 
-        stock:
-          fila[9],
 
-        linkid:
-          fila[10],
-          
-      };
+        // =================================
+        // PRODUCTO
+        // =================================
 
-    });
+        return {
+
+          nombre:
+            fila[0],
+
+          descripcion:
+            fila[1],
+
+          precio:
+            fila[2],
+
+          foto:
+            foto,
+
+          categoria:
+            fila[4],
+
+          descuento:
+            fila[5],
+
+          orden:
+            fila[6],
+
+          visible:
+            fila[7],
+
+          destacado:
+            fila[8],
+
+          stock:
+            fila[9],
+
+          linkid:
+            fila[10]
+
+        };
+
+      })
+
+      // Eliminar productos null
+      .filter(
+        producto =>
+          producto !== null
+      );
 
 
   // ============================
@@ -143,11 +249,268 @@ function doGet() {
   };
 
 
+  // ============================
+  // DEVOLVER JSON
+  // ============================
+
   return ContentService
+
     .createTextOutput(
-      JSON.stringify(respuesta)
+      JSON.stringify(
+        respuesta
+      )
     )
+
     .setMimeType(
       ContentService.MimeType.JSON
     );
+}
+
+
+/**
+ * ==========================================
+ * BOTÓN "GUARDAR PRODUCTOS"
+ * ==========================================
+ */
+
+function guardarProductos() {
+
+  const ui =
+    SpreadsheetApp.getUi();
+
+
+  // ------------------------------------------
+  // CONFIRMACIÓN
+  // ------------------------------------------
+
+  const respuesta =
+    ui.alert(
+
+      "Guardar cambios",
+
+      "¿Querés publicar los cambios de los productos en la web?",
+
+      ui.ButtonSet.YES_NO
+
+    );
+
+
+  if (
+    respuesta !== ui.Button.YES
+  ) {
+
+    return;
+
+  }
+
+
+  // ------------------------------------------
+  // ENVIAR A GITHUB
+  // ------------------------------------------
+
+  try {
+
+    dispararGitHub();
+
+
+    ui.alert(
+
+      "Cambios enviados",
+
+      "Los cambios fueron enviados correctamente a la Web.\n\n" +
+      "En instantes se actualizarán los productos.",
+
+      ui.ButtonSet.OK
+
+    );
+
+
+  } catch (error) {
+
+    ui.alert(
+
+      "Error",
+
+      "No se pudieron enviar los cambios a GitHub.\n\n" +
+      error.message,
+
+      ui.ButtonSet.OK
+
+    );
+
+
+    Logger.log(
+      "ERROR: " +
+      error.message
+    );
+
+  }
+}
+
+
+/**
+ * ==========================================
+ * ENVIAR WORKFLOW A GITHUB
+ * ==========================================
+ */
+
+function dispararGitHub() {
+
+  const token =
+    PropertiesService
+      .getScriptProperties()
+      .getProperty(
+        "GITHUB_TOKEN"
+      );
+
+
+  if (!token) {
+
+    throw new Error(
+
+      "No se encontró GITHUB_TOKEN " +
+      "en las propiedades del proyecto."
+
+    );
+
+  }
+
+
+  // ------------------------------------------
+  // URL DE GITHUB API
+  // ------------------------------------------
+
+  const url =
+
+    "https://api.github.com/repos/" +
+
+    CONFIG.usuario +
+    "/" +
+
+    CONFIG.repositorio +
+
+    "/actions/workflows/" +
+
+    CONFIG.workflow +
+
+    "/dispatches";
+
+
+  // ------------------------------------------
+  // DATOS DEL WORKFLOW
+  // ------------------------------------------
+
+  const payload = {
+
+    ref:
+      CONFIG.rama,
+
+    inputs: {
+
+      demo_target:
+        CONFIG.nombreDemo
+
+    }
+
+  };
+
+
+  // ------------------------------------------
+  // CONFIGURACIÓN
+  // ------------------------------------------
+
+  const options = {
+
+    method:
+      "post",
+
+    contentType:
+      "application/json",
+
+    payload:
+      JSON.stringify(
+        payload
+      ),
+
+    headers: {
+
+      Authorization:
+        "Bearer " + token,
+
+      Accept:
+        "application/vnd.github+json",
+
+      "X-GitHub-Api-Version":
+        "2022-11-28"
+
+    },
+
+    muteHttpExceptions:
+      true
+
+  };
+
+
+  // ------------------------------------------
+  // ENVIAR A GITHUB
+  // ------------------------------------------
+
+  const response =
+    UrlFetchApp.fetch(
+      url,
+      options
+    );
+
+
+  const status =
+    response.getResponseCode();
+
+  const body =
+    response.getContentText();
+
+
+  Logger.log(
+    "GitHub HTTP STATUS: " +
+    status
+  );
+
+  Logger.log(
+    "GitHub RESPONSE: " +
+    body
+  );
+
+
+  // ------------------------------------------
+  // COMPROBAR RESPUESTA
+  // ------------------------------------------
+
+  if (
+    status !== 204 &&
+    status !== 200
+  ) {
+
+    throw new Error(
+
+      "GitHub rechazó el workflow.\n\n" +
+
+      "HTTP: " +
+      status +
+
+      "\n" +
+
+      "Respuesta: " +
+      body
+
+    );
+
+  }
+
+
+  Logger.log(
+    "Workflow enviado correctamente."
+  );
+
+  Logger.log(
+    "Productos publicados."
+  );
 }
