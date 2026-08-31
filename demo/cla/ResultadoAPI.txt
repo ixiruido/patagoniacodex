@@ -1,3 +1,0 @@
-https://script.google.com/macros/s/AKfycbybL9CqDd9RUFzoaovIetEbgF6cyx4WFKnI-nK_1sX3vmsCJlTGASxuUkCdT8UbTQTB/exec
-
-{"error":"Email requerido"}
