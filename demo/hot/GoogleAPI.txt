@@ -1,70 +1,574 @@
+/**
+ * ==========================================
+ * CONFIGURACIÓN
+ * ==========================================
+ */
+
+const CONFIG = {
+
+  usuario:
+    "ixiruido",
+
+  repositorio:
+    "patagoniacodex",
+
+  workflow:
+    "actualizar-hotel.yml",
+
+  rama:
+    "main",
+
+  nombreDemo:
+    "hot"
+};
+
+
+/**
+ * ==========================================
+ * GENERAR JSON
+ * ==========================================
+ *
+ * Lee todas las filas desde la fila 2.
+ *
+ * Cada fila representa un alojamiento.
+ *
+ * NO modifica GitHub.
+ */
+
 function doGet() {
+
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    
-    // Verificar cuántas filas hay
-    var lastRow = sheet.getLastRow();
-    Logger.log("Última fila: " + lastRow);
-    
-    // Si hay menos de 2 filas (solo encabezados), devolver array vacío
-    if (lastRow < 2) {
-      return ContentService.createTextOutput(JSON.stringify([]))
-        .setMimeType(ContentService.MimeType.JSON);
+
+    var sheet =
+      SpreadsheetApp
+        .getActiveSpreadsheet()
+        .getActiveSheet();
+
+
+    // ========================================
+    // ÚLTIMA FILA
+    // ========================================
+
+    var lastRow =
+      sheet.getLastRow();
+
+
+    Logger.log(
+      "Última fila: " +
+      lastRow
+    );
+
+
+    // ========================================
+    // SI NO HAY ALOJAMIENTOS
+    // ========================================
+
+    if (
+      lastRow < 2
+    ) {
+
+      return ContentService
+
+        .createTextOutput(
+          JSON.stringify([])
+        )
+
+        .setMimeType(
+          ContentService.MimeType.JSON
+        );
+
     }
-    
-    // Leemos todas las filas con datos (desde la fila 2 hasta la última fila)
-    var data = sheet.getRange(2, 1, lastRow - 1, 10).getValues();
-    Logger.log("Filas leídas: " + data.length);
-    
+
+
+    // ========================================
+    // LEER TODAS LAS FILAS
+    // ========================================
+
+    var data =
+      sheet
+        .getRange(
+          2,
+          1,
+          lastRow - 1,
+          10
+        )
+        .getValues();
+
+
+    Logger.log(
+      "Filas leídas: " +
+      data.length
+    );
+
+
+    // ========================================
+    // ALOJAMIENTOS
+    // ========================================
+
     var alojamientos = [];
-    
-    // Procesamos cada fila
-    for (var i = 0; i < data.length; i++) {
-    var row = data[i];
-    Logger.log("Procesando fila " + (i + 2) + ": " + row[0]);
-    
-    // Verificamos que la fila tenga datos (nombre no vacío)
-    if (row[0] && row[0].toString().trim() !== "") {
-      // Mapeo exacto según tu estructura de Google Sheets
-      var cabanaNombre        = row[0].toString(); // Columna A
-      var estado              = row[1] ? row[1].toString() : ""; // Columna B
-      var precioBase          = row[2] ? row[2].toString() : ""; // Columna C
-      var descuento           = row[3] ? row[3].toString() : ""; // Columna D
-      var aviso               = row[4] ? row[4].toString() : ""; // Columna E
-      var ultimaActualizacion = row[5] ? row[5].toString() : ""; // Columna F
 
-      // Solo procesar si hay nombre
-      if (cabanaNombre.trim() !== "") {
-        // Concatenamos el mensaje original con el nombre de la cabaña
-        var mensajeCompleto = "Hola!%20Estoy%20interesado%20en%20este%20alojamiento%3A%20" + " " + cabanaNombre + " " + precioBase + " ";
-        var mensajeCodificado = encodeURIComponent(mensajeCompleto);
-        
-        // Generamos el link de WhatsApp
-        var linkWhatsapp = "https://wa.me/" + "5492996100676" + "?text=" + mensajeCodificado;
 
-        var resultado = {
-          nombre: cabanaNombre,
-          estado: estado,
-          precioBase: precioBase,
-          descuento: descuento,
-          aviso: aviso,
-          ultimaActualizacion: ultimaActualizacion,
-          whatsappLink: linkWhatsapp
-        };
-        
-        alojamientos.push(resultado);
-        Logger.log("Alojamiento agregado: " + cabanaNombre);
+    // ========================================
+    // PROCESAR CADA FILA
+    // ========================================
+
+    for (
+      var i = 0;
+      i < data.length;
+      i++
+    ) {
+
+      var row =
+        data[i];
+
+
+      Logger.log(
+        "Procesando fila " +
+        (i + 2) +
+        ": " +
+        row[0]
+      );
+
+
+      // ======================================
+      // IGNORAR FILAS SIN NOMBRE
+      // ======================================
+
+      if (
+        !row[0] ||
+        row[0].toString().trim() === ""
+      ) {
+
+        continue;
+
       }
+
+
+      // ======================================
+      // DATOS
+      // ======================================
+
+      var cabanaNombre =
+        row[0].toString();
+
+      var estado =
+        row[1]
+          ? row[1].toString()
+          : "";
+
+      var precioBase =
+        row[2]
+          ? row[2].toString()
+          : "";
+
+      var descuento =
+        row[3]
+          ? row[3].toString()
+          : "";
+
+      var aviso =
+        row[4]
+          ? row[4].toString()
+          : "";
+
+      var ultimaActualizacion =
+        row[5]
+          ? row[5].toString()
+          : "";
+
+
+      // ======================================
+      // WHATSAPP
+      // ======================================
+
+      var mensajeCompleto =
+
+        "Hola! Estoy interesado en este alojamiento: " +
+        " " +
+        cabanaNombre +
+        " " +
+        precioBase +
+        " ";
+
+
+      var mensajeCodificado =
+        encodeURIComponent(
+          mensajeCompleto
+        );
+
+
+      var linkWhatsapp =
+
+        "https://wa.me/" +
+        "5492996100676" +
+        "?text=" +
+        mensajeCodificado;
+
+
+      // ======================================
+      // ALOJAMIENTO
+      // ======================================
+
+      var resultado = {
+
+        nombre:
+          cabanaNombre,
+
+        estado:
+          estado,
+
+        precioBase:
+          precioBase,
+
+        descuento:
+          descuento,
+
+        aviso:
+          aviso,
+
+        ultimaActualizacion:
+          ultimaActualizacion,
+
+        whatsappLink:
+          linkWhatsapp
+
+      };
+
+
+      // ======================================
+      // AGREGAR
+      // ======================================
+
+      alojamientos.push(
+        resultado
+      );
+
+
+      Logger.log(
+        "Alojamiento agregado: " +
+        cabanaNombre
+      );
+
     }
+
+
+    // ========================================
+    // RESULTADO
+    // ========================================
+
+    Logger.log(
+      "Total alojamientos: " +
+      alojamientos.length
+    );
+
+
+    return ContentService
+
+      .createTextOutput(
+        JSON.stringify(
+          alojamientos
+        )
+      )
+
+      .setMimeType(
+        ContentService.MimeType.JSON
+      );
+
+
+  } catch (error) {
+
+    // ========================================
+    // ERROR
+    // ========================================
+
+    Logger.log(
+      "Error: " +
+      error.toString()
+    );
+
+
+    return ContentService
+
+      .createTextOutput(
+        JSON.stringify([])
+      )
+
+      .setMimeType(
+        ContentService.MimeType.JSON
+      );
+
+  }
+}
+
+
+/**
+ * ==========================================
+ * BOTÓN "GUARDAR HOTEL"
+ * ==========================================
+ *
+ * Esta función se asigna al botón
+ * dentro de Google Sheets.
+ */
+
+function guardarHotel() {
+
+  var ui =
+    SpreadsheetApp.getUi();
+
+
+  // ------------------------------------------
+  // CONFIRMACIÓN
+  // ------------------------------------------
+
+  var respuesta =
+    ui.alert(
+
+      "Guardar cambios",
+
+      "¿Querés publicar los cambios del hotel en la web?",
+
+      ui.ButtonSet.YES_NO
+
+    );
+
+
+  // ------------------------------------------
+  // CANCELAR
+  // ------------------------------------------
+
+  if (
+    respuesta !== ui.Button.YES
+  ) {
+
+    return;
+
   }
 
-  Logger.log("Total alojamientos: " + alojamientos.length);
-  return ContentService.createTextOutput(JSON.stringify(alojamientos))
-    .setMimeType(ContentService.MimeType.JSON);
-    
+
+  // ------------------------------------------
+  // ENVIAR A GITHUB
+  // ------------------------------------------
+
+  try {
+
+    dispararGitHub();
+
+
+    // ----------------------------------------
+    // ÉXITO
+    // ----------------------------------------
+
+    ui.alert(
+
+      "Cambios enviados",
+
+      "Los cambios fueron enviados correctamente a la Web.\n\n" +
+      "En instantes se actualizarán las habitaciones.json.",
+
+      ui.ButtonSet.OK
+
+    );
+
+
   } catch (error) {
-    Logger.log("Error: " + error.toString());
-    return ContentService.createTextOutput(JSON.stringify([]))
-      .setMimeType(ContentService.MimeType.JSON);
+
+    // ----------------------------------------
+    // ERROR
+    // ----------------------------------------
+
+    ui.alert(
+
+      "Error",
+
+      "No se pudieron enviar los cambios a GitHub.\n\n" +
+      error.message,
+
+      ui.ButtonSet.OK
+
+    );
+
+
+    Logger.log(
+      "ERROR: " +
+      error.message
+    );
+
   }
+}
+
+
+/**
+ * ==========================================
+ * ENVIAR WORKFLOW A GITHUB
+ * ==========================================
+ */
+
+function dispararGitHub() {
+
+
+  // ------------------------------------------
+  // OBTENER TOKEN
+  // ------------------------------------------
+
+  var token =
+    PropertiesService
+      .getScriptProperties()
+      .getProperty(
+        "GITHUB_TOKEN"
+      );
+
+
+  if (!token) {
+
+    throw new Error(
+
+      "No se encontró GITHUB_TOKEN " +
+      "en las propiedades del proyecto."
+
+    );
+
+  }
+
+
+  // ------------------------------------------
+  // URL DE GITHUB API
+  // ------------------------------------------
+
+  var url =
+
+    "https://api.github.com/repos/" +
+
+    CONFIG.usuario +
+    "/" +
+
+    CONFIG.repositorio +
+
+    "/actions/workflows/" +
+
+    CONFIG.workflow +
+
+    "/dispatches";
+
+
+  // ------------------------------------------
+  // PAYLOAD
+  // ------------------------------------------
+
+  var payload = {
+
+    ref:
+      CONFIG.rama,
+
+    inputs: {
+
+      demo_target:
+        CONFIG.nombreDemo
+
+    }
+
+  };
+
+
+  // ------------------------------------------
+  // OPCIONES
+  // ------------------------------------------
+
+  var options = {
+
+    method:
+      "post",
+
+    contentType:
+      "application/json",
+
+    payload:
+      JSON.stringify(
+        payload
+      ),
+
+    headers: {
+
+      Authorization:
+        "Bearer " + token,
+
+      Accept:
+        "application/vnd.github+json",
+
+      "X-GitHub-Api-Version":
+        "2022-11-28"
+
+    },
+
+    muteHttpExceptions:
+      true
+
+  };
+
+
+  // ------------------------------------------
+  // LLAMADA A GITHUB
+  // ------------------------------------------
+
+  var response =
+    UrlFetchApp.fetch(
+      url,
+      options
+    );
+
+
+  var status =
+    response.getResponseCode();
+
+  var body =
+    response.getContentText();
+
+
+  // ------------------------------------------
+  // LOG
+  // ------------------------------------------
+
+  Logger.log(
+    "GitHub HTTP STATUS: " +
+    status
+  );
+
+  Logger.log(
+    "GitHub RESPONSE: " +
+    body
+  );
+
+
+  // ------------------------------------------
+  // COMPROBAR RESPUESTA
+  // ------------------------------------------
+
+  if (
+    status !== 204 &&
+    status !== 200
+  ) {
+
+    throw new Error(
+
+      "GitHub rechazó el workflow.\n\n" +
+
+      "HTTP: " +
+      status +
+
+      "\n" +
+
+      "Respuesta: " +
+      body
+
+    );
+
+  }
+
+
+  Logger.log(
+    "Workflow enviado correctamente."
+  );
+
+  Logger.log(
+    "Hotel publicado correctamente."
+  );
 }
