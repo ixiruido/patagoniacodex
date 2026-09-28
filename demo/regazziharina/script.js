@@ -30,13 +30,16 @@ let observador;
             const elementosARevelar = document.querySelectorAll('.reveal');
             observador = new IntersectionObserver((entradas, miObservador) => {
                 entradas.forEach(entrada => {if (entrada.isIntersecting) {
-                        // Retraso escalonado para evitar que todas las tarjetas se activen al mismo tiempo
-                        const delay = Array.from(elementosARevelar).indexOf(entrada.target) * 100;
+                        // Retraso escalonado más rápido para animaciones más fluidas
+                        const delay = Array.from(elementosARevelar).indexOf(entrada.target) * 50;
                         setTimeout(() => {
                             entrada.target.classList.add('active');}, delay);
-                        miObservador.unobserve(entrada.target);}});}, 
+                        miObservador.unobserve(entrada.target);}});},
             { root: null, threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
             elementosARevelar.forEach(el => observador.observe(el));
+
+            // Inicializar slideshow
+            initSlideshow();
 
             // Activar sección inicial al cargar
             const sections = document.querySelectorAll('section[id]');
@@ -110,8 +113,8 @@ async function cargarAvisos() {
                 <div class="aviso-card reveal">
                     <div class="aviso-header">
                         <h3 class="aviso-titulo">${aviso.titulo}</h3>
-                        <span class="aviso-fecha">${fechaFormateada}</span>
                     </div>
+                    <div class="aviso-fecha">${fechaFormateada}</div>
                     <div class="aviso-autor">Por: ${aviso.autor}</div>
                     <p class="aviso-texto">${aviso.texto}</p>
                     ${adjuntoHTML}
@@ -128,5 +131,59 @@ async function cargarAvisos() {
     } catch (error) {
         console.error('Error al cargar avisos:', error);
         avisosContainer.innerHTML = '<p class="avisos-placeholder">Error al cargar los avisos. Por favor, inténtelo más tarde.</p>';
+    }
+}
+
+// Función para inicializar el slideshow
+function initSlideshow() {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+
+    if (slides.length === 0) return;
+
+    let currentSlide = 0;
+    const slideInterval = 5000; // 5 segundos
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            if (dots[i]) dots[i].classList.remove('active');
+        });
+
+        slides[index].classList.add('active');
+        if (dots[index]) dots[index].classList.add('active');
+        currentSlide = index;
+    }
+
+    function nextSlide() {
+        const next = (currentSlide + 1) % slides.length;
+        showSlide(next);
+    }
+
+    // Iniciar con primera slide activa
+    showSlide(0);
+
+    // Auto-play
+    let slideTimer = setInterval(nextSlide, slideInterval);
+
+    // Click en dots
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            clearInterval(slideTimer);
+            showSlide(index);
+            slideTimer = setInterval(nextSlide, slideInterval);
+        });
+    });
+
+    // Pausar al hover
+    const slideshowContainer = document.querySelector('.location-slideshow-container');
+    if (slideshowContainer) {
+        slideshowContainer.addEventListener('mouseenter', () => {
+            clearInterval(slideTimer);
+        });
+
+        slideshowContainer.addEventListener('mouseleave', () => {
+            slideTimer = setInterval(nextSlide, slideInterval);
+        });
     }
 }
