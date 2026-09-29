@@ -148,9 +148,7 @@ section { padding: 3rem 8%; }
         background-color: var(--gold-hover);}}
 
 .about {max-width: 1200px; margin: 0 auto; padding: 6rem 8%;}
-.about-header {display: flex; gap: 4rem; align-items: center;
-    margin-bottom: 4rem;}
-.about-img {flex: 1; min-width: 300px;
+.about-img {margin: 0 auto 3rem auto;
     max-width: 500px; position: relative;
     overflow: visible;
     display: flex; align-items: center; justify-content: center;}
@@ -159,7 +157,36 @@ section { padding: 3rem 8%; }
     transition: transform 0.5s ease;
     max-height: 500px; object-fit: contain;}
 .about-img:hover img { transform: scale(1.05); transition: transform 0.4s ease; }
-.about-content { flex: 1.5; }
+
+.professionals-container {margin-bottom: 3rem; width: 100%;}
+.professionals-container h3 {font-size: 1.8rem;
+    color: var(--gold-primary); margin-bottom: 1.5rem;
+    text-transform: uppercase; letter-spacing: 1px; text-align: center;}
+.professionals-grid {display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem; max-width: 800px; margin: 0 auto;}
+.professional-card {background-color: rgba(18, 22, 31, 0.85);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 6px; padding: 1.5rem;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;}
+.professional-card:hover {transform: translateY(-8px) scale(1.02);
+    border-color: rgba(212, 175, 55, 0.6);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);}
+.professional-card h4 {color: var(--gold-primary);
+    font-size: 1.1rem; margin-bottom: 0.5rem;
+    font-family: var(--font-headers);}
+.professional-card p {color: var(--text-muted);
+    font-size: 0.9rem; margin-bottom: 0.3rem;}
+.btn-contact {display: inline-block;
+    margin-top: 1rem; padding: 0.6rem 1.2rem;
+    background-color: var(--gold-primary);
+    color: #1a1d23; text-decoration: none;
+    font-weight: bold; font-size: 0.85rem;
+    border-radius: 4px; transition: background-color 0.3s ease;
+    text-transform: uppercase; letter-spacing: 1px;}
+.btn-contact:hover {background-color: var(--gold-hover);}
+
+.about-content { max-width: 800px; margin: 0 auto; text-align: center; }
 .about-content h2 {font-size: 2.5rem;
     color: var(--gold-primary); margin-bottom: 1.5rem;
     text-transform: uppercase; letter-spacing: 2px;}
@@ -379,10 +406,12 @@ footer {background-color: #06070a;
     color: var(--text-muted); font-size: 1.1rem;
     margin-bottom: 3rem; max-width: 600px;
     margin-left: auto; margin-right: auto;}
-.location-container {display: grid;
-    grid-template-columns: 1fr 1fr; gap: 2rem;
-    max-width: 1200px; margin: 0 auto;
-    align-items: start;}
+.location-container {display: flex;
+    flex-direction: column; align-items: center;
+    max-width: 1200px; margin: 0 auto; gap: 2rem;}
+.location-info {width: 100%; max-width: 600px;}
+.map-container {width: 100%; max-width: 600px; height: 400px;}
+.location-slideshow-container {width: 100%; max-width: 600px; height: 400px;}
 .location-info {background-color: var(--bg-card);
     border: 1px solid rgba(212, 175, 55, 0.2);
     border-radius: 8px; padding: 2.5rem;
@@ -409,22 +438,24 @@ footer {background-color: #06070a;
 .map-container {border: 1px solid rgba(212, 175, 55, 0.3);
     border-radius: 8px; overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    min-height: 400px;
+    height: 400px;
     transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;}
 .map-container:hover {transform: translateY(-5px);
     border-color: rgba(212, 175, 55, 0.5);
     box-shadow: 0 15px 40px rgba(212, 175, 55, 0.2);}
 .map-container iframe {display: block; width: 100%;
-    height: 100%; min-height: 400px;}
+    height: 100%;}
 
 .location-slideshow-container {
     border: 1px solid rgba(212, 175, 55, 0.3);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    min-height: 400px;
+    height: 400px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
     position: relative;
-    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .location-slideshow-container:hover {
@@ -437,7 +468,6 @@ footer {background-color: #06070a;
     position: relative;
     width: 100%;
     height: 100%;
-    min-height: 400px;
 }
 
 .slide {
@@ -459,7 +489,6 @@ footer {background-color: #06070a;
 .slide img {
     width: 100%;
     height: 100%;
-    min-height: 400px;
     object-fit: cover;
     display: block;
 }
