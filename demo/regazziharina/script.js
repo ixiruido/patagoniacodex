@@ -76,24 +76,46 @@ function parseFechaArgentina(fechaStr) {
     return new Date(anio, mes, dia);
 }
 
-// Función para expandir/colapsar tarjetas de servicios
+// Función para abrir modal con detalles del servicio
 function toggleCard(button) {
     const card = button.closest('.service-card');
-    const fullContent = card.querySelector('.card-full');
-    const shortContent = card.querySelector('.card-short');
-    
-    if (fullContent.classList.contains('active')) {
-        fullContent.classList.remove('active');
-        shortContent.style.display = '-webkit-box';
-        card.classList.remove('expanded');
-        button.textContent = 'Ver más';
-    } else {
-        fullContent.classList.add('active');
-        shortContent.style.display = 'none';
-        card.classList.add('expanded');
-        button.textContent = 'Ver menos';
-    }
+    const title = card.querySelector('h3').textContent;
+    const fullContent = card.querySelector('.card-full').innerHTML;
+
+    const modal = document.getElementById('service-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+
+    modalTitle.textContent = title;
+    modalBody.innerHTML = fullContent;
+    modal.classList.add('active');
+
+    // Prevenir scroll del body
+    document.body.style.overflow = 'hidden';
 }
+
+// Función para cerrar modal
+function closeModal() {
+    const modal = document.getElementById('service-modal');
+    modal.classList.remove('active');
+
+    // Restaurar scroll del body
+    document.body.style.overflow = '';
+}
+
+// Cerrar modal al hacer clic fuera del contenido
+document.getElementById('service-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
 
 // Función para cargar y mostrar avisos desde avisos.json
 async function cargarAvisos() {
