@@ -38,8 +38,7 @@ let observador;
             { root: null, threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
             elementosARevelar.forEach(el => observador.observe(el));
 
-            // Inicializar slideshow
-            initSlideshow();
+
 
             // Activar sección inicial al cargar
             const sections = document.querySelectorAll('section[id]');
@@ -75,6 +74,25 @@ function parseFechaArgentina(fechaStr) {
     if (isNaN(dia) || isNaN(mes) || isNaN(anio)) return new Date(0);
     
     return new Date(anio, mes, dia);
+}
+
+// Función para expandir/colapsar tarjetas de servicios
+function toggleCard(button) {
+    const card = button.closest('.service-card');
+    const fullContent = card.querySelector('.card-full');
+    const shortContent = card.querySelector('.card-short');
+    
+    if (fullContent.classList.contains('active')) {
+        fullContent.classList.remove('active');
+        shortContent.style.display = '-webkit-box';
+        card.classList.remove('expanded');
+        button.textContent = 'Ver más';
+    } else {
+        fullContent.classList.add('active');
+        shortContent.style.display = 'none';
+        card.classList.add('expanded');
+        button.textContent = 'Ver menos';
+    }
 }
 
 // Función para cargar y mostrar avisos desde avisos.json
@@ -134,56 +152,3 @@ async function cargarAvisos() {
     }
 }
 
-// Función para inicializar el slideshow
-function initSlideshow() {
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dot');
-
-    if (slides.length === 0) return;
-
-    let currentSlide = 0;
-    const slideInterval = 5000; // 5 segundos
-
-    function showSlide(index) {
-        slides.forEach((slide, i) => {
-            slide.classList.remove('active');
-            if (dots[i]) dots[i].classList.remove('active');
-        });
-
-        slides[index].classList.add('active');
-        if (dots[index]) dots[index].classList.add('active');
-        currentSlide = index;
-    }
-
-    function nextSlide() {
-        const next = (currentSlide + 1) % slides.length;
-        showSlide(next);
-    }
-
-    // Iniciar con primera slide activa
-    showSlide(0);
-
-    // Auto-play
-    let slideTimer = setInterval(nextSlide, slideInterval);
-
-    // Click en dots
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            clearInterval(slideTimer);
-            showSlide(index);
-            slideTimer = setInterval(nextSlide, slideInterval);
-        });
-    });
-
-    // Pausar al hover
-    const slideshowContainer = document.querySelector('.location-slideshow-container');
-    if (slideshowContainer) {
-        slideshowContainer.addEventListener('mouseenter', () => {
-            clearInterval(slideTimer);
-        });
-
-        slideshowContainer.addEventListener('mouseleave', () => {
-            slideTimer = setInterval(nextSlide, slideInterval);
-        });
-    }
-}
