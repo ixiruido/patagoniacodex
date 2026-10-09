@@ -422,10 +422,12 @@ section { padding: 3rem 8%; }
     width: 100%;
     max-height: 80vh;
     overflow-y: auto;
-    padding: 2.5rem;
+    padding: 0;
     position: relative;
     animation: slideUp 0.3s ease;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-content::before {
@@ -451,12 +453,32 @@ section { padding: 3rem 8%; }
     }
 }
 
+.modal-header {
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-card);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 2.5rem 2.5rem 1rem 2.5rem;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
 .modal-content h3 {
     color: var(--gold-primary);
     font-size: 1.8rem;
-    margin-bottom: 1.5rem;
+    margin: 0;
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    flex: 1;
+}
+
+#modal-body {
+    padding: 2rem 2.5rem;
+    flex-grow: 1;
 }
 
 .modal-content p {
@@ -472,9 +494,7 @@ section { padding: 3rem 8%; }
 }
 
 .modal-close {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
+    position: relative;
     width: 40px;
     height: 40px;
     background-color: rgba(201, 162, 39, 0.2);
@@ -488,6 +508,8 @@ section { padding: 3rem 8%; }
     color: var(--gold-primary);
     font-size: 1.5rem;
     line-height: 1;
+    flex-shrink: 0;
+    margin-top: -0.5rem;
 }
 
 .modal-close:hover {
@@ -513,6 +535,27 @@ section { padding: 3rem 8%; }
 
 .modal-content::-webkit-scrollbar-thumb:hover {
     background: rgba(201, 162, 39, 0.6);
+}
+
+.modal-back-btn {
+    padding: 0.8rem 1.5rem;
+    background-color: var(--gold-primary);
+    color: #0a0c10;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin: 0 2.5rem 2.5rem 2.5rem;
+    align-self: flex-start;
+}
+
+.modal-back-btn:hover {
+    background-color: var(--gold-hover);
+    transform: translateY(-2px);
 }
 
 .online-consultation {
@@ -996,10 +1039,42 @@ a[href^="tel"] {color: inherit; text-decoration: none;}
 @media (max-width: 480px) {
     .logo {font-size: 1.2rem; letter-spacing: 1px;}
     nav a {margin: 0 0.5rem; font-size: 0.65rem;}
-    
+
     #inicio, #sobre-nosotros, #servicios, #profesionales, #avisos, #contacto, #ubicacion {
         scroll-margin-top: 100px;}
-    
+
     body {padding-top: 80px;}
     .hero {margin-top: -80px;
         padding-top: calc(4rem + 80px);}}
+
+/* Modal responsive */
+@media (max-width: 768px) {
+    .modal-content {
+        max-width: 90%;
+        max-height: 85vh;
+    }
+
+    .modal-header {
+        padding: 2rem 1.5rem 1rem 1.5rem;
+    }
+
+    .modal-content h3 {
+        font-size: 1.4rem;
+    }
+
+    .modal-close {
+        width: 36px;
+        height: 36px;
+        font-size: 1.3rem;
+    }
+
+    #modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-back-btn {
+        margin: 0 1.5rem 1.5rem 1.5rem;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.8rem;
+    }
+}
