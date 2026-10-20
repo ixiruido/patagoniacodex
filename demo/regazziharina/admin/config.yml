@@ -1,18 +1,18 @@
 backend:
   name: github
-  repo: <TU-USUARIO-DE-GITHUB>/<NOMBRE-DE-TU-REPOSITORIO>
-  branch: main # O la rama que uses (master/main)
-  site_domain: <TU-WEB>.pages.dev # Tu dominio de Cloudflare Pages
+  repo: <ixiruido>/<patagoniacodex>
+  branch: main/demo/regazziharina
+  site_domain: patagoniacodex.pages.dev # Tu dominio de Cloudflare Pages
   base_url: https://<TU-WORKER-AUTH>.workers.dev # El mediador de login que veremos en el paso 3
   auth_endpoint: auth
 
-media_folder: "img/catalogo" # Carpeta de tu proyecto donde se guardarán las fotos
-public_folder: "/img/catalogo" # Ruta que usará el HTML para leer las fotos
+media_folder: "images/catalogo" # Carpeta de tu proyecto donde se guardarán las fotos
+public_folder: "/images" # Ruta que usará el HTML para leer las fotos
 
 collections:
   - name: "catalogo"
     label: "Catálogo de Productos"
-    folder: "data" # Carpeta donde tienes tu archivo JSON (ej: data/productos.json)
+    folder: "main/demo/regazziharina/" # Carpeta donde tienes tu archivo JSON (ej: data/productos.json)
     extension: "json"
     format: "json"
     create: true # Permite al cliente añadir nuevos productos
