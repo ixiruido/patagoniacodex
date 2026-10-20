@@ -1,25 +1,36 @@
 backend:
   name: github
   repo: <ixiruido>/<patagoniacodex>
-  branch: main/demo/regazziharina
-  site_domain: patagoniacodex.pages.dev # Tu dominio de Cloudflare Pages
-  base_url: https://<TU-WORKER-AUTH>.workers.dev # El mediador de login que veremos en el paso 3
+  branch: main/demo/regazziharina/
+  site_domain: patagoniacodex.pages.dev
+  base_url: https://<TU-WORKER-AUTH>.workers.dev # El mediador de login
   auth_endpoint: auth
 
-media_folder: "images/catalogo" # Carpeta de tu proyecto donde se guardarán las fotos
-public_folder: "/images" # Ruta que usará el HTML para leer las fotos
+# Rutas de Archivos en tu repositorio de GitHub
+media_folder: "main/demo/regazziharina/images" # Ruta desde la raíz de GitHub para guardar fotos
+public_folder: "images" # Cómo lee tu HTML las fotos (relativo a su index.html)
 
 collections:
   - name: "catalogo"
     label: "Catálogo de Productos"
-    folder: "main/demo/regazziharina/" # Carpeta donde tienes tu archivo JSON (ej: data/productos.json)
+    # Apuntamos a la subcarpeta exacta donde está tu archivo JSON
+    folder: "main/demo/regazziharina" 
     extension: "json"
     format: "json"
-    create: true # Permite al cliente añadir nuevos productos
-    slug: "{{fields.id}}" # Cómo se identificará internamente cada producto
-    fields:
-      - { label: "ID Único", name: "id", widget: "string" }
-      - { label: "Nombre del Producto", name: "title", widget: "string" }
-      - { label: "Precio", name: "price", widget: "number", value_type: "float" }
-      - { label: "Descripción", name: "description", widget: "text" }
-      - { label: "Foto del Producto", name: "image", widget: "image" }
+    create: true
+    slug: "{{fields.id}}"
+    # IMPORTANTE: Cambia "productos.json" por el nombre exacto de tu archivo
+    files:
+      - label: "Lista de Productos"
+        name: "lista_productos"
+        file: "main/demo/regazziharina/productos.json" 
+        fields:
+          - label: "Productos"
+            name: "productos"
+            widget: "list"
+            fields:
+              - { label: "ID Único", name: "id", widget: "string" }
+              - { label: "Nombre", name: "title", widget: "string" }
+              - { label: "Precio", name: "price", widget: "number", value_type: "float" }
+              - { label: "Descripción", name: "description", widget: "text" }
+              - { label: "Foto", name: "image", widget: "image" }
