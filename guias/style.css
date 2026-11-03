@@ -1,0 +1,241 @@
+/* CSS específico para las guías/tutoriales */
+/* Sistema de pasos lineales en lugar de cards apiladas */
+
+/* Contenedor principal de la guía */
+.services {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Título de la guía */
+.services h2 {
+    font-size: clamp(1.8rem, 5vw, 2.2rem);
+    color: var(--gold-primary);
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Contenedor de pasos - layout vertical */
+.services-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Card convertida en paso de tutorial */
+.card {
+    position: relative;
+    background-color: var(--bg-card);
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 2rem 2rem 2rem 4rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: auto;
+}
+
+/* Número de paso */
+.card::before {
+    content: attr(data-step);
+    position: absolute;
+    left: 1.5rem;
+    top: 2rem;
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--gold-primary), var(--gold-hover));
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    transform: scale(1);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    z-index: 2;
+}
+
+/* Línea conectora entre pasos */
+.card::after {
+    content: '';
+    position: absolute;
+    left: calc(1.5rem + 22px);
+    top: calc(2rem + 45px);
+    width: 2px;
+    height: calc(100% + 2rem);
+    background: linear-gradient(to bottom, #e5e7eb, transparent);
+    z-index: 1;
+}
+
+/* Último paso sin línea conectora */
+.card:last-child::after {
+    display: none;
+}
+
+/* Hover del paso */
+.card:hover {
+    transform: translateX(8px);
+    border-color: var(--gold-primary);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover::before {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Título del paso */
+.card h3 {
+    color: var(--gold-primary);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    text-align: left;
+}
+
+.card:hover h3 {
+    color: #000000;
+}
+
+/* Contenido del paso */
+.card p {
+    color: var(--text-light);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+}
+
+/* Imágenes dentro de los pasos */
+.card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Botón dentro del paso */
+.card .btn-view-details {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.8rem 2rem;
+    background-color: var(--gold-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.card .btn-view-details:hover {
+    background-color: var(--gold-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Animación de revelar */
+.reveal {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1),
+                transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .services {
+        padding: 2rem 5%;
+    }
+
+    .services-grid {
+        gap: 1.5rem;
+    }
+
+    .card {
+        padding: 1.5rem 1.5rem 1.5rem 3.5rem;
+    }
+
+    .card::before {
+        left: 1rem;
+        top: 1.5rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .card::after {
+        left: calc(1rem + 20px);
+        top: calc(1.5rem + 40px);
+    }
+
+    .card h3 {
+        font-size: 1.1rem;
+    }
+
+    .card p {
+        font-size: 0.95rem;
+    }
+
+    .card img {
+        max-height: 300px;
+        object-fit: contain;
+    }
+}
+
+@media (max-width: 480px) {
+    .services {
+        padding: 1.5rem 4%;
+    }
+
+    .card {
+        padding: 1.2rem 1.2rem 1.2rem 3rem;
+    }
+
+    .card::before {
+        left: 0.8rem;
+        top: 1.2rem;
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+
+    .card::after {
+        left: calc(0.8rem + 17.5px);
+        top: calc(1.2rem + 35px);
+    }
+
+    .card h3 {
+        font-size: 1rem;
+    }
+
+    .card p {
+        font-size: 0.9rem;
+    }
+
+    .card .btn-view-details {
+        width: 100%;
+        text-align: center;
+    }
+}
